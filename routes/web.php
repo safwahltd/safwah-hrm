@@ -7,6 +7,7 @@ use App\Http\Controllers\admin\EmployeeController;
 use App\Http\Controllers\admin\DepartmentController;
 use App\Http\Controllers\admin\DesignationController;
 use App\Http\Controllers\admin\HolidayController;
+use App\Http\Controllers\admin\AssetController;
 
 Route::get('/', [AdminAuthController::class, 'login'])->name('login');
 Route::post('/login-confirm', [AdminAuthController::class, 'loginConfirm'])->name('login.confirm');
@@ -22,6 +23,7 @@ Route::middleware(['admin.auth'])->group(function () {
     Route::resource('holidays', HolidayController::class);
     Route::resource('holidays', HolidayController::class);
     Route::post('/holiday-status-update/{id}', [HolidayController::class, 'StatusUpdate'])->name('admin.holiday.StatusUpdate');
-
+    Route::resource('assets', AssetController::class);
+    Route::get('/assets-search-employee', [AssetController::class,'employeeFilter'])->name('employee.filter.asset');
     Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
 });

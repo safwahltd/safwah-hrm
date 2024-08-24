@@ -72,12 +72,6 @@ class EmployeeController extends Controller
             return back();
         }
     }
-
-    public function show(User $user)
-    {
-        //
-    }
-
     public function update(Request $request, $id)
     {
         $user = User::find($id);
