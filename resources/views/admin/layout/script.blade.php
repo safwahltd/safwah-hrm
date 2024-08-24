@@ -32,3 +32,5 @@
     @endif
 
 </script>
+<script src="https://kit.fontawesome.com/1b84ef290f.js" crossorigin="anonymous"></script>
+@stack('js')
