@@ -41,7 +41,7 @@
                         </form>
                     </div>
                     <div class="profile-av pe-xl-4 pe-md-2 pe-sm-4 pe-4 text-center w220">
-                        <a href="">
+                        <a href="{{route('employee.profile',$user->id)}}">
                             @if($user->userInfo->image == '')
                                 <img src="{{asset('/')}}admin/assets/images/lg/avatar3.jpg" alt="" class="avatar xl rounded-circle img-thumbnail shadow-sm">
                             @else

@@ -23,8 +23,9 @@
                 <!-- Menu: Sub menu ul -->
                 <ul class="sub-menu collapse {{ Request::route()->getName() == 'holidays.index' ? 'show':''}}
                 {{ Request::route()->getName() == 'departments.index' ? 'show':''}}
-                {{ Request::route()->getName() == 'designations.index' ? 'show':''}} " id="project-Components">
-                    <li><a class="ms-link" href="#"><span>Members</span></a></li>
+                {{ Request::route()->getName() == 'designations.index' ? 'show':''}}
+                {{ Request::route()->getName() == 'employees.index' ? 'show':'' }}" id="project-Components">
+                    <li><a class="ms-link {{ Request::route()->getName() == 'employees.index' ? 'active':'' }}" href="{{route('employees.index')}}"><span>Members</span></a></li>
                     <li><a class="ms-link {{ Request::route()->getName() == 'holidays.index' ? 'active':'' }}" href="{{route('holidays.index')}}"><span>Holidays</span></a></li>
                     <li><a class="ms-link" href="#"><span>Attendance</span></a></li>
                     <li><a class="ms-link" href="#"><span>Leave Request</span></a></li>
@@ -74,7 +75,7 @@
                 <!-- Menu: Sub menu ul -->
                 <ul class="sub-menu collapse  {{ Request::route()->getName() == 'assets.index' ? 'show':''}} {{ Request::route()->getName() == 'employees.index' ? 'show':'' }}" id="client-Components">
                     <li><a class="ms-link {{ Request::route()->getName() == 'assets.index' ? 'active':'' }}" href="{{route('assets.index')}}"> <span>Assets</span></a></li>
-                    <li><a class="ms-link {{ Request::route()->getName() == 'employees.index' ? 'active':'' }}" href="{{route('employees.index')}}"> <span> Users </span></a></li>
+                    {{--<li><a class="ms-link " href=""> <span> Users </span></a></li>--}}
                     <li class="collapsed">
                         <a class="ms-link" data-bs-toggle="collapse" data-bs-target="#settings" href="#">
                             <i class="icofont-ticket"></i> <span>Settings</span> <span class="arrow icofont-dotted-down ms-auto text-end fs-5"></span>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\admin;
 
 use App\Models\Asset;
 use App\Models\User;
+use App\Models\UserInfos;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
@@ -110,13 +111,16 @@ class AssetController extends Controller
     }
 
     public  function employeeFilter(Request $request){
-        $employeee = User::where('name', 'like', '%' . $request->employeeName . '%')->get()->pluck('id');
-        $assets = Asset::whereIn('user_id',$employeee)->get();
-        if ($assets){
-            $users = User::whereNotIn('role',['admin'])->get();
+        $users = User::whereNotIn('role',['admin'])->get();
+        if ($request->employeeName){
+            $employeee = User::where('name', 'like', '%' . $request->employeeName . '%')->get()->pluck('id');
+            $assets = Asset::whereIn('user_id',$employeee)->get();
             return view('admin.assets.employeeFilter',compact('assets','users'));
         }
-//        $employeeIds = A
-        return view('admin.assets.employeeFilter',compact('assets','users'));
+        if ($request->employeeId){
+            $employeeId = UserInfos::where('employee_id', '=', $request->employeeId)->get()->pluck('user_id');
+            $assets = Asset::whereIn('user_id',$employeeId)->get();
+            return view('admin.assets.employeeFilter',compact('assets','users'));
+        }
     }
 }

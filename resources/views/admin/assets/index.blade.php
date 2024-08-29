@@ -18,7 +18,14 @@
                 <label class="focus-label">Employee Name</label>
             </div>
         </div>
+
         <div class="col-sm-6 col-md-3">
+            <div class="input-block mb-3 form-focus select-focus">
+                <input type="text" id="employee_id" class="form-control floating">
+                <label class="focus-label">Employee Id</label>
+            </div>
+        </div>
+        {{--<div class="col-sm-6 col-md-3">
             <div class="input-block mb-3 form-focus select-focus">
                 <select class="select floating form-control-sm">
                     <option value>All</option>
@@ -27,32 +34,12 @@
                     <option value="2"> Returned </option>
                 </select>
             </div>
-        </div>
-        <div class="col-sm-12 col-md-4">
-            <div class="row">
-                <div class="col-md-6 col-sm-6">
-                    <div class="input-block mb-3 form-focus">
-                        <div class="cal-icon">
-                            <input class="form-control floating datetimepicker" type="text">
-                        </div>
-                        <label class="focus-label">From</label>
-                    </div>
-                </div>
-                <div class="col-md-6 col-sm-6">
-                    <div class="input-block mb-3 form-focus">
-                        <div class="cal-icon">
-                            <input class="form-control floating datetimepicker" type="text">
-                        </div>
-                        <label class="focus-label">To</label>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-sm-6 col-md-2">
+        </div>--}}
+        {{--<div class="col-sm-6 col-md-2">
             <div class="d-grid">
                 <a href="#" class="btn btn-success"> Search </a>
             </div>
-        </div>
+        </div>--}}
     </div>
     <div class="row">
         <div class="col-md-12">
@@ -84,10 +71,10 @@
 {{--                        <td>5 Jan 2019</td>--}}
                         <td>{{$asset->value}}.tk</td>
                         <td class="text-center">
-                            <select name="status" id="" class="form-control-sm {{$asset->status == 1 ? 'text-white bg-success':''}}{{$asset->status == 0 ? 'text-dark bg-danger':''}} ">
-                                <option {{$asset->status == 1 ? 'selected':''}} value="1">Active</option>
-                                <option {{$asset->status == 0 ? 'selected':''}} value="0">Inactive</option>
-                            </select>
+                            <span class="rounded-2 p-1  text-white {{$asset->status == 1 ? 'bg-success text-white':''}}{{$asset->status == 0 ? 'bg-danger text-dark':''}}">
+                                {{$asset->status == 1 ? 'Active':''}}
+                                {{$asset->status == 0 ? 'Inactive':''}}
+                            </span>
                         </td>
                         <td class="d-flex justify-content-end">
                             <a class="mx-1" href="#" data-bs-toggle="modal" data-bs-target="#show_asset{{$key}}"><i class="fa-solid btn btn-primary fa-eye m-r-5"></i></a>
@@ -400,8 +387,7 @@
                 var employeeName = $(this).val();
                 var employeeNameLength = employeeName.length;
                 console.log(employeeNameLength);
-                if (employeeNameLength >= 3){
-                    $.ajax({
+                $.ajax({
                         url: '{{route('employee.filter.asset')}}',
                         type: 'GET',
                         data: {
@@ -409,18 +395,41 @@
                         },
                         dataType: 'html',
                         success: function(response) {
-
-                             $("#assetTable").empty();
-                             $("#assetTable").html(response);
+                            if(response != ''){
+                                $("#assetTable").empty();
+                                $("#assetTable").html(response);
+                            }
                         },
                         error: function(xhr, status, error) {
                             console.error(error);
                         }
                     });
-                }
-                else{
 
-                }
+            });
+            $("#employee_id").keyup(function(){
+                var employeeId = $(this).val();
+                // var employeeNameLength = employeeName.length;
+                console.log(employeeId);
+                $.ajax({
+                        url: '{{route('employee.filter.asset')}}',
+                        type: 'GET',
+                        data: {
+                            // employeeName: employeeName,
+                            employeeId: employeeId,
+                        },
+                        dataType: 'html',
+                        success: function(response) {
+                            if(response != ''){
+                                $("#assetTable").empty();
+                                $("#assetTable").html(response);
+                            }
+
+                        },
+                        error: function(xhr, status, error) {
+                            console.error(error);
+                        }
+                    });
+
             });
 
         });
