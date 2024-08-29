@@ -20,11 +20,13 @@ class EmployeeController extends Controller
         $users = User::latest()->whereNotIn('role',['admin'])->get();
         return view('admin.user.index',compact('designations','users'));
     }
-
-    public function create()
+    public function employees()
     {
-        //
+        $designations = Designation::where('status',1)->get();
+        $users = User::latest()->whereNotIn('role',['admin'])->get();
+        return view('admin.user.index',compact('designations','users'));
     }
+
 
     public function store(Request $request)
     {
@@ -139,5 +141,9 @@ class EmployeeController extends Controller
 
         toastr()->success('Status Update Success.');
         return back();
+    }
+    public function employeeProfile($id){
+        $user = User::find($id);
+        return view('admin.user.profile',compact('user'));
     }
 }

@@ -13,7 +13,7 @@
     </tr>
     </thead>
     <tbody>
-    @foreach($assets as $key => $asset)
+    @forelse($assets as $key => $asset)
         <tr>
             <td>{{$asset->user->name}}</td>
             <td>
@@ -234,7 +234,10 @@
                 </div>
             </div>
         </div>
-
-    @endforeach
+    @empty
+        <tr class="text-center">
+            <td colspan="8">No Data Found</td>
+        </tr>
+    @endforelse
     </tbody>
 </table>

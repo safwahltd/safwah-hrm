@@ -28,20 +28,27 @@ class AdminAuthController extends Controller
             $user = User::where('email',$request->email)->first();
             if($user){
                 if ($user->status == 1){
-                    if (Auth::guard('web')->attempt($credentials)){
-                        if ($user->role == 'admin') {
+                    if ($user->role == 'admin'){
+                        if (Auth::guard('web')->attempt($credentials)){
                             toastr()->success('Login Successfull');
                             return redirect()->route('admin.dashboard');
                         }
-                        elseif ($user->role == 'employee') {
-                            toastr()->success('Login Successfull');
-                            return redirect()->route('user.dashboard');
+                        else{
+                            toastr()->error("Invalid Credentials!");
+                            return back();
                         }
                     }
-                    else{
-                        toastr()->error("Invalid Credentials!");
-                        return back();
+                    elseif ($user->role == 'employee'){
+                        if (Auth::guard('web')->attempt($credentials)){
+                            toastr()->success('Login Successfull');
+                            return redirect()->route('employee.dashboard');
+                        }
+                        else{
+                            toastr()->error("Invalid Credentials!");
+                            return back();
+                        }
                     }
+
                 }
                 else{
                     toastr()->error("Your account is Inactive!");
