@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\employee;
 
 use App\Models\Attendance;
+use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Exception;
@@ -17,6 +18,11 @@ class AttendanceController extends Controller
         $attendances = Attendance::where('user_id',auth()->user()->id)->latest()->paginate(30);
         return view('employee.attendance.index',compact('attendances'));
     }
+     public function adminAttendanceList(){
+        $attendances = Attendance::latest()->paginate(30);
+        return view('admin.attendance.index',compact('attendances'));
+    }
+
     public function getClockStatus()
     {
         $userId = auth()->user()->id;
@@ -93,6 +99,7 @@ class AttendanceController extends Controller
         ]);
     }
     public function attendanceReport(){
+
         // Get the start and end dates of the current month
         $startOfMonth = Carbon::now()->startOfMonth();
         $endOfMonth = Carbon::now()->endOfMonth();
@@ -125,7 +132,54 @@ class AttendanceController extends Controller
 //        dd($startOfMonth,$endOfMonth,$totalDays,$currentDay,$dates);
         return view('employee.attendance.report',compact('datess','dates','attendances'));
     }
+    public function adminAttendanceReport(Request $request){
+        if ($request->year){
+            // Get the filter parameters
+            $year = $request->input('year');
+            $month = $request->input('month');
+            $day = $request->input('day', null);
 
+            // Fetch all users with attendances for the specified month (and day if provided)
+            $users = User::with(['attendances' => function ($query) use ($year, $month, $day) {
+                $query->whereYear('clock_in', $year)
+                    ->whereMonth('clock_in', $month);
+
+                if ($day) {
+                    $query->whereDay('clock_in', $day);
+                }
+            }])->get();
+
+            // Generate dates for the selected month
+            $dates = [];
+            $totalDays = Carbon::createFromDate($year, $month)->daysInMonth;
+            for ($d = 1; $d <= $totalDays; $d++) {
+                $dates[] = Carbon::createFromDate($year, $month, $d)->toDateString();
+            }
+            return view('admin.attendance.report', compact('users', 'dates', 'year', 'month', 'day'));
+        }
+        else{
+            // Get the current month
+            $currentMonth = Carbon::now()->month;
+            $currentYear = Carbon::now()->year;
+
+            // Get all users
+            $users = User::with(['attendances' => function ($query) use ($currentMonth, $currentYear) {
+                $query->whereMonth('clock_in', $currentMonth)
+                    ->whereYear('clock_in', $currentYear);
+            }])->get();
+
+            // Generate dates for the current month
+            $dates = [];
+            for ($day = 1; $day <= Carbon::now()->daysInMonth; $day++) {
+                $dates[] = Carbon::createFromDate($currentYear, $currentMonth, $day)->toDateString();
+            }
+            $year = $currentYear;
+            $month = $currentMonth;
+            $day = Carbon::now()->day;
+            return view('admin.attendance.report', compact('dates', 'users' , 'year', 'month', 'day'));
+        }
+
+    }
     public function getEvents()
     {
         $attendances = Attendance::where('user_id',auth()->user()->id)->get();

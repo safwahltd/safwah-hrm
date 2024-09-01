@@ -24,10 +24,13 @@
                 <ul class="sub-menu collapse {{ Request::route()->getName() == 'holidays.index' ? 'show':''}}
                 {{ Request::route()->getName() == 'departments.index' ? 'show':''}}
                 {{ Request::route()->getName() == 'designations.index' ? 'show':''}}
-                {{ Request::route()->getName() == 'employees.index' ? 'show':'' }}" id="project-Components">
+                {{ Request::route()->getName() == 'employees.index' ? 'show':'' }}
+                {{ Request::route()->getName() == 'admin.attendance.report' ? 'show':'' }}
+                {{ Request::route()->getName() == 'admin.attendance.list' ? 'show':'' }}" id="project-Components">
                     <li><a class="ms-link {{ Request::route()->getName() == 'employees.index' ? 'active':'' }}" href="{{route('employees.index')}}"><span>Members</span></a></li>
                     <li><a class="ms-link {{ Request::route()->getName() == 'holidays.index' ? 'active':'' }}" href="{{route('holidays.index')}}"><span>Holidays</span></a></li>
-                    <li><a class="ms-link" href="#"><span>Attendance</span></a></li>
+                    <li><a class="ms-link {{ Request::route()->getName() == 'admin.attendance.list' ? 'active':'' }}" href="{{route('admin.attendance.list')}}"><span>Attendance</span></a></li>
+                    <li><a class="ms-link {{ Request::route()->getName() == 'admin.attendance.report' ? 'active':'' }}" href="{{route('admin.attendance.report')}}"><span>Attendance Report</span></a></li>
                     <li><a class="ms-link" href="#"><span>Leave Request</span></a></li>
                     <li class=""><a class="ms-link {{ Request::route()->getName() == 'departments.index' ? 'active':'' }}" href="{{route('departments.index')}}"><span>Departments</span></a></li>
                     <li><a class="ms-link {{ Request::route()->getName() == 'designations.index' ? 'active':'' }}" href="{{route('designations.index')}}"><span>Designation</span></a></li>

@@ -37,6 +37,7 @@ class EmployeeController extends Controller
                 "designation" => "required",
                 "gender" => "required",
                 "employee_id" => "required|unique:user_infos,employee_id",
+                "employee_type" => "required",
                 "email" => "required|unique:users,email",
                 'password' => 'required|min:8|required_with:confirm_password|same:confirm_password',
                 'confirm_password' => 'required|min:8'
@@ -60,6 +61,7 @@ class EmployeeController extends Controller
             $userInfo->name = $user->name;
             $userInfo->email = $user->email;
             $userInfo->employee_id = $request->employee_id;
+            $userInfo->employee_type = $request->employee_type;
             $userInfo->join = $request->join;
             $userInfo->mobile = $request->phone;
             $userInfo->designation = $request->designation;
@@ -83,6 +85,7 @@ class EmployeeController extends Controller
                 "join" => "required",
                 "designation" => "required",
                 "gender" => "required",
+                "employee_type" => "required",
                 "employee_id" => [
                     'required',
                     Rule::unique('user_infos')->ignore($user->userInfo->id),
@@ -110,6 +113,7 @@ class EmployeeController extends Controller
             $userInfo->name = $user->name;
             $userInfo->email = $user->email;
             $userInfo->employee_id = $request->employee_id;
+            $userInfo->employee_type = $request->employee_type;
             $userInfo->join = $request->join;
             $userInfo->mobile = $request->phone;
             $userInfo->designation = $request->designation;

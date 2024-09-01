@@ -60,7 +60,7 @@
                                 </div>
                                 <div class="col-5 align-content-center">
                                     <button class="btn btn-primary" hidden id="clockInBtn"><i class="fa-solid fa-play"></i> Clock In</button>
-                                    <button class="btn text-white btn-danger" hidden id="clockOutBtn"><i class="fa-sharp fa-solid fa-person-walking-arrow-right"></i> Clock Out</button>
+                                    <button class="btn text-white btn-danger" hidden id="clockOutBtn"><i class="fa-solid fa-person-walking-arrow-right "></i> Clock Out</button>
                                     <div class="" id="clockInCLockOut">
                                         <button class="btn btn-primary" hidden id="clockInBtn"><i class="fa-solid fa-play"></i> Clock In</button>
                                         <button class="btn text-white btn-danger" hidden id="clockOutBtn"><i class="fa-sharp fa-solid fa-person-walking-arrow-right"></i> Clock Out</button>

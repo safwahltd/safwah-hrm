@@ -5,6 +5,7 @@ namespace App\Http\Controllers\admin;
 use App\Models\Holiday;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Validator;
 use Exception;
 use DateTime;
@@ -97,7 +98,6 @@ class HolidayController extends Controller
             toastr()->error($e->getMessage());
         }
     }
-
     public function StatusUpdate(Request $request,$id)
     {
         try {
@@ -111,5 +111,22 @@ class HolidayController extends Controller
             toastr()->error($e->getMessage());
             return back();
         }
+    }
+    public function employeeIndex(Request $request){
+        $currentDate = Carbon::now();
+        $endOfYear = $currentDate->copy()->endOfYear();
+        if ($request->type == 'left'){
+            $holidays = Holiday::where('date_from', '>', $currentDate)->where('date_to', '<=', $endOfYear)->orderBy('date_from')->get();
+            return view('employee.holiday.index',[
+                'holidays' => $holidays,
+                'type' => $request->type,
+            ]);
+        }
+        $holidays = Holiday::latest()->simplePaginate(20);
+
+        return view('employee.holiday.index',[
+            'holidays' => $holidays,
+            'type' => $request->type,
+        ]);
     }
 }
