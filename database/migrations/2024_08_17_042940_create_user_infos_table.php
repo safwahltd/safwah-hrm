@@ -16,6 +16,7 @@ return new class extends Migration
             $table->bigInteger('user_id');
             $table->string('name');
             $table->string('employee_id')->nullable()->unique();
+            $table->string('employee_type')->nullable();
             $table->text('join')->nullable();
             $table->string('email')->unique();
             $table->string('personal_email')->unique()->nullable();

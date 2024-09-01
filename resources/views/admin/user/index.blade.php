@@ -49,7 +49,7 @@
                             @endif
                             <div class="about-info align-items-center mt-3 justify-content-center">
                                 <h6  class="mb-0 mt-2  fw-bold d-block fs-6">{{$user->name}}</h6>
-                                <span class="light-info-bg py-1 px-2 rounded-1 d-inline-block fw-bold small-11 mb-0 mt-1">{{$user->userInfo->designations->name ?? 'N/A'}}</span><br>
+                                <span class="light-info-bg py-1 px-2 rounded-1 d-inline-block fw-bold small-11 mb-0 mt-1">{{$user->userInfo->designations->name ?? 'N/A'}}<br> <span>({{ str_replace('_',' ',$user->userInfo->employee_type) }})</span></span><br>
                                 <span class="light-info-bg py-1 px-2 rounded-1 d-inline-block fw-bold small-11 mb-0 mt-1">EIN : {{$user->userInfo->employee_id ?? 'N/A'}}</span>
                             </div>
                         </a>
@@ -78,11 +78,24 @@
                                 </div>
                                 <div class="deadline-form">
                                     <div class="row g-3 mb-3">
-                                        <div class="col-sm-6">
+                                        <div class="col-sm-4">
                                             <label for="exampleFormControlInput1778" class="form-label">Employee ID <span class="text-danger">*</span></label>
                                             <input type="text" required name="employee_id" value="{{$user->userInfo->employee_id}}" class="form-control" id="exampleFormControlInput1778" placeholder="Employee Id">
                                         </div>
-                                        <div class="col-sm-6">
+                                        <div class="col-sm-4">
+                                            <label for="employee_type" class="form-label">Employee Type <span class="text-danger">*</span></label>
+                                            <select  class="form-control" required name="employee_type" id="employee_type">
+                                                <option label="Select Type"></option>
+                                                <option {{$user->userInfo->employee_type == 'Intern' ? 'selected':''}} value="Intern">Intern</option>
+                                                <option {{$user->userInfo->employee_type == 'Probationary' ? 'selected':''}} value="Probationary">Probationary</option>
+                                                <option {{$user->userInfo->employee_type == 'Confirm' ? 'selected':''}} value="Confirm">Confirm</option>
+                                                <option {{$user->userInfo->employee_type == 'Part_Time' ? 'selected':''}} value="Part_Time">Part Time</option>
+                                                <option {{$user->userInfo->employee_type == 'Contractual' ? 'selected':''}} value="Contractual">Contractual</option>
+                                                <option {{$user->userInfo->employee_type == 'Remote' ? 'selected':''}} value="Remote">Remote</option>
+                                            </select>
+                                        </div>
+
+                                        <div class="col-sm-4">
                                             <label for="exampleFormControlInput2778" class="form-label">Joining Date <span class="text-danger">*</span></label>
                                             <input type="date" required name="join" class="form-control" value="{{$user->userInfo->join}}" id="exampleFormControlInput2778">
                                         </div>
@@ -337,143 +350,6 @@
         @endforeach
     </div>
 
-    <!-- Modal Members-->
-    <div class="modal fade" id="addUser" tabindex="-1" aria-labelledby="addUserLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title  fw-bold" id="addUserLabel">Employee Invitation</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="inviteby_email">
-                        <div class="input-group mb-3">
-                            <input type="email" class="form-control" placeholder="Email address" id="exampleInputEmail1" aria-describedby="exampleInputEmail1">
-                            <button class="btn btn-dark" type="button" id="button-addon2">Sent</button>
-                        </div>
-                    </div>
-                    <div class="members_list">
-                        <h6 class="fw-bold ">Employee </h6>
-                        <ul class="list-unstyled list-group list-group-custom list-group-flush mb-0">
-                            <li class="list-group-item py-3 text-center text-md-start">
-                                <div class="d-flex align-items-center flex-column flex-sm-column flex-md-row">
-                                    <div class="no-thumbnail mb-2 mb-md-0">
-                                        <img class="avatar lg rounded-circle" src="{{asset('/')}}admin/assets/images/xs/avatar2.jpg" alt="">
-                                    </div>
-                                    <div class="flex-fill ms-3 text-truncate">
-                                        <h6 class="mb-0  fw-bold">Rachel Carr(you)</h6>
-                                        <span class="text-muted">rachel.carr@gmail.com</span>
-                                    </div>
-                                    <div class="members-action">
-                                        <span class="members-role ">Admin</span>
-                                        <div class="btn-group">
-                                            <button type="button" class="btn bg-transparent dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                                                <i class="icofont-ui-settings  fs-6"></i>
-                                            </button>
-                                            <ul class="dropdown-menu dropdown-menu-end">
-                                                <li><a class="dropdown-item" href="#"><i class="icofont-ui-password fs-6 me-2"></i>ResetPassword</a></li>
-                                                <li><a class="dropdown-item" href="#"><i class="icofont-chart-line fs-6 me-2"></i>ActivityReport</a></li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-                            </li>
-                            <li class="list-group-item py-3 text-center text-md-start">
-                                <div class="d-flex align-items-center flex-column flex-sm-column flex-md-row">
-                                    <div class="no-thumbnail mb-2 mb-md-0">
-                                        <img class="avatar lg rounded-circle" src="{{asset('/')}}admin/assets/images/xs/avatar3.jpg" alt="">
-                                    </div>
-                                    <div class="flex-fill ms-3 text-truncate">
-                                        <h6 class="mb-0  fw-bold">Lucas Baker<a href="#" class="link-secondary ms-2">(Resend invitation)</a></h6>
-                                        <span class="text-muted">lucas.baker@gmail.com</span>
-                                    </div>
-                                    <div class="members-action">
-                                        <div class="btn-group">
-                                            <button type="button" class="btn bg-transparent dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                                                Members
-                                            </button>
-                                            <ul class="dropdown-menu dropdown-menu-end">
-                                                <li>
-                                                    <a class="dropdown-item" href="#">
-                                                        <i class="icofont-check-circled"></i>
-                                                        Member
-                                                        <span>Can view, edit, delete, comment on and save files</span>
-                                                    </a>
-
-                                                </li>
-                                                <li>
-                                                    <a class="dropdown-item" href="#">
-                                                        <i class="fs-6 p-2 me-1"></i>
-                                                        Admin
-                                                        <span>Member, but can invite and manage team members</span>
-                                                    </a>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                        <div class="btn-group">
-                                            <button type="button" class="btn bg-transparent dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                                                <i class="icofont-ui-settings  fs-6"></i>
-                                            </button>
-                                            <ul class="dropdown-menu dropdown-menu-end">
-                                                <li><a class="dropdown-item" href="#"><i class="icofont-delete-alt fs-6 me-2"></i>Delete Member</a></li>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
-                            </li>
-                            <li class="list-group-item py-3 text-center text-md-start">
-                                <div class="d-flex align-items-center flex-column flex-sm-column flex-md-row">
-                                    <div class="no-thumbnail mb-2 mb-md-0">
-                                        <img class="avatar lg rounded-circle" src="{{asset('/')}}admin/assets/images/xs/avatar8.jpg" alt="">
-                                    </div>
-                                    <div class="flex-fill ms-3 text-truncate">
-                                        <h6 class="mb-0  fw-bold">Una Coleman</h6>
-                                        <span class="text-muted">una.coleman@gmail.com</span>
-                                    </div>
-                                    <div class="members-action">
-                                        <div class="btn-group">
-                                            <button type="button" class="btn bg-transparent dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                                                Members
-                                            </button>
-                                            <ul class="dropdown-menu dropdown-menu-end">
-                                                <li>
-                                                    <a class="dropdown-item" href="#">
-                                                        <i class="icofont-check-circled"></i>
-                                                        Member
-                                                        <span>Can view, edit, delete, comment on and save files</span>
-                                                    </a>
-                                                </li>
-                                                <li>
-                                                    <a class="dropdown-item" href="#">
-                                                        <i class="fs-6 p-2 me-1"></i>
-                                                        Admin
-                                                        <span>Member, but can invite and manage team members</span>
-                                                    </a>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                        <div class="btn-group">
-                                            <div class="btn-group">
-                                                <button type="button" class="btn bg-transparent dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                                                    <i class="icofont-ui-settings  fs-6"></i>
-                                                </button>
-                                                <ul class="dropdown-menu dropdown-menu-end">
-                                                    <li><a class="dropdown-item" href="#"><i class="icofont-ui-password fs-6 me-2"></i>ResetPassword</a></li>
-                                                    <li><a class="dropdown-item" href="#"><i class="icofont-chart-line fs-6 me-2"></i>ActivityReport</a></li>
-                                                    <li><a class="dropdown-item" href="#"><i class="icofont-delete-alt fs-6 me-2"></i>Suspend member</a></li>
-                                                    <li><a class="dropdown-item" href="#"><i class="icofont-not-allowed fs-6 me-2"></i>Delete Member</a></li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
     <!-- Modal Create Employee-->
     <div class="modal fade" id="createemp" tabindex="-1"  aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
@@ -495,11 +371,24 @@
                         </div>
                         <div class="deadline-form">
                             <div class="row g-3 mb-3">
-                                <div class="col-sm-6">
+                                <div class="col-sm-4">
                                     <label for="exampleFormControlInput1778" class="form-label">Employee ID <span class="text-danger">*</span></label>
                                     <input type="text" required name="employee_id" value="{{old('employee_id')}}" class="form-control" id="exampleFormControlInput1778" placeholder="Employee Id">
                                 </div>
-                                <div class="col-sm-6">
+                                <div class="col-sm-4">
+                                    <label for="employee_type" class="form-label">Employee Type <span class="text-danger">*</span></label>
+                                    <select  class="form-control" required name="employee_type" id="employee_type">
+                                        <option label="Select Type"></option>
+                                        <option value="Intern">Intern</option>
+                                        <option value="Probationary">Probationary</option>
+                                        <option value="Confirm">Confirm</option>
+                                        <option value="Part_Time">Part Time</option>
+                                        <option value="Contractual">Contractual</option>
+                                        <option value="Remote">Remote</option>
+                                    </select>
+                                </div>
+
+                                <div class="col-sm-4">
                                     <label for="exampleFormControlInput2778" class="form-label">Joining Date <span class="text-danger">*</span></label>
                                     <input type="date" required name="join" class="form-control" value="{{old('join')}}" id="exampleFormControlInput2778">
                                 </div>
@@ -513,7 +402,6 @@
                                     <label for="confirm_password" class="form-label">Confirm Password <span class="text-danger">*</span></label>
                                     <input type="password" required name="confirm_password" value="{{old('confirm_password')}}" class="form-control" id="confirm_password" placeholder="confirm Password">
                                 </div>
-
                                 <div class="col-sm-6">
                                     <label for="exampleFormControlInput777" class="form-label">Phone</label>
                                     <input type="text" name="phone" class="form-control" value="{{old('phone')}}" id="exampleFormControlInput777" placeholder="phone number">

@@ -29,9 +29,10 @@ Route::middleware(['employee.auth'])->prefix('employee/')->group(function () {
     Route::get('/employee-attendance-list', [AttendanceController::class,'attendanceList'])->name('employee.attendance.list');
     Route::get('/employee-attendance-report', [AttendanceController::class,'attendanceReport'])->name('employee.attendance.report');
     Route::get('/employee-attendance-report-event', [AttendanceController::class,'getEvents'])->name('employee.attendance.report.event');
+    Route::get('/employee-holiday', [HolidayController::class,'employeeIndex'])->name('employee.holiday.index');
 });
 
-Route::middleware(['admin.auth'])->group(function () {
+Route::middleware(['admin.auth'])->prefix('admin/')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
     Route::resource('employees', EmployeeController::class);
     Route::post('/employee-ban-unban/{id}', [EmployeeController::class, 'banUnbanUSer'])->name('admin.user.ban.unban');
@@ -45,5 +46,7 @@ Route::middleware(['admin.auth'])->group(function () {
     Route::resource('assets', AssetController::class);
     Route::get('/assets-search-employee', [AssetController::class,'employeeFilter'])->name('employee.filter.asset');
     Route::get('/employee-profile/{id}', [EmployeeController::class,'employeeProfile'])->name('employee.profile');
+    Route::get('/attendance-list', [AttendanceController::class,'adminAttendanceList'])->name('admin.attendance.list');
+    Route::get('/attendance-report', [AttendanceController::class,'adminAttendanceReport'])->name('admin.attendance.report');
 });
 Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');

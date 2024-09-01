@@ -10,3 +10,4 @@
         padding: 0 10px;
     }
 </style>
+<link rel="stylesheet" href="{{asset('/')}}fontawesome/css/all.css">
