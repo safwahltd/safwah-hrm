@@ -14,6 +14,12 @@
         <div class="col-sm-12">
             <div class="mb-3">
                 <div class="text-end my-2">
+                    <form method="GET" action="{{ route('admin.attendance.report.export') }}">
+                        <input type="hidden" name="year" value="{{$year}}">
+                        <input type="hidden" name="month" value="{{$month}}">
+                        <input type="hidden" name="day" value="{{$day}}">
+                        <button class="form-control-sm my-2 bg-primary text-white" type="submit"><i class="fa fa-download"></i> Download Report</button>
+                    </form>
                     <form method="get" action="{{route('admin.attendance.report')}}">
                         <select class="form-control-sm" name="year" id="year">
                             @for($y = 2020; $y <= now()->year; $y++)

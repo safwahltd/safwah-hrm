@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\employee;
 
+use App\Exports\AttendanceExport;
 use App\Models\Attendance;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -11,6 +12,8 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use DateTime;
 use DateTimeZone;
+use Maatwebsite\Excel\Facades\Excel;
+
 
 class AttendanceController extends Controller
 {
@@ -195,5 +198,14 @@ class AttendanceController extends Controller
         });
 
         return response()->json($events);
+    }
+    public function exportAttendance(Request $request)
+    {
+        $day = $request->input('day',null);
+        $year = $request->input('year');
+        $month = $request->input('month');
+        $fileName = "attendance_report_{$year}_{$month}.xlsx";
+
+        return Excel::download(new AttendanceExport($year, $month,$day), $fileName);
     }
 }
