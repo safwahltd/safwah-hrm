@@ -11,6 +11,7 @@ use App\Http\Controllers\admin\AssetController;
 use App\Http\Controllers\employee\EmployeeDashboardController;
 use App\Http\Controllers\employee\EmployeeAccountController;
 use App\Http\Controllers\employee\AttendanceController;
+use App\Http\Controllers\LeaveController;
 
 
 Route::get('/', [AdminAuthController::class, 'login'])->name('login');
@@ -48,5 +49,15 @@ Route::middleware(['admin.auth'])->prefix('admin/')->group(function () {
     Route::get('/employee-profile/{id}', [EmployeeController::class,'employeeProfile'])->name('employee.profile');
     Route::get('/attendance-list', [AttendanceController::class,'adminAttendanceList'])->name('admin.attendance.list');
     Route::get('/attendance-report', [AttendanceController::class,'adminAttendanceReport'])->name('admin.attendance.report');
+    Route::get('/export-attendance', [AttendanceController::class, 'exportAttendance'])->name('admin.attendance.report.export');
+    Route::controller(LeaveController::class)->group(function (){
+        Route::get('/leave-type', 'leaveTypeIndex')->name('admin.leave.type');
+        Route::post('/leave-type-store', 'leaveTypeStore')->name('admin.leave.type.store');
+        Route::put('/leave-type-update', 'leaveTypeUpdate')->name('admin.leave.type.update');
+        Route::delete('/leave-type-destroy/{id}', 'leaveTypeDestroy')->name('admin.leave.type.destroy');
+        Route::delete('/leave-type-destroy/{id}', 'leaveTypeStatusUpdate')->name('admin.leave.type.status.update');
+    });
+
+
 });
 Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');

@@ -26,12 +26,23 @@
                 {{ Request::route()->getName() == 'designations.index' ? 'show':''}}
                 {{ Request::route()->getName() == 'employees.index' ? 'show':'' }}
                 {{ Request::route()->getName() == 'admin.attendance.report' ? 'show':'' }}
-                {{ Request::route()->getName() == 'admin.attendance.list' ? 'show':'' }}" id="project-Components">
+                {{ Request::route()->getName() == 'admin.attendance.list' ? 'show':'' }}
+                {{ Request::route()->getName() == 'admin.leave.type' ? 'show':'' }}
+                    " id="project-Components">
                     <li><a class="ms-link {{ Request::route()->getName() == 'employees.index' ? 'active':'' }}" href="{{route('employees.index')}}"><span>Members</span></a></li>
                     <li><a class="ms-link {{ Request::route()->getName() == 'holidays.index' ? 'active':'' }}" href="{{route('holidays.index')}}"><span>Holidays</span></a></li>
                     <li><a class="ms-link {{ Request::route()->getName() == 'admin.attendance.list' ? 'active':'' }}" href="{{route('admin.attendance.list')}}"><span>Attendance</span></a></li>
                     <li><a class="ms-link {{ Request::route()->getName() == 'admin.attendance.report' ? 'active':'' }}" href="{{route('admin.attendance.report')}}"><span>Attendance Report</span></a></li>
-                    <li><a class="ms-link" href="#"><span>Leave Request</span></a></li>
+                    <li class="collapsed">
+                        <a class="ms-link {{ Request::route()->getName() == 'assets.index' ? 'active':'' }}" data-bs-toggle="collapse" data-bs-target="#leave" href="#">
+                            <span>Leave</span> <span class="arrow icofont-dotted-down ms-auto text-end"></span>
+                        </a>
+                        <!-- Menu: Sub menu ul -->
+                        <ul class="sub-menu collapse  {{ Request::route()->getName() == 'assets.index' ? 'show':''}} {{ Request::route()->getName() == 'employees.index' ? 'show':'' }}" id="leave">
+                            <li><a class="ms-link {{ Request::route()->getName() == 'assets.index' ? 'active':'' }}" href="{{route('assets.index')}}"> <span>Leave Request</span></a></li>
+                            <li><a class="ms-link {{ Request::route()->getName() == 'admin.leave.type' ? 'active':'' }}" href="{{route('admin.leave.type')}}"> <span>Leave Type</span></a></li>
+                        </ul>
+                    </li>
                     <li class=""><a class="ms-link {{ Request::route()->getName() == 'departments.index' ? 'active':'' }}" href="{{route('departments.index')}}"><span>Departments</span></a></li>
                     <li><a class="ms-link {{ Request::route()->getName() == 'designations.index' ? 'active':'' }}" href="{{route('designations.index')}}"><span>Designation</span></a></li>
                     <li><a class="ms-link" href="#"><span>Termination</span></a></li>

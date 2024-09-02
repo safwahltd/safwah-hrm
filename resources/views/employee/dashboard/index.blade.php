@@ -15,16 +15,15 @@
         </div>
     </div>--}}
     <div class="row">
-        <div class="col-xxl-8 col-lg-12 col-md-12">
+        <div class="col-xxl-9 col-lg-12 col-md-12">
             <div class="row">
 
-                <div class="col-lg-6 col-md-12">
-                    <div class="card bg-primary-gradient flex-fill">
+                <div class="col-lg-7 col-md-12">
+                    <div class="card bg-primary-gradient">
                         <div class="card-body">
                             <div class="d-flex">
                                 <div class="">
-                                    <h4>Welcome Back, {{auth()->user()->name ?? 'N/A'}}</h4>
-{{--                                    <p>You have <span>4 meetings</span> today,</p>--}}
+                                    <h4>Welcome Back, <span class="fw-bold">{{auth()->user()->name ?? 'N/A'}}</span></h4>
                                 </div>
                                 <div class="">
                                     @if(file_exists(auth()->user()->userInfo->image))
@@ -40,7 +39,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="card bg-primary-subtle flex-fill">
+                    <div class="card bg-primary-subtle">
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-7">
@@ -90,27 +89,54 @@
                             </div>
                         </div>
                     </div>
-                    <div class="card info-card flex-fill">
+                    <div class="card info-card">
                         <div class="card-body">
-                            <h4>Upcoming Holidays</h4>
+                            <h4 class="fw-bold">Upcoming Holidays</h4>
                             <div class="holiday-details">
                                 <div class="holiday-calendar">
-                                    <div class="holiday-calendar-icon">
-                                        <img src="assets/img/icons/holiday-calendar.svg" alt="Icon">
-                                    </div>
                                     <div class="holiday-calendar-content">
-                                        <h6>Ramzan</h6>
-                                        <p>Mon 20 May 2024</p>
+                                        <div class="row">
+                                            <table id="myProjectTable" class="table table-hover table-striped align-middle mb-0" style="width:100%">
+                                                <thead class="bg-primary">
+                                                <tr class="bg-secondary">
+                                                    <th  class="bg-primary-subtle">Name</th>
+                                                    <th  class="bg-primary-subtle">Date</th>
+                                                    <th  class="bg-primary-subtle">Total</th>
+                                                    <th  class="bg-primary-subtle">Status</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                @forelse($holidays as $key => $holiday)
+                                                    <tr class="fw-bold">
+                                                        <td><small>{{$holiday->name}}</small></td>
+                                                        <td>
+                                                            <small>{{ \Illuminate\Support\Carbon::parse($holiday->date_from)->format('d M') }} -</small>
+                                                            <small>{{ \Illuminate\Support\Carbon::parse($holiday->date_to)->format('d M, Y') }}</small>
+                                                        </td>
+                                                        <td><small>{{ $holiday->total_day }} {{$holiday->total_day <= 1 ? 'day':'days'}}</small></td>
+                                                        <td><span class="p-1 px-3 rounded-2 text-white {{ $holiday->date_to > \Illuminate\Support\Carbon::now() ? 'bg-success' : 'bg-danger' }}">{{ $holiday->date_to > \Illuminate\Support\Carbon::now() ? 'In Coming' : 'Passed' }}</span></td>
+                                                    </tr>
+                                                @empty
+                                                    <tr>
+                                                        <td colspan="4" class="text-center"><span class="fw-bold">No Result</span></td>
+                                                    </tr>
+                                                @endforelse
+                                                </tbody>
+                                            </table>
+                                        </div>
                                     </div>
+
                                 </div>
                                 <div class="holiday-btn">
-                                    <a href="holidays.html" class="btn">View All</a>
+                                    <a href="{{route('employee.holiday.index')}}" class="btn btn-primary p-1 my-2">
+                                        View All <i class="fe fe-arrow-right-circle"></i>
+                                    </a>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-6 col-md-12">
+                <div class="col-lg-5 col-md-12">
                     <div class="card flex-fill">
                         <div class="card-body">
                             <div class="statistic-header d-flex">
@@ -197,7 +223,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-xxl-4 col-lg-12 col-md-12 d-flex">
+        <div class="col-xxl-3 col-lg-12 col-md-12 d-flex">
             <div class="card flex-fill">
                 <div class="card-body">
                     <div class="statistic-header">
