@@ -33,19 +33,19 @@
                         </div>
                         <div class="my-1">
                             <a class="mx-2" href="{{$user->userInfo->facebook}}" target="_blank">
-                                <i class="fa fa-facebook"></i>
+                                <i class="icofont-facebook"></i>
                             </a>
                             <a class="" href="{{$user->userInfo->instagram}}" target="_blank">
-                                <i class="fa fa-instagram"></i>
+                                <i class="icofont-instagram"></i>
                             </a>
                             <a class="mx-2" href="{{$user->userInfo->linkedIn}}" target="_blank">
-                                <i class="fa fa-linkedin"></i>
+                                <i class="icofont-linkedin"></i>
                             </a>
                             <a class="" href="{{$user->userInfo->twitter}}" target="_blank">
-                                <i class="fa fa-twitter"></i>
+                                <i class="icofont-twitter"></i>
                             </a>
                             <a class="mx-2" href="{{$user->userInfo->github}}" target="_blank">
-                                <i class="fa fa-github"></i>
+                                <i class="icofont-github"></i>
                             </a>
                         </div>
                     </div>
@@ -154,8 +154,8 @@
                             </ul>
                         </div>
                     </div>
-                    <div class="card">
-                        <div class="card-header py-3 d-flex justify-content-between">
+                    <div class="card my-2">
+                        <div class="card-header py-3  d-flex justify-content-between">
                             <h6 class="mb-0 fw-bold"><i class="fa-solid fa-people-roof"></i> Family Information</h6>
                         </div>
                         <div class="card-body">

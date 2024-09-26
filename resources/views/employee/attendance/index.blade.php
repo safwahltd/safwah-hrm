@@ -10,47 +10,36 @@
     </div>
     <!-- Row end  -->
 
-    <div class="row clearfix g-3">
+    <div class="row g-3">
         <div class="col-sm-12">
             <div class="card mb-3">
                 <div class="card-body">
-                    <table id="myProjectTable" class="table table-hover table-striped align-middle mb-0" style="width:100%">
-                        <thead class="bg-primary">
-                        <tr class="">
-                            <th>No</th>
-                            <th>
-                                <p class="my-0">Clock In</p>
-                                <p class="text-muted my-0"><small>(D-M-Y H:M:S)</small></p>
-
-                            </th>
-                            <th>
-                                <p class="my-0">Clock Out</p>
-                                <p class="text-muted my-0"><small>(D-M-Y H:M:S)</small></p>
-                            </th>
-                            <th>
-                                <p class="my-0">Working Hour</p>
-                                <p class="text-muted my-0"><small>(H:M:S)</small></p>
-
-                            </th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        @forelse($attendances as $key => $attendance)
+                    <div class="table-responsive export-table">
+                        <table id="file-datatable" class="table table-bordered w-100" style="width:100%">
+                            <thead>
                             <tr>
-                                <td><span class="fw-bold">{{$loop->iteration}}</span></td>
-                                <td>{{$attendance->clock_in}}</td>
-                                <td>{{$attendance->clock_out}}</td>
-                                <td>{{$attendance->working_time }}</td>
+                                <th class="border-bottom-0">No</th>
+                                <th class="border-bottom-0">Clock In <sub>(D-M-Y H:M:S)</sub></th>
+                                <th class="border-bottom-0">Clock Out <sub>(D-M-Y H:M:S)</sub></th>
+                                <th class="border-bottom-0">Working Hour <sub>(H:M:S)</sub></th>
                             </tr>
-                        @empty
-                            <tr>
-                                <td colspan="4" class="text-center"><span class="fw-bold">No Result</span></td>
-                            </tr>
-                        @endforelse
-                        </tbody>
-                    </table>
-                    <div class="text-white my-3 d-grid justify-content-center">
-                        {{$attendances->links()}}
+                            </thead>
+                            </thead>
+                            <tbody>
+                            @forelse($attendances as $key => $attendance)
+                                <tr>
+                                    <td><span class="fw-bold">{{$loop->iteration}}</span></td>
+                                    <td>{{$attendance->clock_in}}</td>
+                                    <td>{{$attendance->clock_out}}</td>
+                                    <td>{{$attendance->working_time }}</td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="4" class="text-center"><span class="fw-bold">No Result</span></td>
+                                </tr>
+                            @endforelse
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>

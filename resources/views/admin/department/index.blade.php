@@ -24,6 +24,7 @@
 {{--                            <th>Department Head</th>--}}
                             <th>Department Name</th>
 {{--                            <th>Employee UnderWork</th>--}}
+                            <th>Status</th>
                             <th>Actions</th>
                         </tr>
                         </thead>
@@ -43,7 +44,7 @@
                             <td>
                                 <form action="{{route('admin.department.StatusUpdate',$department->id)}}" method="post">
                                     @csrf
-                                    <select name="status" id="" class="form-control text-white {{$department->status == 1 ? 'bg-success':'bg-danger'}}" onchange="this.form.submit()">
+                                    <select name="status" id="" class="form-control-sm text-white {{$department->status == 1 ? 'bg-success':'bg-danger'}}" onchange="this.form.submit()">
                                         <option {{$department->status == 1 ? 'selected':''}} value="1">Active</option>
                                         <option {{$department->status == 0 ? 'selected':''}} value="0">Inactive</option>
                                     </select>

@@ -25,6 +25,7 @@
                             <th>Designation Name</th>
                             <th>Department Name</th>
 {{--                            <th>Employee UnderWork</th>--}}
+                            <th>Status</th>
                             <th>Actions</th>
                         </tr>
                         </thead>
@@ -43,7 +44,7 @@
                             <td>
                                 <form action="{{route('admin.designation.StatusUpdate',$designation->id)}}" method="post">
                                     @csrf
-                                    <select name="status" id="" class="form-control text-white {{$designation->status == 1 ? 'bg-success':'bg-danger'}}" onchange="this.form.submit()">
+                                    <select name="status" id="" class="form-control-sm text-white {{$designation->status == 1 ? 'bg-success':'bg-danger'}}" onchange="this.form.submit()">
                                         <option {{$designation->status == 1 ? 'selected':''}} value="1">Active</option>
                                         <option {{$designation->status == 0 ? 'selected':''}} value="0">Inactive</option>
                                     </select>

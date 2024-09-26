@@ -11,9 +11,9 @@
     <!-- Row end  -->
 
     <div class="row clearfix g-3">
-        <div class="col-sm-12">
+        <div class="col-sm-12 p-2" style="background-color: #ffffff">
             <div class="mb-3">
-                <div id='calendar'></div>
+                <div id='calendar' class="text-black"></div>
                 {{--<div class="table-responsive">
                     <table id="myProjectTable" class="table table-hover table-striped align-middle mb-0" style="width:100%">
                         @foreach($datess as $date)

@@ -24,9 +24,9 @@
     <div class="row g-3 py-1 pb-4">
         @foreach($users as $key => $user)
         <div class="col-2">
-            <div class="card teacher-card">
+            <div class="card">
                 <div class="card-body">
-                    <div class="d-flex">
+                    <div class="">
                         <button class="btn btn-toolbar float-start" data-bs-toggle="modal" data-bs-target="#editEmp{{$key}}"><i class="icofont-edit text-success"></i></button>
                         <form action="{{route('admin.user.ban.unban',$user->id)}}" method="post">
                             @csrf
@@ -40,7 +40,7 @@
                             @endif
                         </form>
                     </div>
-                    <div class="profile-av pe-xl-4 pe-md-2 pe-sm-4 pe-4 text-center w220">
+                    <div class="text-center">
                         <a href="{{route('employee.profile',$user->id)}}">
                             @if($user->userInfo->image == '')
                                 <img src="{{asset('/')}}admin/assets/images/lg/avatar3.jpg" alt="" class="avatar xl rounded-circle img-thumbnail shadow-sm">

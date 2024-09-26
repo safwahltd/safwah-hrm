@@ -42,7 +42,7 @@
                             <td>
                                 <form action="{{route('admin.holiday.StatusUpdate',$holiday->id)}}" method="post">
                                     @csrf
-                                    <select name="status" id="" class="form-control text-white {{$holiday->status == 1 ? 'bg-success':'bg-danger'}}" onchange="this.form.submit()">
+                                    <select name="status" id="" class="form-control-sm text-white {{$holiday->status == 1 ? 'bg-success':'bg-danger'}}" onchange="this.form.submit()">
                                         <option {{$holiday->status == 1 ? 'selected':''}} value="1">Active</option>
                                         <option {{$holiday->status == 0 ? 'selected':''}} value="0">Inactive</option>
                                     </select>

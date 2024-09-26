@@ -9,7 +9,7 @@
     @include('employee.layout.style')
 </head>
 
-<body  data-mytask="theme-indigo">
+<body  data-mytask="theme-indigo" style="background-color: #eee6e6">
 <div id="mytask-layout">
 
     <!-- sidebar -->
@@ -210,10 +210,6 @@
                         </div>
                     </li>
                 </ul>
-            </div>
-            <div class="d-flex">
-                <a href="https://themeforest.net/item/mytask-hr-project-management-admin-template/31974551" class="btn w-100 me-1 py-2 btn-primary">Buy Now</a>
-                <a href="https://themeforest.net/user/pixelwibes/portfolio" class="btn w-100 ms-1 py-2 btn-dark">View Portfolio</a>
             </div>
         </div>
     </div>

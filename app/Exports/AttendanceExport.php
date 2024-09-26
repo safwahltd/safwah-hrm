@@ -2,64 +2,87 @@
 
 namespace App\Exports;
 
+use App\Models\Attendance;
 use App\Models\User;
+use Carbon\CarbonPeriod;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Carbon;
+use Maatwebsite\Excel\Concerns\WithTitle;
 use Maatwebsite\Excel\Concerns\FromCollection;
+use Maatwebsite\Excel\Concerns\WithHeadings;
+use Maatwebsite\Excel\Concerns\WithMapping;
 
-class AttendanceExport implements FromCollection
+class AttendanceExport implements WithTitle,FromCollection,WithHeadings,WithMapping
 {
     protected $month;
     protected $year;
     protected $day;
+    protected $daysInMonth;
 
     public function __construct($year,$month,$day)
     {
         $this->year = $year;
         $this->month = $month;
         $this->day = $day;
+        $this->daysInMonth = Carbon::createFromDate($year, $month, 1)->daysInMonth;
     }
 
     public function collection()
     {
-        // Fetch users with their attendance for the specified month and year
-        return User::select('id', 'name')->with(['attendances' => function ($query) {
-            $query->select('user_id', 'clock_in', 'clock_out')
-                ->whereYear('clock_in', $this->year)
-                ->whereMonth('clock_in', $this->month);
-            if ($this->day != '') {
-                $query->whereDay('clock_in', $this->day);
+        $report = collect();
+
+        $users = User::whereNotIN('id',[1])->get();
+        foreach ($users as $user) {
+            $userData = [
+                'user' => $user->name,
+            ];
+            // Loop through each day of the month
+            for ($day = 1; $day <= $this->daysInMonth; $day++) {
+                $date = Carbon::create($this->year, $this->month, $day)->format('Y-m-d');
+                // Fetch attendance for the user on a specific day
+                $attendance = Attendance::where('user_id', $user->id)
+                    ->whereDate('clock_in_date', $date)
+                    ->first();
+                // If there's no attendance, set clock in/out to 'N/A'
+                if ($attendance) {
+                    $clockIn = Carbon::parse($attendance->clock_in)->format('h:i A');
+                    $clockOut = Carbon::parse($attendance->clock_out)->format('h:i A');
+                    $userData["day_$day"] = $clockIn . ' / ' . $clockOut;
+                } else {
+                    $userData["day_$day"] = 'N/A';
+                }
             }
-        }])->get();
+            // Add the user row to the report collection
+            $report->push((object) $userData);
+        }
+
+        return $report;
     }
 
     public function headings(): array
     {
-        $daysInMonth = Carbon::create($this->year, $this->month)->daysInMonth;
-        $dates = [];
-
-        for ($day = 1; $day <= $daysInMonth; $day++) {
-            $dates[] = Carbon::create($this->year, $this->month, $day)->toDateString();
+        $headings = ['User Name'];
+        // Add a heading for each day of the month
+        for ($day = 1; $day <= $this->daysInMonth; $day++) {
+            $date = Carbon::create($this->year, $this->month, $day)->format('Y-m-d');
+            $headings[] = "$date (In / Out)";
         }
-
-        return array_merge(['User'], $dates);
+        return $headings;
     }
 
-    public function map($user): array
+    public function map($row): array
     {
-        $daysInMonth = Carbon::create($this->year, $this->month)->daysInMonth;
-        $row = [$user->name];
+        // Map user and their attendance data for each day
+        $mapped = [$row->user];
 
-        for ($day = 1; $day <= $daysInMonth; $day++) {
-            $date = Carbon::create($this->year, $this->month, $day)->toDateString();
-            $attendance = $user->attendances->firstWhere('clock_in', $date);
-
-            if ($attendance) {
-                $row[] = 'In: ' . Carbon::parse($attendance->clock_in)->format('H:i') . ', Out: ' . Carbon::parse($attendance->clock_out)->format('H:i');
-            } else {
-                $row[] = '-';
-            }
+        for ($day = 1; $day <= $this->daysInMonth; $day++) {
+            $mapped[] = $row->{"day_$day"} ?? '';
         }
 
-        return $row;
+        return $mapped;
+    }
+    public function title(): string
+    {
+        return 'Attendance Report - ' . Carbon::createFromDate($this->year, $this->month)->format('M Y');
     }
 }
