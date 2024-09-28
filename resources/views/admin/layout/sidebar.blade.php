@@ -1,8 +1,9 @@
-<div class="sidebar px-4 py-4 py-md-5 me-0">
-    <div class="d-flex flex-column h-100">
+<div class="sidebar px-4 py-4 py-md-5 me-0" style="background-color: #1a1d20">
+    <div class="d-flex flex-column h-100" >
         <a href="{{route('admin.dashboard')}}" class="mb-0 text-center">
             <span class="logo-icon">
-                <img width="200" src="{{asset('/')}}admin/assets/logo.png" alt="" class="img-responsive">
+{{--                <img width="200" src="{{asset('/')}}admin/assets/logo.png" alt="" class="img-responsive">--}}
+                <h5 class="text-white fw-bold">SAFWAH LIMITED</h5>
             </span>
         </a>
         <!-- Menu: main ul -->
@@ -21,31 +22,26 @@
                     "  data-bs-toggle="collapse" data-bs-target="#project-Components" href="#">
                     <i class="icofont-briefcase"></i><span>Employees</span> <span class="arrow icofont-dotted-down ms-auto text-end fs-5"></span></a>
                 <!-- Menu: Sub menu ul -->
-                <ul class="sub-menu collapse {{ Request::route()->getName() == 'holidays.index' ? 'show':''}}
+                <ul class="sub-menu collapse
+                {{ Request::route()->getName() == 'holidays.index' ? 'show':''}}
                 {{ Request::route()->getName() == 'departments.index' ? 'show':''}}
                 {{ Request::route()->getName() == 'designations.index' ? 'show':''}}
                 {{ Request::route()->getName() == 'employees.index' ? 'show':'' }}
                 {{ Request::route()->getName() == 'admin.attendance.report' ? 'show':'' }}
                 {{ Request::route()->getName() == 'admin.attendance.list' ? 'show':'' }}
-                {{ Request::route()->getName() == 'admin.leave.type' ? 'show':'' }}
+                {{ Request::route()->getName() == 'admin.leave.report' ? 'show':'' }}
+                {{ Request::route()->getName() == 'admin.leave.requests' ? 'show':'' }}
+                {{ Request::route()->getName() == 'admin.termination.index' ? 'show':'' }}
                     " id="project-Components">
                     <li><a class="ms-link {{ Request::route()->getName() == 'employees.index' ? 'active':'' }}" href="{{route('employees.index')}}"><span>Members</span></a></li>
                     <li><a class="ms-link {{ Request::route()->getName() == 'holidays.index' ? 'active':'' }}" href="{{route('holidays.index')}}"><span>Holidays</span></a></li>
                     <li><a class="ms-link {{ Request::route()->getName() == 'admin.attendance.list' ? 'active':'' }}" href="{{route('admin.attendance.list')}}"><span>Attendance</span></a></li>
                     <li><a class="ms-link {{ Request::route()->getName() == 'admin.attendance.report' ? 'active':'' }}" href="{{route('admin.attendance.report')}}"><span>Attendance Report</span></a></li>
-                    <li class="collapsed">
-                        <a class="ms-link {{ Request::route()->getName() == 'assets.index' ? 'active':'' }}" data-bs-toggle="collapse" data-bs-target="#leave" href="#">
-                            <span>Leave</span> <span class="arrow icofont-dotted-down ms-auto text-end"></span>
-                        </a>
-                        <!-- Menu: Sub menu ul -->
-                        <ul class="sub-menu collapse  {{ Request::route()->getName() == 'assets.index' ? 'show':''}} {{ Request::route()->getName() == 'employees.index' ? 'show':'' }}" id="leave">
-                            <li><a class="ms-link {{ Request::route()->getName() == 'assets.index' ? 'active':'' }}" href="{{route('assets.index')}}"> <span>Leave Request</span></a></li>
-                            <li><a class="ms-link {{ Request::route()->getName() == 'admin.leave.type' ? 'active':'' }}" href="{{route('admin.leave.type')}}"> <span>Leave Type</span></a></li>
-                        </ul>
-                    </li>
+                    <li><a class="ms-link {{ Request::route()->getName() == 'admin.leave.requests' ? 'active':'' }}" href="{{route('admin.leave.requests')}}"><span>Leave Request</span></a></li>
+                    <li><a class="ms-link {{ Request::route()->getName() == 'admin.leave.report' ? 'active':'' }}" href="{{route('admin.leave.report')}}"><span>Leave Report</span></a></li>
                     <li class=""><a class="ms-link {{ Request::route()->getName() == 'departments.index' ? 'active':'' }}" href="{{route('departments.index')}}"><span>Departments</span></a></li>
                     <li><a class="ms-link {{ Request::route()->getName() == 'designations.index' ? 'active':'' }}" href="{{route('designations.index')}}"><span>Designation</span></a></li>
-                    <li><a class="ms-link" href="#"><span>Termination</span></a></li>
+                    <li><a class="ms-link {{ Request::route()->getName() == 'admin.termination.index' ? 'active':'' }}"  href="{{route('admin.termination.index')}}"><span>Termination</span></a></li>
                 </ul>
             </li>
 
@@ -87,9 +83,8 @@
                 <a class="m-link {{ Request::route()->getName() == 'assets.index' ? 'active':'' }}" data-bs-toggle="collapse" data-bs-target="#client-Components" href="#"><i
                         class="icofont-user-male"></i> <span>Administration</span> <span class="arrow icofont-dotted-down ms-auto text-end fs-5"></span></a>
                 <!-- Menu: Sub menu ul -->
-                <ul class="sub-menu collapse  {{ Request::route()->getName() == 'assets.index' ? 'show':''}} {{ Request::route()->getName() == 'employees.index' ? 'show':'' }}" id="client-Components">
-                    <li><a class="ms-link {{ Request::route()->getName() == 'assets.index' ? 'active':'' }}" href="{{route('assets.index')}}"> <span>Assets</span></a></li>
-                    {{--<li><a class="ms-link " href=""> <span> Users </span></a></li>--}}
+                <ul class="sub-menu collapse  {{ Request::route()->getName() == 'asset.index' ? 'show':''}}" id="client-Components">
+                    <li><a class="ms-link {{ Request::route()->getName() == 'asset.index' ? 'active':'' }}" href="{{route('asset.index')}}"> <span>Assets</span></a></li>
                     <li class="collapsed">
                         <a class="ms-link" data-bs-toggle="collapse" data-bs-target="#settings" href="#">
                             <i class="icofont-ticket"></i> <span>Settings</span> <span class="arrow icofont-dotted-down ms-auto text-end fs-5"></span>
@@ -102,7 +97,7 @@
                             <li><a class="ms-link" href="tickets.html"><span> Invoice Settings  </span></a></li>
                             <li><a class="ms-link" href="tickets.html"><span> Notification Settings </span></a></li>
                             <li><a class="ms-link" href="tickets.html"><span> Change Password </span></a></li>
-                            <li><a class="ms-link" href="tickets.html"><span> Leave Type </span></a></li>
+{{--                            <li><a class="ms-link" href="tickets.html"><span> Leave Type </span></a></li>--}}
                         </ul>
                     </li>
                 </ul>

@@ -13,7 +13,7 @@
     <!-- Row End -->
 
     <div class="row g-3">
-        <div class="col-xl-8 col-lg-12 col-md-12">
+        <div class="col-xl-12 col-lg-12 col-md-12">
             <div class="card teacher-card  mb-3">
                 <div class="card-body  d-flex teacher-fulldeatil">
                     <div class="profile-teacher pe-xl-4 pe-md-2 pe-sm-4 pe-0 text-center w220 mx-sm-0 mx-auto">
@@ -169,7 +169,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-xl-4 col-lg-12 col-md-12">
+        {{--<div class="col-xl-4 col-lg-12 col-md-12">
             <div class="card">
                 <div class="card-header py-3">
                     <h6 class="mb-0 fw-bold ">Experience</h6>
@@ -213,7 +213,7 @@
                     </div> <!-- timeline item end  -->
                 </div>
             </div>
-        </div>
+        </div>--}}
     </div>
     <!-- Row End -->
 @endsection

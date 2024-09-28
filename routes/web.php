@@ -12,6 +12,8 @@ use App\Http\Controllers\employee\EmployeeDashboardController;
 use App\Http\Controllers\employee\EmployeeAccountController;
 use App\Http\Controllers\employee\AttendanceController;
 use App\Http\Controllers\LeaveController;
+use App\Http\Controllers\admin\TerminationController;
+use App\Http\Controllers\admin\TerminationTypeController;
 
 
 Route::get('/', [AdminAuthController::class, 'login'])->name('login');
@@ -31,6 +33,13 @@ Route::middleware(['employee.auth'])->prefix('employee/')->group(function () {
     Route::get('/employee-attendance-report', [AttendanceController::class,'attendanceReport'])->name('employee.attendance.report');
     Route::get('/employee-attendance-report-event', [AttendanceController::class,'getEvents'])->name('employee.attendance.report.event');
     Route::get('/employee-holiday', [HolidayController::class,'employeeIndex'])->name('employee.holiday.index');
+    Route::controller(LeaveController::class)->group(function (){
+        Route::get('/leave', 'employeeLeaveIndex')->name('employee.leave');
+        Route::post('/leave-request', 'employeeLeaveRequest')->name('employee.leave.request');
+        Route::put('/leave-request-update/{id}', 'employeeLeaveRequestUpdate')->name('employee.leave.request.update');
+        Route::post('/leave-request-cancel/{id}', 'employeeLeaveRequestCancel')->name('employee.leave.request.cancel');
+        Route::get('/leave-request-print/{id}', 'employeeLeaveRequestPrint')->name('employee.leave.request.print');
+    });
 });
 
 Route::middleware(['admin.auth'])->prefix('admin/')->group(function () {
@@ -44,20 +53,26 @@ Route::middleware(['admin.auth'])->prefix('admin/')->group(function () {
     Route::resource('holidays', HolidayController::class);
     Route::resource('holidays', HolidayController::class);
     Route::post('/holiday-status-update/{id}', [HolidayController::class, 'StatusUpdate'])->name('admin.holiday.StatusUpdate');
-    Route::resource('assets', AssetController::class);
+    Route::resource('asset', AssetController::class);
     Route::get('/assets-search-employee', [AssetController::class,'employeeFilter'])->name('employee.filter.asset');
     Route::get('/employee-profile/{id}', [EmployeeController::class,'employeeProfile'])->name('employee.profile');
     Route::get('/attendance-list', [AttendanceController::class,'adminAttendanceList'])->name('admin.attendance.list');
     Route::get('/attendance-report', [AttendanceController::class,'adminAttendanceReport'])->name('admin.attendance.report');
     Route::get('/export-attendance', [AttendanceController::class, 'exportAttendance'])->name('admin.attendance.report.export');
     Route::controller(LeaveController::class)->group(function (){
+        Route::get('/leave-requests', 'adminIndex')->name('admin.leave.requests');
+        Route::post('/leave-request-status-update/{id}', 'AdminRequestUpdate')->name('admin.leave.update');
+        Route::get('/leave-report', 'AdminReport')->name('admin.leave.report');
+        Route::get('/leave-request-print/{id}', 'employeeLeaveRequestPrint')->name('admin.leave.request.print');
         Route::get('/leave-type', 'leaveTypeIndex')->name('admin.leave.type');
-        Route::post('/leave-type-store', 'leaveTypeStore')->name('admin.leave.type.store');
-        Route::put('/leave-type-update', 'leaveTypeUpdate')->name('admin.leave.type.update');
-        Route::delete('/leave-type-destroy/{id}', 'leaveTypeDestroy')->name('admin.leave.type.destroy');
-        Route::delete('/leave-type-destroy/{id}', 'leaveTypeStatusUpdate')->name('admin.leave.type.status.update');
     });
-
+    Route::controller(TerminationController::class)->group(function (){
+        Route::get('/termination', 'index')->name('admin.termination.index');
+        Route::post('/termination-store', 'store')->name('admin.termination.store');
+        Route::put('/termination-update/{id}', 'update')->name('admin.termination.update');
+        Route::delete('/termination-destroy/{id}', 'destroy')->name('admin.termination.destroy');
+        Route::post('/termination-download/{id}', 'download')->name('admin.termination.download');
+    });
 
 });
 Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');

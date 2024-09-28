@@ -22,6 +22,5 @@ class AdminAuth
         else{
             return redirect()->back();
         }
-
     }
 }

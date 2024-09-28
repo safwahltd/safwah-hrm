@@ -15,7 +15,7 @@ class AssetController extends Controller
 {
     public function index()
     {
-        return view('admin.assets.index',[
+        return view('admin.asset.index',[
             'assets' => Asset::latest()->paginate(10),
             'users' => User::whereNotIn('role',['admin'])->get(),
         ]);
@@ -113,14 +113,27 @@ class AssetController extends Controller
     public  function employeeFilter(Request $request){
         $users = User::whereNotIn('role',['admin'])->get();
         if ($request->employeeName){
-            $employeee = User::where('name', 'like', '%' . $request->employeeName . '%')->get()->pluck('id');
-            $assets = Asset::whereIn('user_id',$employeee)->get();
-            return view('admin.assets.employeeFilter',compact('assets','users'));
+            if ($request->employeeName == 'null'){
+                $assets = Asset::get();
+                return view('admin.asset.employeeFilter',compact('assets','users'));
+            }
+            else{
+                $employeee = User::where('name', 'like', '%' . $request->employeeName . '%')->get()->pluck('id');
+                $assets = Asset::whereIn('user_id',$employeee)->get();
+                return view('admin.asset.employeeFilter',compact('assets','users'));
+            }
         }
         if ($request->employeeId){
-            $employeeId = UserInfos::where('employee_id', '=', $request->employeeId)->get()->pluck('user_id');
-            $assets = Asset::whereIn('user_id',$employeeId)->get();
-            return view('admin.assets.employeeFilter',compact('assets','users'));
+            if ($request->employeeId == 'null'){
+                $assets = Asset::get();
+                return view('admin.asset.employeeFilter',compact('assets','users'));
+            }
+            else{
+                $employeeId = UserInfos::where('employee_id', '=', $request->employeeId)->get()->pluck('user_id');
+                $assets = Asset::whereIn('user_id',$employeeId)->get();
+                return view('admin.asset.employeeFilter',compact('assets','users'));
+            }
+
         }
     }
 }

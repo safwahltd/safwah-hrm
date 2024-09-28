@@ -22,37 +22,37 @@
         <div class="col-sm-12">
             <div class="card mb-3">
                 <div class="card-body">
-                    <table id="myProjectTable" class="table table-hover table-striped align-middle mb-0" style="width:100%">
-                        <thead class="bg-primary">
-                        <tr class="bg-secondary">
-                            <th class="bg-primary-subtle">SL</th>
-                            <th  class="bg-primary-subtle">Name</th>
-                            <th  class="bg-primary-subtle">From</th>
-                            <th  class="bg-primary-subtle">To</th>
-                            <th  class="bg-primary-subtle">Total</th>
-                            <th  class="bg-primary-subtle">Status</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        @forelse($holidays as $key => $holiday)
-                            <tr>
-                                <td><span class="fw-bold">{{$loop->iteration}}</span></td>
-                                <td>{{$holiday->name}}</td>
-                                <td>{{ \Illuminate\Support\Carbon::parse($holiday->date_from)->format('d M,  Y') }}</td>
-                                <td>{{ \Illuminate\Support\Carbon::parse($holiday->date_to)->format('d M,  Y') }}</td>
-                                <td>{{ $holiday->total_day }} {{$holiday->total_day <= 1 ? 'day':'days'}}</td>
-                                <td><span class="p-1 px-3 rounded-2 text-white {{ $holiday->date_to > \Illuminate\Support\Carbon::now() ? 'bg-success' : 'bg-danger' }}">{{ $holiday->date_to > \Illuminate\Support\Carbon::now() ? 'In Coming' : 'Passed' }}</span></td>
+                    <div class="table-responsive export-table">
+                        <table id="file-datatable" class="table table-hover table-striped align-middle mb-0" style="width:100%">
+                            <thead class="bg-primary">
+                            <tr class="bg-secondary">
+                                <th class="bg-primary-subtle">SL</th>
+                                <th  class="bg-primary-subtle">Name</th>
+                                <th  class="bg-primary-subtle">From</th>
+                                <th  class="bg-primary-subtle">To</th>
+                                <th  class="bg-primary-subtle">Total</th>
+                                <th  class="bg-primary-subtle">Status</th>
                             </tr>
-                        @empty
-                            <tr>
-                                <td colspan="4" class="text-center"><span class="fw-bold">No Result</span></td>
-                            </tr>
-                        @endforelse
-                        </tbody>
-                    </table>
-                    <div class="text-white my-3 d-grid justify-content-center">
-                        {{--{{  $holidays->links() }}--}}
+                            </thead>
+                            <tbody>
+                            @forelse($holidays as $key => $holiday)
+                                <tr>
+                                    <td><span class="fw-bold">{{$loop->iteration}}</span></td>
+                                    <td>{{$holiday->name}}</td>
+                                    <td>{{ \Illuminate\Support\Carbon::parse($holiday->date_from)->format('d M,  Y') }}</td>
+                                    <td>{{ \Illuminate\Support\Carbon::parse($holiday->date_to)->format('d M,  Y') }}</td>
+                                    <td>{{ $holiday->total_day }} {{$holiday->total_day <= 1 ? 'day':'days'}}</td>
+                                    <td><span class="p-1 px-3 rounded-2 text-white {{ $holiday->date_to > \Illuminate\Support\Carbon::now() ? 'bg-success' : 'bg-danger' }}">{{ $holiday->date_to > \Illuminate\Support\Carbon::now() ? 'In Coming' : 'Passed' }}</span></td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="4" class="text-center"><span class="fw-bold">No Result</span></td>
+                                </tr>
+                            @endforelse
+                            </tbody>
+                        </table>
                     </div>
+
                 </div>
             </div>
         </div>

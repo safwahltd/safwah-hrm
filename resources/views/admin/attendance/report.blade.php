@@ -50,16 +50,16 @@
                             <tr>
                                 <th class="bg-success text-white">User</th>
                                 @foreach($dates as $date)
-                                    <th class="text-white bg-success" style="width: 500px">{{ $date }}</th>
+                                    <th class="text-white bg-success" style="width: 200px">{{ $date }}</th>
                                 @endforeach
                             </tr>
                         </thead>
                         <tbody>
                         @foreach($users as $user)
                             <tr>
-                                <td class="bg-primary text-white">{{ $user->name }}</td>
+                                <td class="bg-primary text-white"><a class="text-white" href="{{route('employee.profile',$user->id)}}">{{ $user->name }}</a></td>
                                 @foreach($dates as $date)
-                                    <td class="text-center col-2">
+                                    <td class="text-center">
                                         @php
                                             $attendance = $user->attendances->firstWhere('clock_in_date',$date);
                                         @endphp

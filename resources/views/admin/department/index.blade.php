@@ -24,6 +24,7 @@
 {{--                            <th>Department Head</th>--}}
                             <th>Department Name</th>
 {{--                            <th>Employee UnderWork</th>--}}
+                            <th>Status</th>
                             <th>Actions</th>
                         </tr>
                         </thead>
@@ -43,7 +44,7 @@
                             <td>
                                 <form action="{{route('admin.department.StatusUpdate',$department->id)}}" method="post">
                                     @csrf
-                                    <select name="status" id="" class="form-control text-white {{$department->status == 1 ? 'bg-success':'bg-danger'}}" onchange="this.form.submit()">
+                                    <select name="status" id="" class="form-control-sm text-white {{$department->status == 1 ? 'bg-success':'bg-danger'}}" onchange="this.form.submit()">
                                         <option {{$department->status == 1 ? 'selected':''}} value="1">Active</option>
                                         <option {{$department->status == 0 ? 'selected':''}} value="0">Inactive</option>
                                     </select>
@@ -134,42 +135,44 @@
                     <h5 class="modal-title  fw-bold" id="depaddLabel"> Department Add</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form action="{{route('departments.store')}}" method="post">
-                    @csrf
+
                     <div class="modal-body">
-                        <div class="mb-3">
-                            <label for="exampleFormControlInput1111" class="form-label">Department Name</label>
-                            <input type="text" name="department_name" class="form-control" id="exampleFormControlInput1111">
-                        </div>
-                        <div class="deadline-form">
-
-                            <div class="row g-3 mb-3">
-                                <div class="col-sm-6">
-                                    <label for="department_head" class="form-label">Department Head</label>
-                                    <select class="form-control" name="department_head" id="department_head">
-                                        <option selected value="2">Employee Name 2</option>
-                                        <option value="3">Employee Name 3</option>
-                                        <option value="4">Employee Name 4</option>
-                                        <option value="5">Employee Name 5</option>
-                                        <option value="6">Employee Name 6</option>
-                                        <option value="7">Employee Name 7</option>
-                                    </select>
-                                </div>
-                                <div class="col-sm-6">
-                                    <label for="status" class="form-label">Status</label>
-                                    <select class="form-control" name="status" id="status">
-                                        <option selected value="1">Active</option>
-                                        <option value="0">Inactive</option>
-                                    </select>
-                                </div>
+                        <form action="{{route('departments.store')}}" method="post">
+                            @csrf
+                            <div class="mb-3">
+                                <label for="exampleFormControlInput1111" class="form-label">Department Name</label>
+                                <input type="text" name="department_name" class="form-control" id="exampleFormControlInput1111">
                             </div>
+                            <div class="deadline-form">
 
-                        </div>
+                                <div class="row g-3 mb-3">
+                                    <div class="col-sm-6">
+                                        <label for="department_head" class="form-label">Department Head</label>
+                                        <select class="form-control" name="department_head" id="department_head">
+                                            <option selected value="2">Employee Name 2</option>
+                                            <option value="3">Employee Name 3</option>
+                                            <option value="4">Employee Name 4</option>
+                                            <option value="5">Employee Name 5</option>
+                                            <option value="6">Employee Name 6</option>
+                                            <option value="7">Employee Name 7</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <label for="status" class="form-label">Status</label>
+                                        <select class="form-control" name="status" id="status">
+                                            <option selected value="1">Active</option>
+                                            <option value="0">Inactive</option>
+                                        </select>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-primary">Add</button>
+                            </div>
+                        </form>
                     </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary">Add</button>
-                    </div>
-                </form>
+
             </div>
         </div>
     </div>
