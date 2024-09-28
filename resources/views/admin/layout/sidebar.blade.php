@@ -22,7 +22,8 @@
                     "  data-bs-toggle="collapse" data-bs-target="#project-Components" href="#">
                     <i class="icofont-briefcase"></i><span>Employees</span> <span class="arrow icofont-dotted-down ms-auto text-end fs-5"></span></a>
                 <!-- Menu: Sub menu ul -->
-                <ul class="sub-menu collapse {{ Request::route()->getName() == 'holidays.index' ? 'show':''}}
+                <ul class="sub-menu collapse
+                {{ Request::route()->getName() == 'holidays.index' ? 'show':''}}
                 {{ Request::route()->getName() == 'departments.index' ? 'show':''}}
                 {{ Request::route()->getName() == 'designations.index' ? 'show':''}}
                 {{ Request::route()->getName() == 'employees.index' ? 'show':'' }}
@@ -30,6 +31,7 @@
                 {{ Request::route()->getName() == 'admin.attendance.list' ? 'show':'' }}
                 {{ Request::route()->getName() == 'admin.leave.report' ? 'show':'' }}
                 {{ Request::route()->getName() == 'admin.leave.requests' ? 'show':'' }}
+                {{ Request::route()->getName() == 'admin.termination.index' ? 'show':'' }}
                     " id="project-Components">
                     <li><a class="ms-link {{ Request::route()->getName() == 'employees.index' ? 'active':'' }}" href="{{route('employees.index')}}"><span>Members</span></a></li>
                     <li><a class="ms-link {{ Request::route()->getName() == 'holidays.index' ? 'active':'' }}" href="{{route('holidays.index')}}"><span>Holidays</span></a></li>
@@ -39,7 +41,7 @@
                     <li><a class="ms-link {{ Request::route()->getName() == 'admin.leave.report' ? 'active':'' }}" href="{{route('admin.leave.report')}}"><span>Leave Report</span></a></li>
                     <li class=""><a class="ms-link {{ Request::route()->getName() == 'departments.index' ? 'active':'' }}" href="{{route('departments.index')}}"><span>Departments</span></a></li>
                     <li><a class="ms-link {{ Request::route()->getName() == 'designations.index' ? 'active':'' }}" href="{{route('designations.index')}}"><span>Designation</span></a></li>
-                    <li><a class="ms-link" href="#"><span>Termination</span></a></li>
+                    <li><a class="ms-link {{ Request::route()->getName() == 'admin.termination.index' ? 'active':'' }}"  href="{{route('admin.termination.index')}}"><span>Termination</span></a></li>
                 </ul>
             </li>
 
