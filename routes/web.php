@@ -13,7 +13,7 @@ use App\Http\Controllers\employee\EmployeeAccountController;
 use App\Http\Controllers\employee\AttendanceController;
 use App\Http\Controllers\LeaveController;
 use App\Http\Controllers\admin\TerminationController;
-use App\Http\Controllers\admin\TerminationTypeController;
+use App\Http\Controllers\admin\RolePermissionController;
 
 
 Route::get('/', [AdminAuthController::class, 'login'])->name('login');
@@ -73,6 +73,19 @@ Route::middleware(['admin.auth'])->prefix('admin/')->group(function () {
         Route::delete('/termination-destroy/{id}', 'destroy')->name('admin.termination.destroy');
         Route::post('/termination-download/{id}', 'download')->name('admin.termination.download');
     });
-
+    Route::controller(RolePermissionController::class)->group(function (){
+        /* role */
+        Route::get('/role','roleIndex')->name('admin.role.index');
+        Route::post('/role-store','roleStore')->name('admin.role.store');
+        Route::put('/role-update/{id}','roleUpdate')->name('admin.role.update');
+        Route::delete('/role-destroy/{id}','roleDestroy')->name('admin.role.destroy');
+        /* Permission */
+        Route::get('/permission','permissionIndex')->name('admin.permission.index');
+        Route::post('/permission-store','permissionStore')->name('admin.permission.store');
+        Route::put('/permission-update/{id}','permissionUpdate')->name('admin.permission.update');
+        Route::delete('/permission-destroy/{id}','permissionDestroy')->name('admin.permission.destroy');
+        Route::get('/user-role','userRoleIndex')->name('admin.user.role');
+        Route::put('/user-role-update/{id}','userRoleUpdate')->name('admin.user.role.update');
+    });
 });
 Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');

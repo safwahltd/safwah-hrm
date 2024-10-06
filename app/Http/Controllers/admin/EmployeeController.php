@@ -5,8 +5,10 @@ namespace App\Http\Controllers\admin;
 use App\Http\Controllers\Controller;
 use App\Models\Department;
 use App\Models\Designation;
+use App\Models\Role;
 use App\Models\User;
 use App\Models\UserInfos;
+use App\Models\UserRole;
 use Illuminate\Http\Request;
 use Exception;
 use Illuminate\Support\Facades\Validator;
@@ -18,7 +20,8 @@ class EmployeeController extends Controller
     {
         $designations = Designation::where('status',1)->get();
         $users = User::latest()->whereNotIn('role',['admin'])->get();
-        return view('admin.user.index',compact('designations','users'));
+        $roles = Role::where('status',1)->get();
+        return view('admin.user.index',compact('designations','users','roles'));
     }
     public function employees()
     {
@@ -55,6 +58,14 @@ class EmployeeController extends Controller
             $user->role = 'employee';
             $user->status = $request->status;
             $user->save();
+            if ($request->role_id){
+                foreach ($request->role_id as $role) {
+                    $userRole = new UserRole();
+                    $userRole->user_id = $user->id;
+                    $userRole->role_id = $role;
+                    $userRole->saveOrFail();
+                }
+            }
 
             $userInfo = new UserInfos();
             $userInfo->user_id = $user->id;
@@ -108,6 +119,19 @@ class EmployeeController extends Controller
             $user->status = $request->status;
             $user->save();
 
+            if ($request->role_id){
+                $userRoles = UserRole::where('user_id',$id)->whereNotIn('role_id',$request->role_id)->pluck('id')->toArray();
+                UserRole::destroy($userRoles);
+                foreach ($request->role_id as $role){
+                    $permit = UserRole::where('user_id',$id)->where('role_id',$role)->first();
+                    if (!$permit){
+                        $permit = new UserRole();
+                        $permit->user_id = $user->id;
+                        $permit->role_id = $role;
+                        $permit->save();
+                    }
+                }
+            }
             $userInfo = UserInfos::where('user_id',$user->id)->first();
             $userInfo->user_id = $user->id;
             $userInfo->name = $user->name;
@@ -131,7 +155,24 @@ class EmployeeController extends Controller
 
     public function destroy(User $user)
     {
-        //
+        if (auth()->user()->hasPermission('admin user destroy')){
+            try{
+                $user = User::find($user->id);
+                $userRolesIds = UserRole::where('user_id',$user->id)->pluck('id')->toArray();
+                UserRole::destroy($userRolesIds);
+                $user->delete();
+                toastr()->success('Delete Successfully.');
+                return back();
+            }
+            catch(Exception $e){
+                toastr()->error($e->getMessage());
+                return back();
+            }
+        }
+        else{
+            toastr()->error('You Have No Permission.');
+            return back();
+        }
     }
     public function banUnbanUSer(Request $request,$id){
 
