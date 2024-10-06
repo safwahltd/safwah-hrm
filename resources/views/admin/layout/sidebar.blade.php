@@ -80,10 +80,19 @@
                 </ul>
             </li>
             <li class="collapsed">
-                <a class="m-link {{ Request::route()->getName() == 'assets.index' ? 'active':'' }}" data-bs-toggle="collapse" data-bs-target="#client-Components" href="#"><i
+                <a class="m-link {{ Request::route()->getName() == 'assets.index' ? 'active':'' }}
+                {{ Request::route()->getName() == 'admin.role.index' ? 'active':''}}
+                {{ Request::route()->getName() == 'admin.permission.index' ? 'active':''}}
+                {{ Request::route()->getName() == 'admin.user.role' ? 'active':''}}
+                    " data-bs-toggle="collapse" data-bs-target="#client-Components" href="#"><i
                         class="icofont-user-male"></i> <span>Administration</span> <span class="arrow icofont-dotted-down ms-auto text-end fs-5"></span></a>
                 <!-- Menu: Sub menu ul -->
-                <ul class="sub-menu collapse  {{ Request::route()->getName() == 'asset.index' ? 'show':''}}" id="client-Components">
+                <ul class="sub-menu collapse
+                        {{ Request::route()->getName() == 'assets.index' ? 'show':'' }}
+                        {{ Request::route()->getName() == 'admin.role.index' ? 'show':''}}
+                        {{ Request::route()->getName() == 'admin.permission.index' ? 'show':''}}
+                        {{ Request::route()->getName() == 'admin.user.role' ? 'show':''}}
+                    " id="client-Components">
                     <li><a class="ms-link {{ Request::route()->getName() == 'asset.index' ? 'active':'' }}" href="{{route('asset.index')}}"> <span>Assets</span></a></li>
                     <li class="collapsed">
                         <a class="ms-link" data-bs-toggle="collapse" data-bs-target="#settings" href="#">
@@ -92,12 +101,32 @@
                         <ul class="sub-menu collapse" id="settings">
                             <li><a class="ms-link" href="tickets.html"><span> Company Settings </span></a></li>
                             <li><a class="ms-link" href="tickets.html"><span> Theme Settings </span></a></li>
-                            <li><a class="ms-link" href="tickets.html"><span> Roles And Permissions </span></a></li>
                             <li><a class="ms-link" href="tickets.html"><span> Email Settings </span></a></li>
                             <li><a class="ms-link" href="tickets.html"><span> Invoice Settings  </span></a></li>
                             <li><a class="ms-link" href="tickets.html"><span> Notification Settings </span></a></li>
                             <li><a class="ms-link" href="tickets.html"><span> Change Password </span></a></li>
 {{--                            <li><a class="ms-link" href="tickets.html"><span> Leave Type </span></a></li>--}}
+                        </ul>
+                    </li>
+                    <li class="collapsed">
+                        <a class="ms-link" data-bs-toggle="collapse" data-bs-target="#rolePermissions" href="#">
+                            <i class="icofont-ticket"></i> <span>Role Permission</span> <span class="arrow icofont-dotted-down ms-auto text-end fs-5"></span>
+                        </a>
+                        <ul class="sub-menu collapse
+                        {{ Request::route()->getName() == 'admin.role.index' ? 'show':''}}
+                        {{ Request::route()->getName() == 'admin.permission.index' ? 'show':''}}
+                        {{ Request::route()->getName() == 'admin.user.role' ? 'show':''}}
+                            " id="rolePermissions">
+                            @if(auth()->user()->hasPermission('admin role index'))
+                                <li><a class="ms-link {{ Request::route()->getName() == 'admin.role.index' ? 'active':''}}" href="{{route('admin.role.index')}}"><span> Roles </span></a></li>
+                            @endif
+                            @if(auth()->user()->hasPermission('admin permission index'))
+                                <li><a href="{{route('admin.permission.index')}}" class="ms-link {{ Request::route()->getName() == 'admin.permission.index' ? 'active':''}}">Permission</a></li>
+                            @endif
+                            @if(auth()->user()->hasPermission('admin user role'))
+                                <li><a href="{{route('admin.user.role')}}" class="ms-link {{ Request::route()->getName() == 'admin.user.role' ? 'active':''}}">User Roles</a></li>
+                            @endif
+
                         </ul>
                     </li>
                 </ul>

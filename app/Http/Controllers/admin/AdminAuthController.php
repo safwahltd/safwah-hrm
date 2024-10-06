@@ -12,6 +12,14 @@ class AdminAuthController extends Controller
 {
     public function login()
     {
+        if (auth()->check()){
+            if (auth()->user()->role == 'admin'){
+                return redirect()->route('admin.dashboard');
+            }
+            if (auth()->user()->role == 'employee'){
+                return redirect()->route('employee.dashboard');
+            }
+        }
         return view('admin.auth.login');
     }
     public function loginConfirm(Request $request){

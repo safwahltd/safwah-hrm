@@ -9,7 +9,7 @@
     @include('admin.layout.style')
 </head>
 
-<body  data-mytask="theme-indigo"  style="background-color: #eee6e6">
+<body  data-mytask="theme-indigo"  style="background-color: #d0c6c6">
 <div id="mytask-layout">
 
     <!-- sidebar -->

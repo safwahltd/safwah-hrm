@@ -129,215 +129,27 @@
                                                 <option {{$user->status == 0 ? 'selected':''}} value="0">Inactive</option>
                                             </select>
                                         </div>
+                                        <hr>
+                                        <div class="row my-2">
+                                            <h4 class="text-center text-white bg-black">Role</h4>
+
+                                            @php($userRoles = \App\Models\UserRole::where('user_id',$user->id)->pluck('role_id')->toArray())
+                                            <h5><input class="selectAll" id="selectAll" type="checkbox"> <label for="selectAll">Select All</label></h5>
+                                            @foreach($roles as $key => $role)
+                                                <div class="col-4">
+                                                    <span>
+                                                        <input type="checkbox" name="role_id[]" value="{{$role->id}}"
+                                                               {{ in_array($role->id, $userRoles) ? 'checked' : '' }} id="role{{$key}}" class="itemCheckbox">
+                                                        <label for="role{{$key}}">{{$role->name}}</label>
+                                                    </span>
+                                                </div>
+                                            @endforeach
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="d-grid justify-content-end">
                                     <button type="submit" onclick="return confirm('Are you sure to Update ?')" class="btn btn-primary">Update</button>
                                 </div>
-
-                                {{--<div class="table-responsive">
-                                    <table class="table table-striped custom-table">
-                                        <thead>
-                                        <tr>
-                                            <th>Project Permission</th>
-                                            <th class="text-center">Read</th>
-                                            <th class="text-center">Write</th>
-                                            <th class="text-center">Create</th>
-                                            <th class="text-center">Delete</th>
-                                            <th class="text-center">Import</th>
-                                            <th class="text-center">Export</th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        <tr>
-                                            <td class="fw-bold">Projects</td>
-                                            <td class="text-center">
-                                                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault1" checked>
-                                            </td>
-                                            <td class="text-center">
-                                                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault2" checked>
-                                            </td>
-                                            <td class="text-center">
-                                                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault3" checked>
-                                            </td>
-                                            <td class="text-center">
-                                                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault4" checked>
-                                            </td>
-                                            <td class="text-center">
-                                                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault5" checked>
-                                            </td>
-                                            <td class="text-center">
-                                                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault6" checked>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td  class="fw-bold">Tasks</td>
-                                            <td class="text-center">
-
-                                                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault7" checked>
-
-                                            </td>
-                                            <td class="text-center">
-
-                                                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault8" checked>
-
-                                            </td>
-                                            <td class="text-center">
-
-                                                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault9" checked>
-
-                                            </td>
-                                            <td class="text-center">
-
-                                                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault10" checked>
-
-                                            </td>
-                                            <td class="text-center">
-
-                                                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault11" checked>
-
-                                            </td>
-                                            <td class="text-center">
-
-                                                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault12" checked>
-
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td  class="fw-bold">Chat</td>
-                                            <td class="text-center">
-
-                                                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault13" checked>
-
-                                            </td>
-                                            <td class="text-center">
-
-                                                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault14" checked>
-
-                                            </td>
-                                            <td class="text-center">
-
-                                                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault15" checked>
-
-                                            </td>
-                                            <td class="text-center">
-
-                                                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault16" checked>
-
-                                            </td>
-                                            <td class="text-center">
-
-                                                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault17" checked>
-
-                                            </td>
-                                            <td class="text-center">
-
-                                                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault18" checked>
-
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td  class="fw-bold">Estimates</td>
-                                            <td class="text-center">
-
-                                                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault19" checked>
-
-                                            </td>
-                                            <td class="text-center">
-
-                                                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault20" checked>
-
-                                            </td>
-                                            <td class="text-center">
-
-                                                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault21" checked>
-
-                                            </td>
-                                            <td class="text-center">
-
-                                                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault22" checked>
-
-                                            </td>
-                                            <td class="text-center">
-
-                                                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault23" checked>
-
-                                            </td>
-                                            <td class="text-center">
-
-                                                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault24" checked>
-
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td  class="fw-bold">Invoices</td>
-                                            <td class="text-center">
-
-                                                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault25" checked>
-
-                                            </td>
-                                            <td class="text-center">
-
-                                                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault26">
-
-                                            </td>
-                                            <td class="text-center">
-
-                                                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault27" checked>
-
-                                            </td>
-                                            <td class="text-center">
-
-                                                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault28">
-
-                                            </td>
-                                            <td class="text-center">
-
-                                                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault29" checked>
-
-                                            </td>
-                                            <td class="text-center">
-
-                                                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault30" checked>
-
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td  class="fw-bold">Timing Sheets</td>
-                                            <td class="text-center">
-
-                                                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault31" checked>
-
-                                            </td>
-                                            <td class="text-center">
-
-                                                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault32" checked>
-
-                                            </td>
-                                            <td class="text-center">
-
-                                                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault33" checked>
-
-                                            </td>
-                                            <td class="text-center">
-
-                                                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault34" checked>
-
-                                            </td>
-                                            <td class="text-center">
-
-                                                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault35" checked>
-
-                                            </td>
-                                            <td class="text-center">
-
-                                                <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault36" checked>
-
-                                            </td>
-                                        </tr>
-                                        </tbody>
-                                    </table>
-                                </div>--}}
                             </form>
                         </div>
                         <div class="modal-footer">
@@ -429,222 +241,43 @@
                                         <option value="0">Inactive</option>
                                     </select>
                                 </div>
+                                <hr>
+                                <div class="row my-2">
+                                    <h4 class="text-center text-white bg-black">Role</h4>
+                                    <h5><input class="selectAll" id="selectAlladd" type="checkbox"> <label for="selectAlladd">Select All</label></h5>
+                                    @foreach($roles as $key => $role)
+                                        <div class="col-4">
+                                                    <span>
+                                                        <input type="checkbox" name="role_id[]" value="{{$role->id}}" id="roleAdd{{$key}}" class="itemCheckbox">
+                                                        <label for="roleAdd{{$key}}">{{$role->name}}</label>
+                                                    </span>
+                                        </div>
+                                    @endforeach
+                                </div>
                             </div>
                         </div>
                         <div class="d-grid justify-content-end">
                             <button type="submit" class="btn btn-primary">Create</button>
                         </div>
-
-                        {{--<div class="table-responsive">
-                            <table class="table table-striped custom-table">
-                                <thead>
-                                <tr>
-                                    <th>Project Permission</th>
-                                    <th class="text-center">Read</th>
-                                    <th class="text-center">Write</th>
-                                    <th class="text-center">Create</th>
-                                    <th class="text-center">Delete</th>
-                                    <th class="text-center">Import</th>
-                                    <th class="text-center">Export</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <tr>
-                                    <td class="fw-bold">Projects</td>
-                                    <td class="text-center">
-                                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault1" checked>
-                                    </td>
-                                    <td class="text-center">
-                                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault2" checked>
-                                    </td>
-                                    <td class="text-center">
-                                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault3" checked>
-                                    </td>
-                                    <td class="text-center">
-                                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault4" checked>
-                                    </td>
-                                    <td class="text-center">
-                                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault5" checked>
-                                    </td>
-                                    <td class="text-center">
-                                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault6" checked>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td  class="fw-bold">Tasks</td>
-                                    <td class="text-center">
-
-                                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault7" checked>
-
-                                    </td>
-                                    <td class="text-center">
-
-                                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault8" checked>
-
-                                    </td>
-                                    <td class="text-center">
-
-                                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault9" checked>
-
-                                    </td>
-                                    <td class="text-center">
-
-                                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault10" checked>
-
-                                    </td>
-                                    <td class="text-center">
-
-                                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault11" checked>
-
-                                    </td>
-                                    <td class="text-center">
-
-                                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault12" checked>
-
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td  class="fw-bold">Chat</td>
-                                    <td class="text-center">
-
-                                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault13" checked>
-
-                                    </td>
-                                    <td class="text-center">
-
-                                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault14" checked>
-
-                                    </td>
-                                    <td class="text-center">
-
-                                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault15" checked>
-
-                                    </td>
-                                    <td class="text-center">
-
-                                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault16" checked>
-
-                                    </td>
-                                    <td class="text-center">
-
-                                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault17" checked>
-
-                                    </td>
-                                    <td class="text-center">
-
-                                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault18" checked>
-
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td  class="fw-bold">Estimates</td>
-                                    <td class="text-center">
-
-                                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault19" checked>
-
-                                    </td>
-                                    <td class="text-center">
-
-                                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault20" checked>
-
-                                    </td>
-                                    <td class="text-center">
-
-                                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault21" checked>
-
-                                    </td>
-                                    <td class="text-center">
-
-                                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault22" checked>
-
-                                    </td>
-                                    <td class="text-center">
-
-                                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault23" checked>
-
-                                    </td>
-                                    <td class="text-center">
-
-                                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault24" checked>
-
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td  class="fw-bold">Invoices</td>
-                                    <td class="text-center">
-
-                                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault25" checked>
-
-                                    </td>
-                                    <td class="text-center">
-
-                                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault26">
-
-                                    </td>
-                                    <td class="text-center">
-
-                                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault27" checked>
-
-                                    </td>
-                                    <td class="text-center">
-
-                                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault28">
-
-                                    </td>
-                                    <td class="text-center">
-
-                                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault29" checked>
-
-                                    </td>
-                                    <td class="text-center">
-
-                                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault30" checked>
-
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td  class="fw-bold">Timing Sheets</td>
-                                    <td class="text-center">
-
-                                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault31" checked>
-
-                                    </td>
-                                    <td class="text-center">
-
-                                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault32" checked>
-
-                                    </td>
-                                    <td class="text-center">
-
-                                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault33" checked>
-
-                                    </td>
-                                    <td class="text-center">
-
-                                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault34" checked>
-
-                                    </td>
-                                    <td class="text-center">
-
-                                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault35" checked>
-
-                                    </td>
-                                    <td class="text-center">
-
-                                        <input class="form-check-input" type="checkbox" value="" id="flexCheckDefault36" checked>
-
-                                    </td>
-                                </tr>
-                                </tbody>
-                            </table>
-                        </div>--}}
                     </form>
                 </div>
-                <div class="modal-footer">
-
-                </div>
-
             </div>
         </div>
     </div>
 @endsection
+@push('js')
+    <script>
+        $('.selectAll').click(function() {
+            $('.itemCheckbox').prop('checked', this.checked);
+        });
+
+        // Optional: If all checkboxes are manually checked, also check "Select All"
+        $('.itemCheckbox').click(function() {
+            if ($('.itemCheckbox:checked').length == $('.itemCheckbox').length) {
+                $('.selectAll').prop('checked', true);
+            } else {
+                $('.selectAll').prop('checked', false);
+            }
+        });
+    </script>
+@endpush

@@ -35,3 +35,10 @@
 {{--<script src="https://kit.fontawesome.com/1b84ef290f.js" crossorigin="anonymous"></script>--}}
 @stack('js')
 <script src="{{asset('/')}}fontawesome/js/all.js" crossorigin="anonymous"></script>
+<!-- Select2 JS -->
+
+<!-- FORM ELEMENTS JS -->
+<script src="{{asset('/')}}admin/assets/js/formelementadvnced.js"></script>
+
+<!-- INTERNAL SELECT2 JS -->
+<script src="{{asset('/')}}admin/assets/plugins/select2/select2.full.min.js"></script>
