@@ -1,6 +1,12 @@
 @extends('admin.layout.app')
 @section('title','Attendance Report')
 @section('body')
+    <style>
+        label {
+            display: inline-block;
+            padding-bottom: 10px;
+        }
+    </style>
     <div class="row align-items-center">
         <div class="border-0 mb-4">
             <div class="card-header py-3 no-bg bg-transparent d-flex align-items-center px-0 justify-content-between border-bottom flex-wrap">
@@ -44,8 +50,8 @@
                 </div>
 
                 <!-- Filter Form -->
-                <div class="table-responsive">
-                    <table id="myProjectTable" class="table table-hover table-striped align-middle mb-0" style="width:100%">
+                <div class="card-body export-table bg-dark-subtle">
+                    <table id="example3" class="table table-bordered text-nowrap table-secondary key-buttons border-bottom w-100">
                         <thead>
                             <tr>
                                 <th class="bg-success text-white">User</th>
@@ -57,7 +63,7 @@
                         <tbody>
                         @foreach($users as $user)
                             <tr>
-                                <td class="bg-primary text-white"><a class="text-white" href="{{route('employee.profile',$user->id)}}">{{ $user->name }}</a></td>
+                                <td class="bg-primary text-white"><a class="text-white" href="{{route('employee.profile',$user->id)}}">{{ $user->name }} <sub>({{ $user->userInfo->employee_id }})</sub></a></td>
                                 @foreach($dates as $date)
                                     <td class="text-center">
                                         @php

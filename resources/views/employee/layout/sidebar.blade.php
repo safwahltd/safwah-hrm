@@ -43,18 +43,13 @@
                 <!-- Menu: Sub menu ul -->
                 <ul class="sub-menu collapse {{ Request::route()->getName() == 'employee.profile.details' ? 'show':''}}" id="client-Components">
                     <li><a class="ms-link {{ Request::route()->getName() == 'employee.profile.details' ? 'active':''}}" href="{{route('employee.profile.details')}}"> <span>Profile</span></a></li>
-                    <li><a class="ms-link " href="#"> <span> Password Change</span></a></li>
-                    {{--<li><a class="ms-link " href=""> <span> Personal Info </span></a></li>
-                    <li><a class="ms-link " href=""> <span> Bank Info </span></a></li>
-                    <li><a class="ms-link " href=""> <span> Family Info </span></a></li>
-                    <li><a class="ms-link " href=""> <span> Experience</span></a></li>--}}
                 </ul>
             </li>
-            <li class="collapsed">
+            {{--<li class="collapsed">
                 <a class="m-link" href="#">
                     <i class="icofont-chat fs-5"></i> <span> Chat </span>
                 </a>
-            </li>
+            </li>--}}
             <li class="collapsed">
                 <a class="m-link btn" onclick="return confirm('are you sure to logout ?') ? document.getElementById('logoutSideBar').submit():''">
                     <i class="icofont-logout fs-5"></i> <span> Logout </span>

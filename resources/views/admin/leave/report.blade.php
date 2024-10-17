@@ -18,11 +18,15 @@
         .td {
             max-width: 300px;
         }
+        label {
+            display: inline-block;
+            padding-bottom: 10px;
+        }
     </style>
     <div class="row align-items-center">
         <div class="border-0 mb-4">
             <div class="card-header py-3 no-bg bg-transparent d-flex align-items-center px-0 justify-content-between border-bottom flex-wrap">
-                <h3 class="fw-bold mb-0">Leave Report</h3>
+                <h3 class="fw-bold text-white mb-0">Leave Report</h3>
             </div>
         </div>
     </div>
@@ -49,11 +53,12 @@
                             </div>
                             <div class="panel-body tabs-menu-body">
                                 <div class="tab-content">
-                                    <div class="tab-pane active " id="full">
-                                        <div class="">
-                                            <h5 class="text-center bg-primary py-1 text-white fw-bold">FULL DAY REPORT</h5>
-                                        </div>
-                                        <table id="myProjectTable" class="table table-hover align-middle mb-0" style="width:100%">
+                                    <div class="tab-pane active table-responsive export-table bg-dark-subtle" id="full">
+
+                                            <table id="file-datatable" class="table table-bordered text-nowrap table-secondary key-buttons border-bottom w-100">
+                                                <div class="">
+                                                    <h5 class="text-center bg-primary py-1 text-white fw-bold">FULL DAY REPORT</h5>
+                                                </div>
                                             <thead>
                                             <tr>
                                                 <th>No</th>
@@ -107,11 +112,11 @@
                                             {{$users->links()}}
                                         </div>
                                     </div>
-                                    <div class="tab-pane table-responsive" id="half">
-                                        <div class="">
-                                            <h5 class="text-center bg-success py-1 text-white fw-bold">HALF DAY REPORT</h5>
-                                        </div>
-                                        <table id="myProjectTable" class="table table-hover align-middle mb-0" style="width:100%">
+                                    <div class="tab-pane table-responsive export-table bg-dark-subtle" id="half">
+                                        <table id="example3" class="table table-bordered text-nowrap table-secondary key-buttons border-bottom w-100">
+                                            <div class="">
+                                                <h5 class="text-center bg-primary py-1 text-white fw-bold">HALF DAY REPORT</h5>
+                                            </div>
                                             <thead>
                                                 <tr>
                                                     <th>No</th>

@@ -4,7 +4,7 @@
     <div class="row align-items-center">
         <div class="border-0 mb-4">
             <div class="card-header py-3 no-bg bg-transparent d-flex align-items-center px-0 justify-content-between border-bottom flex-wrap">
-                <h3 class="fw-bold mb-0">Assets</h3>
+                <h3 class="fw-bold mb-0 text-white">Assets</h3>
                 <div class="col-auto d-flex w-sm-100">
                     <button type="button" class="btn btn-dark btn-set-task w-sm-100" data-bs-toggle="modal" data-bs-target="#add_asset"><i class="icofont-plus-circle me-2 fs-6"></i>Add Asset</button>
                 </div>
@@ -15,44 +15,28 @@
         <div class="col-sm-6 col-md-3">
             <div class="input-block mb-3 form-focus">
                 <input type="text" id="employee_name" class="form-control floating">
-                <label class="focus-label">Employee Name</label>
+                <label class="focus-label  text-white">Employee Name</label>
             </div>
         </div>
 
         <div class="col-sm-6 col-md-3">
             <div class="input-block mb-3 form-focus select-focus">
                 <input type="text" id="employee_id" class="form-control floating">
-                <label class="focus-label">Employee Id</label>
+                <label class="focus-label text-white">Employee Id</label>
             </div>
         </div>
-        {{--<div class="col-sm-6 col-md-3">
-            <div class="input-block mb-3 form-focus select-focus">
-                <select class="select floating form-control-sm">
-                    <option value>All</option>
-                    <option value="0"> Pending </option>
-                    <option value="1"> Approved </option>
-                    <option value="2"> Returned </option>
-                </select>
-            </div>
-        </div>--}}
-        {{--<div class="col-sm-6 col-md-2">
-            <div class="d-grid">
-                <a href="#" class="btn btn-success"> Search </a>
-            </div>
-        </div>--}}
     </div>
     <div class="row">
         <div class="col-md-12">
             <div class="table-responsive" id="assetTable">
-                <table class="table table-striped custom-table mb-0 datatable">
+                <table class="table table-striped table-bordered custom-table mb-0 datatable">
                     <thead>
                     <tr>
+                        <th>SL</th>
                         <th>Asset User</th>
                         <th>Asset Name</th>
                         <th>Asset Id</th>
                         <th>Hand In</th>
-                        <th>Warranty</th>
-{{--                        <th>Warrenty End</th>--}}
                         <th>Amount</th>
                         <th class="text-center">Status</th>
                         <th class="text-end">Action</th>
@@ -61,14 +45,13 @@
                     <tbody>
                     @foreach($assets as $key => $asset)
                     <tr>
+                        <td>{{$loop->iteration}}</td>
                         <td>{{$asset->user->name}}</td>
                         <td>
                             <strong>{{$asset->asset_name}}</strong>
                         </td>
                         <td>{{$asset->asset_id}}</td>
                         <td>{{$asset->hand_in_date ?? 'N/A'}}</td>
-                        <td>{{$asset->warranty ?? 'N/A'}}</td>
-{{--                        <td>5 Jan 2019</td>--}}
                         <td>{{$asset->value}}.tk</td>
                         <td class="text-center">
                             <span class="rounded-2 p-1  text-white {{$asset->status == 1 ? 'bg-success text-white':''}}{{$asset->status == 0 ? 'bg-danger text-dark':''}}">
@@ -79,7 +62,7 @@
                         <td class="d-flex justify-content-end">
                             <a class="mx-1" href="#" data-bs-toggle="modal" data-bs-target="#show_asset{{$key}}"><i class="fa-solid btn btn-primary fa-eye m-r-5"></i></a>
                             <a class="" href="#" data-bs-toggle="modal" data-bs-target="#edit_asset{{$key}}"><i class="fa-solid btn btn-primary fa-pencil m-r-5"></i></a>
-                            <a class="mx-1" href="#" data-bs-toggle="modal" data-bs-target="#delete_asset">
+                            <a class="" href="#" data-bs-toggle="modal" data-bs-target="#delete_asset">
                                 <form action="{{route('asset.destroy',$asset->id)}}" method="post">
                                     @csrf
                                     @method('DELETE')

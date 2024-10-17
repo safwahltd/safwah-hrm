@@ -20,8 +20,8 @@
                 </div>--}}
                 <div class="dropdown notifications">
                     <a class="nav-link dropdown-toggle pulse" href="#" role="button" data-bs-toggle="dropdown">
-                        <i class="icofont-alarm fs-5"></i>
-                        <span class="pulse-ring"></span>
+                        <i class="icofont-alarm  text-white fs-5"></i>
+                        <span class="pulse-ring text-white"></span>
                     </a>
                     <div id="NotificationsDiv" class="dropdown-menu rounded-lg shadow border-0 dropdown-animation dropdown-menu-sm-end p-0 m-0">
                         <div class="card border-0 w380">
@@ -43,42 +43,6 @@
                                                 </div>
                                             </a>
                                         </li>
-                                        <li class="py-2 mb-1 border-bottom">
-                                            <a href="javascript:void(0);" class="d-flex">
-                                                <div class="avatar rounded-circle no-thumbnail">DF</div>
-                                                <div class="flex-fill ms-2">
-                                                    <p class="d-flex justify-content-between mb-0 "><span class="font-weight-bold">Diane Fisher</span> <small>13MIN</small></p>
-                                                    <span class="">Task added Get Started with Fast Cad project</span>
-                                                </div>
-                                            </a>
-                                        </li>
-                                        <li class="py-2 mb-1 border-bottom">
-                                            <a href="javascript:void(0);" class="d-flex">
-                                                <img class="avatar rounded-circle" src="{{asset('/')}}admin/assets/images/xs/avatar3.jpg" alt="">
-                                                <div class="flex-fill ms-2">
-                                                    <p class="d-flex justify-content-between mb-0 "><span class="font-weight-bold">Andrea Gill</span> <small>1HR</small></p>
-                                                    <span class="">Quality Assurance Task Completed</span>
-                                                </div>
-                                            </a>
-                                        </li>
-                                        <li class="py-2 mb-1 border-bottom">
-                                            <a href="javascript:void(0);" class="d-flex">
-                                                <img class="avatar rounded-circle" src="{{asset('/')}}admin/assets/images/xs/avatar5.jpg" alt="">
-                                                <div class="flex-fill ms-2">
-                                                    <p class="d-flex justify-content-between mb-0 "><span class="font-weight-bold">Diane Fisher</span> <small>13MIN</small></p>
-                                                    <span class="">Add New Project for App Developemnt</span>
-                                                </div>
-                                            </a>
-                                        </li>
-                                        <li class="py-2 mb-1 border-bottom">
-                                            <a href="javascript:void(0);" class="d-flex">
-                                                <img class="avatar rounded-circle" src="{{asset('/')}}admin/assets/images/xs/avatar6.jpg" alt="">
-                                                <div class="flex-fill ms-2">
-                                                    <p class="d-flex justify-content-between mb-0 "><span class="font-weight-bold">Andrea Gill</span> <small>1HR</small></p>
-                                                    <span class="">Add Timesheet For Rhinestone project</span>
-                                                </div>
-                                            </a>
-                                        </li>
                                         <li class="py-2">
                                             <a href="javascript:void(0);" class="d-flex">
                                                 <img class="avatar rounded-circle" src="{{asset('/')}}admin/assets/images/xs/avatar7.jpg" alt="">
@@ -97,8 +61,8 @@
                 </div>
                 <div class="dropdown user-profile ml-2 ml-sm-3 d-flex align-items-center">
                     <div class="u-info me-2">
-                        <p class="mb-0 text-end line-height-sm "><span class="font-weight-bold">{{auth()->user()->name}}</span></p>
-                        <small>Admin Profile</small>
+                        <p class="mb-0 text-end line-height-sm "><span class="font-weight-bold text-white">{{auth()->user()->name}}</span></p>
+                        <small class="text-white">{{ ucwords(auth()->user()->role)}} Profile</small>
                     </div>
                     <a class="nav-link dropdown-toggle pulse p-0" href="#" role="button" data-bs-toggle="dropdown" data-bs-display="static">
                         <img class="avatar lg rounded-circle img-thumbnail" src="{{asset('/')}}admin/assets/images/profile_av.png" alt="profile">
@@ -109,16 +73,16 @@
                                 <div class="d-flex py-1">
                                     <img class="avatar rounded-circle" src="{{asset('/')}}admin/assets/images/profile_av.png" alt="profile">
                                     <div class="flex-fill ms-3">
-                                        <p class="mb-0"><span class="font-weight-bold">{{auth()->user()->name}}</span></p>
-                                        <small class="">{{auth()->user()->email}}</small>
+                                        <p class="mb-0"><span class="font-weight-bold text-white">{{auth()->user()->name}}</span></p>
+                                        <small class="text-white">{{auth()->user()->email}}</small>
                                     </div>
                                 </div>
 
                                 <div><hr class="dropdown-divider border-dark"></div>
                             </div>
                             <div class="list-group m-2 ">
-                                <a href="task.html" class="list-group-item list-group-item-action border-0 "><i class="icofont-tasks fs-5 me-3"></i>My Task</a>
-                                <a href="members.html" class="list-group-item list-group-item-action border-0 "><i class="icofont-ui-user-group fs-6 me-3"></i>members</a>
+                                <a href="{{route('employees.index')}}" class="list-group-item list-group-item-action border-0 "><i class="icofont-ui-user-group fs-6 me-3"></i>members</a>
+                                <a href="{{route('employees.index')}}" class="list-group-item list-group-item-action border-0 "><i class="icofont-ui-user-group fs-6 me-3"></i>Settings</a>
                                 <a href="#" class="list-group-item list-group-item-action border-0" onclick="return confirm('are you sure to logout ?') ? document.getElementById('logout-form').submit():''">
                                     <i class="icofont-logout fs-6 me-3"></i> Logout
                                 </a>
@@ -132,7 +96,7 @@
                 </div>
                 <div class="px-md-1">
                     <a href="#offcanvas_setting" data-bs-toggle="offcanvas" aria-expanded="false" title="template setting">
-                        <svg class="svg-stroke" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                        <svg class="svg-stroke text-white" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
                             <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
                             <path d="M10.325 4.317c.426 -1.756 2.924 -1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543 -.94 3.31 .826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756 .426 1.756 2.924 0 3.35a1.724 1.724 0 0 0 -1.066 2.573c.94 1.543 -.826 3.31 -2.37 2.37a1.724 1.724 0 0 0 -2.572 1.065c-.426 1.756 -2.924 1.756 -3.35 0a1.724 1.724 0 0 0 -2.573 -1.066c-1.543 .94 -3.31 -.826 -2.37 -2.37a1.724 1.724 0 0 0 -1.065 -2.572c-1.756 -.426 -1.756 -2.924 0 -3.35a1.724 1.724 0 0 0 1.066 -2.573c-.94 -1.543 .826 -3.31 2.37 -2.37c1 .608 2.296 .07 2.572 -1.065z"></path>
                             <path d="M9 12a3 3 0 1 0 6 0a3 3 0 0 0 -6 0"></path>

@@ -7,9 +7,17 @@
     <!-- Favicon-->
     <!-- project css file  -->
     @include('admin.layout.style')
+        <style>
+            .image-box {
+
+                background: linear-gradient(rgba(105, 92, 92, 0.5), rgba(6, 0, 0, 0.5)) , url({{asset('/hrms-banner.jpg')}});
+                background-size: cover;
+                background-repeat: no-repeat;
+            }
+        </style>
 </head>
 
-<body  data-mytask="theme-indigo"  style="background-color: #d0c6c6">
+<body class="image-box overflow-x-hidden"  data-mytask="theme-indigo"  style="">
 <div id="mytask-layout">
 
     <!-- sidebar -->
@@ -19,7 +27,9 @@
     <div class="main px-lg-4 px-md-4">
 
         <!-- Body: Header -->
-        @include('admin.layout.header')
+        @if(\Illuminate\Support\Facades\Request::route()->getName() != 'admin.chat.index')
+            @include('admin.layout.header')
+        @endif
 
         <!-- Body: Body -->
         <div class="body d-flex py-3">
@@ -168,7 +178,7 @@
         </div>
     </div>
 
-    <!-- start: template setting, and more. -->
+    <!-- start: template settings, and more. -->
     <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvas_setting" aria-labelledby="offcanvas_setting">
         <div class="offcanvas-header">
             <h5 class="offcanvas-title">Template Setting</h5>

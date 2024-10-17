@@ -10,7 +10,7 @@
 
         <ul class="menu-list flex-grow-1 mt-3">
             <li class="collapsed">
-                <a class="m-link" href="{{route('admin.dashboard')}}">
+                <a class="m-link {{ Request::route()->getName() == 'admin.dashboard' ? 'active':''}}" id="dashboard" href="{{route('admin.dashboard')}}">
                     <i class="icofont-home fs-5"></i> <span> Dashboard </span>
                 </a>
             </li>
@@ -19,7 +19,7 @@
                         {{ Request::route()->getName() == 'holidays.index' ? 'active':''}}
                         {{ Request::route()->getName() == 'departments.index' ? 'active':''}}
                         {{ Request::route()->getName() == 'designations.index' ? 'active':''}}
-                    "  data-bs-toggle="collapse" data-bs-target="#project-Components" href="#">
+                    "  data-bs-toggle="collapse" data-bs-target="#employees" href="#">
                     <i class="icofont-briefcase"></i><span>Employees</span> <span class="arrow icofont-dotted-down ms-auto text-end fs-5"></span></a>
                 <!-- Menu: Sub menu ul -->
                 <ul class="sub-menu collapse
@@ -32,7 +32,7 @@
                 {{ Request::route()->getName() == 'admin.leave.report' ? 'show':'' }}
                 {{ Request::route()->getName() == 'admin.leave.requests' ? 'show':'' }}
                 {{ Request::route()->getName() == 'admin.termination.index' ? 'show':'' }}
-                    " id="project-Components">
+                    " id="employees">
                     <li><a class="ms-link {{ Request::route()->getName() == 'employees.index' ? 'active':'' }}" href="{{route('employees.index')}}"><span>Members</span></a></li>
                     <li><a class="ms-link {{ Request::route()->getName() == 'holidays.index' ? 'active':'' }}" href="{{route('holidays.index')}}"><span>Holidays</span></a></li>
                     <li><a class="ms-link {{ Request::route()->getName() == 'admin.attendance.list' ? 'active':'' }}" href="{{route('admin.attendance.list')}}"><span>Attendance</span></a></li>
@@ -44,23 +44,36 @@
                     <li><a class="ms-link {{ Request::route()->getName() == 'admin.termination.index' ? 'active':'' }}"  href="{{route('admin.termination.index')}}"><span>Termination</span></a></li>
                 </ul>
             </li>
+            <li  class="collapsed">
+                <a class="m-link
+                        {{ Request::route()->getName() == 'admin.salary.index' ? 'active':''}}
+                        {{ Request::route()->getName() == 'admin.salary.payment.index' ? 'active':''}}
 
+                    "  data-bs-toggle="collapse" data-bs-target="#accounts" href="#">
+                    <i class="icofont-bank"></i><span>Accounts</span> <span class="arrow icofont-dotted-down ms-auto text-end fs-5"></span></a>
+                <!-- Menu: Sub menu ul -->
+                <ul class="sub-menu collapse
+                {{ Request::route()->getName() == 'admin.salary.index' ? 'show':''}}
+                {{ Request::route()->getName() == 'admin.salary.payment.index' ? 'show':''}}
+                    " id="accounts">
+                    <li><a class="ms-link {{ Request::route()->getName() == 'admin.salary.index' ? 'active':'' }}" href="{{route('admin.salary.index')}}"><span> Employee salary</span></a></li>
+                    <li><a class="ms-link {{ Request::route()->getName() == 'admin.salary.payment.index' ? 'active':''}}" href="{{route('admin.salary.payment.index')}}"><span> Salary Payment</span></a></li>
+                    <li><a class="ms-link" href="tickets.html"><span> Sales Invoice </span></a></li>
+                    <li><a class="ms-link" href="tickets.html"><span> Billings </span></a></li>
+                </ul>
+            </li>
             <li class="collapsed">
-                <a class="m-link" data-bs-toggle="collapse" data-bs-target="#tikit-Components" href="#"><i
+                <a class="m-link
+                {{ Request::route()->getName() == 'admin.notice.index' ? 'active':''}}
+                {{ Request::route()->getName() == 'asset.index' ? 'active':''}}
+                    " data-bs-toggle="collapse" data-bs-target="#tikit-Components" href="#"><i
                         class="icofont-ticket"></i> <span>HR</span> <span class="arrow icofont-dotted-down ms-auto text-end fs-5"></span>
                 </a>
                 <!-- Menu: Sub menu ul -->
-                <ul class="sub-menu collapse" id="tikit-Components">
-                    <li class="collapsed">
-                        <a class="ms-link" data-bs-toggle="collapse" data-bs-target="#employee" href="#">
-                            <i class="icofont-ticket"></i> <span>Accounts</span> <span class="arrow icofont-dotted-down ms-auto text-end fs-5"></span>
-                        </a>
-                        <ul class="sub-menu collapse" id="employee">
-                            <li><a class="ms-link" href="tickets.html"><span> Employee salary</span></a></li>
-                            <li><a class="ms-link" href="tickets.html"><span> Sales Invoice </span></a></li>
-                            <li><a class="ms-link" href="tickets.html"><span> Expenses </span></a></li>
-                        </ul>
-                    </li>
+                <ul class="sub-menu collapse
+                {{ Request::route()->getName() == 'admin.notice.index' ? 'show':'' }}
+                {{ Request::route()->getName() == 'asset.index' ? 'show':'' }}
+                    " id="tikit-Components">
                     <li class="collapsed">
                     <a class="ms-link" data-bs-toggle="collapse" data-bs-target="#reports" href="#">
                         <i class="icofont-ticket"></i> <span>Reports</span> <span class="arrow icofont-dotted-down ms-auto text-end fs-5"></span>
@@ -76,11 +89,12 @@
                         </ul>
                     </li>
                     <li><a class="ms-link" href="ticket-detail.html"><i class="icofont-police"></i> <span>Policies</span></a></li>
-                    <li><a class="ms-link" href="ticket-detail.html"><i class="icofont-notification"></i> <span>Announce</span></a></li>
+                    <li><a class="ms-link {{ Request::route()->getName() == 'admin.notice.index' ? 'active':'' }}" href="{{route('admin.notice.index')}}"><i class="icofont-notification"></i> <span>Announce</span></a></li>
+                    <li><a class="ms-link {{ Request::route()->getName() == 'asset.index' ? 'active':'' }}" href="{{route('asset.index')}}"> <i class="icofont-address-book"></i> <span>Assets</span></a></li>
                 </ul>
             </li>
             <li class="collapsed">
-                <a class="m-link {{ Request::route()->getName() == 'assets.index' ? 'active':'' }}
+                <a class="m-link {{ Request::route()->getName() == 'admin.settings.index' ? 'active':'' }}
                 {{ Request::route()->getName() == 'admin.role.index' ? 'active':''}}
                 {{ Request::route()->getName() == 'admin.permission.index' ? 'active':''}}
                 {{ Request::route()->getName() == 'admin.user.role' ? 'active':''}}
@@ -88,22 +102,22 @@
                         class="icofont-user-male"></i> <span>Administration</span> <span class="arrow icofont-dotted-down ms-auto text-end fs-5"></span></a>
                 <!-- Menu: Sub menu ul -->
                 <ul class="sub-menu collapse
-                        {{ Request::route()->getName() == 'assets.index' ? 'show':'' }}
+                        {{ Request::route()->getName() == 'admin.settings.index' ? 'show':''}}
                         {{ Request::route()->getName() == 'admin.role.index' ? 'show':''}}
                         {{ Request::route()->getName() == 'admin.permission.index' ? 'show':''}}
                         {{ Request::route()->getName() == 'admin.user.role' ? 'show':''}}
                     " id="client-Components">
-                    <li><a class="ms-link {{ Request::route()->getName() == 'asset.index' ? 'active':'' }}" href="{{route('asset.index')}}"> <span>Assets</span></a></li>
                     <li class="collapsed">
                         <a class="ms-link" data-bs-toggle="collapse" data-bs-target="#settings" href="#">
                             <i class="icofont-ticket"></i> <span>Settings</span> <span class="arrow icofont-dotted-down ms-auto text-end fs-5"></span>
                         </a>
-                        <ul class="sub-menu collapse" id="settings">
-                            <li><a class="ms-link" href="tickets.html"><span> Company Settings </span></a></li>
+                        <ul class="sub-menu collapse {{ Request::route()->getName() == 'admin.settings.index' ? 'show':''}}
+                            " id="settings">
+                            <li><a class="ms-link {{ Request::route()->getName() == 'admin.settings.index' ? 'active':''}}" href="{{route('admin.settings.index')}}"><span> Settings </span></a></li>
                             <li><a class="ms-link" href="tickets.html"><span> Theme Settings </span></a></li>
                             <li><a class="ms-link" href="tickets.html"><span> Email Settings </span></a></li>
-                            <li><a class="ms-link" href="tickets.html"><span> Invoice Settings  </span></a></li>
-                            <li><a class="ms-link" href="tickets.html"><span> Notification Settings </span></a></li>
+{{--                            <li><a class="ms-link" href="tickets.html"><span> Invoice Settings  </span></a></li>--}}
+{{--                            <li><a class="ms-link" href="tickets.html"><span> Notification Settings </span></a></li>--}}
                             <li><a class="ms-link" href="tickets.html"><span> Change Password </span></a></li>
 {{--                            <li><a class="ms-link" href="tickets.html"><span> Leave Type </span></a></li>--}}
                         </ul>
@@ -131,11 +145,11 @@
                     </li>
                 </ul>
             </li>
-            <li class="collapsed">
-                <a class="m-link" href="#">
+            {{--<li class="collapsed">
+                <a class="m-link {{ Request::route()->getName() == 'admin.chat.index' ? 'active':''}}" href="{{route('admin.chat.index')}}">
                     <i class="icofont-home fs-5"></i> <span> Chat </span>
                 </a>
-            </li>
+            </li>--}}
             <li class="collapsed">
                 <a class="m-link" onclick="return confirm('are you sure to logout ?') ? document.getElementById('logoutSideBar').submit():''">
                     <i class="icofont-logout fs-5"></i> <span> Logout </span>
@@ -146,8 +160,6 @@
                 </form>
             </li>
         </ul>
-
-
 
         <!-- Menu: menu collepce btn -->
         <button type="button" class="btn btn-link sidebar-mini-btn text-light">

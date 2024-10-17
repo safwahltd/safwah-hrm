@@ -4,7 +4,7 @@
     <div class="row align-items-center">
         <div class="border-0 mb-4">
             <div class="card-header py-3 no-bg bg-transparent d-flex align-items-center px-0 justify-content-between border-bottom flex-wrap">
-                <h3 class="fw-bold mb-0">Designation</h3>
+                <h3 class="fw-bold mb-0 text-white">Designation</h3>
                 <div class="col-auto d-flex w-sm-100">
                     <button type="button" class="btn btn-dark btn-set-task w-sm-100" data-bs-toggle="modal" data-bs-target="#depadd"><i class="icofont-plus-circle me-2 fs-6"></i>Add Designation</button>
                 </div>
@@ -16,15 +16,13 @@
     <div class="row clearfix g-3">
         <div class="col-sm-12">
             <div class="card mb-3">
-                <div class="card-body">
-                    <table id="myProjectTable" class="table table-hover dataTable align-middle mb-0" style="width:100%">
+                <div class="card-body export-table bg-dark-subtle">
+                    <table id="file-datatable" class="table table-bordered text-nowrap table-secondary key-buttons border-bottom w-100">
                         <thead>
                         <tr>
                             <th>No</th>
-{{--                            <th>Department Head</th>--}}
                             <th>Designation Name</th>
                             <th>Department Name</th>
-{{--                            <th>Employee UnderWork</th>--}}
                             <th>Status</th>
                             <th>Actions</th>
                         </tr>
@@ -35,10 +33,6 @@
                             <td>
                                 <span class="fw-bold">{{$loop->iteration}}</span>
                             </td>
-                            {{--<td>
-                                <img class="avatar rounded-circle" src="assets/images/xs/avatar1.jpg" alt="">
-                                <span class="fw-bold ms-1">Joan Dyer</span>
-                            </td>--}}
                             <td>{{$designation->name}}</td>
                             <td>{{$designation->department->department_name ?? ''}}</td>
                             <td>

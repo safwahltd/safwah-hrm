@@ -1,3 +1,4 @@
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <!-- Jquery Core Js -->
 <script src="{{asset('/')}}admin/assets/bundles/libscripts.bundle.js"></script>
 
@@ -42,3 +43,18 @@
 
 <!-- INTERNAL SELECT2 JS -->
 <script src="{{asset('/')}}admin/assets/plugins/select2/select2.full.min.js"></script>
+
+<!-- DATA TABLE JS-->
+<script src="{{asset('/')}}datatable/js/jquery.dataTables.min.js"></script>
+<script src="{{asset('/')}}datatable/js/dataTables.bootstrap5.js"></script>
+<script src="{{asset('/')}}datatable/js/dataTables.buttons.min.js"></script>
+<script src="{{asset('/')}}datatable/js/buttons.bootstrap5.min.js"></script>
+<script src="{{asset('/')}}datatable/js/jszip.min.js"></script>
+<script src="{{asset('/')}}datatable/pdfmake/pdfmake.min.js"></script>
+<script src="{{asset('/')}}datatable/pdfmake/vfs_fonts.js"></script>
+<script src="{{asset('/')}}datatable/js/buttons.html5.min.js"></script>
+<script src="{{asset('/')}}datatable/js/buttons.print.min.js"></script>
+<script src="{{asset('/')}}datatable/js/buttons.colVis.min.js"></script>
+<script src="{{asset('/')}}datatable/dataTables.responsive.min.js"></script>
+<script src="{{asset('/')}}datatable/responsive.bootstrap5.min.js"></script>
+<script src="{{asset('/')}}datatable/table-data.js"></script>

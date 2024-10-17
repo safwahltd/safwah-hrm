@@ -84,7 +84,7 @@ return [
         | When dealing with imports, you might only be interested in the
         | data that the sheet exists. By default we ignore all styles,
         | however if you want to do some logic based on style data
-        | you can enable it by setting read_only to false.
+        | you can enable it by settings read_only to false.
         |
         */
         'read_only'    => true,
@@ -97,7 +97,7 @@ return [
         | When dealing with imports, you might be interested in ignoring
         | rows that have null values or empty strings. By default rows
         | containing empty strings or empty values are not ignored but can be
-        | ignored by enabling the setting ignore_empty to true.
+        | ignored by enabling the settings ignore_empty to true.
         |
         */
         'ignore_empty' => false,
@@ -300,7 +300,7 @@ return [
     | for when an import may fail and you want to retry it. With the
     | transactions, the previous import gets rolled-back.
     |
-    | You can disable the transaction handler by setting this to null.
+    | You can disable the transaction handler by settings this to null.
     | Or you can choose a custom made transaction handler here.
     |
     | Supported handlers: null|db
@@ -353,7 +353,7 @@ return [
         | want to store the temporary file on a shared disk. During the
         | queue executing, we'll retrieve the temporary file from that
         | location instead. When left to null, it will always use
-        | the local path. This setting only has effect when using
+        | the local path. This settings only has effect when using
         | in conjunction with queued imports and exports.
         |
         */

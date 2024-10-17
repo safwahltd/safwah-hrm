@@ -7,9 +7,17 @@
     <!-- Favicon-->
     <!-- project css file  -->
     @include('employee.layout.style')
+        <style>
+            .image-box {
+
+                background: linear-gradient(rgba(105, 92, 92, 0.5), rgba(6, 0, 0, 0.5)) , url({{asset('/hrms-banner.jpg')}});
+                background-size: cover;
+                background-repeat: no-repeat;
+            }
+        </style>
 </head>
 
-<body  data-mytask="theme-indigo" style="background-color: #eee6e6">
+<body  class="image-box overflow-x-hidden"  data-mytask="theme-indigo"  style="">
 <div id="mytask-layout">
 
     <!-- sidebar -->
@@ -168,7 +176,7 @@
         </div>
     </div>
 
-    <!-- start: template setting, and more. -->
+    <!-- start: template settings, and more. -->
     <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvas_setting" aria-labelledby="offcanvas_setting">
         <div class="offcanvas-header">
             <h5 class="offcanvas-title">Template Setting</h5>

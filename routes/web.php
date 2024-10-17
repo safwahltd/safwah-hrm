@@ -14,6 +14,11 @@ use App\Http\Controllers\employee\AttendanceController;
 use App\Http\Controllers\LeaveController;
 use App\Http\Controllers\admin\TerminationController;
 use App\Http\Controllers\admin\RolePermissionController;
+use App\Http\Controllers\ChatController;
+use App\Http\Controllers\SettingController;
+use App\Http\Controllers\admin\NoticeController;
+use App\Http\Controllers\admin\SalaryController;
+use App\Http\Controllers\admin\SalaryPaymentController;
 
 
 Route::get('/', [AdminAuthController::class, 'login'])->name('login');
@@ -39,6 +44,9 @@ Route::middleware(['employee.auth'])->prefix('employee/')->group(function () {
         Route::put('/leave-request-update/{id}', 'employeeLeaveRequestUpdate')->name('employee.leave.request.update');
         Route::post('/leave-request-cancel/{id}', 'employeeLeaveRequestCancel')->name('employee.leave.request.cancel');
         Route::get('/leave-request-print/{id}', 'employeeLeaveRequestPrint')->name('employee.leave.request.print');
+    });
+    Route::controller(NoticeController::class)->group(function (){
+        Route::get('/notices-show','employeeShowList')->name('employee.notice.list');
     });
 });
 
@@ -87,5 +95,39 @@ Route::middleware(['admin.auth'])->prefix('admin/')->group(function () {
         Route::get('/user-role','userRoleIndex')->name('admin.user.role');
         Route::put('/user-role-update/{id}','userRoleUpdate')->name('admin.user.role.update');
     });
+    Route::controller(ChatController::class)->group(function (){
+        Route::get('/chat','index')->name('admin.chat.index');
+    });
+    Route::controller(SettingController::class)->group(function (){
+        Route::get('/settings','index')->name('admin.settings.index');
+        Route::put('/company-setting-update/{id}','companySettingUpdate')->name('admin.company.setting.update');
+        /*Route::get('/email-setting','emailSetting')->name('admin.email.setting.index');
+        Route::put('/email-setting-update/{id}','emailSettingUpdate')->name('admin.email.setting.update');*/
+    });
+    Route::controller(NoticeController::class)->group(function (){
+        Route::get('/notices','index')->name('admin.notice.index');
+        Route::post('/notices-store','store')->name('admin.notice.store');
+        Route::put('/notices-update/{id}','update')->name('admin.notice.update');
+        Route::delete('/notices-destroy/{id}','destroy')->name('admin.notice.destroy');
+        Route::post('/notices-download/{id}', 'download')->name('admin.notice.download');
+    });
+    Route::controller(SalaryController::class)->group(function (){
+        Route::get('/salaries','index')->name('admin.salary.index');
+        Route::post('/salaries-store','store')->name('admin.salary.store');
+        Route::put('/salaries-update/{id}','update')->name('admin.salary.update');
+        Route::delete('/salaries-destroy/{id}','destroy')->name('admin.salary.destroy');
+        Route::get('/salaries-download/{id}', 'download')->name('admin.salary.download');
+        Route::get('/get-salary-details/{id}', [SalaryController::class, 'getSalaryDetails'])->name('salary.getDetails');
+//        Route::get('/salaries-payment-download/{id}', 'download')->name('admin.salary.payment.download');
+        Route::get('/salaries/get-employees', [SalaryController::class, 'getEmployees'])->name('salaries.getEmployees');
+    });
+    Route::controller(SalaryPaymentController::class)->group(function (){
+        Route::get('/salaries-payment','index')->name('admin.salary.payment.index');
+        Route::post('/salaries-payment-store','store')->name('admin.salary.payment.store');
+        Route::put('/salaries-payment-update/{id}','update')->name('admin.salary.payment.update');
+        Route::delete('/salaries-payment-destroy/{id}','destroy')->name('admin.salary.payment.destroy');
+    });
+
+
 });
 Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');

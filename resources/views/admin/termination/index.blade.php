@@ -6,11 +6,15 @@
         h1 { text-align: center; }
         .content { margin: 0 auto; width: 80%; }
         .signature { margin-top: 50px; }
+         label {
+             display: inline-block;
+             padding-bottom: 10px;
+         }
     </style>
     <div class="row align-items-center">
         <div class="border-0 mb-4">
             <div class="card-header py-3 no-bg bg-transparent d-flex align-items-center px-0 justify-content-between border-bottom flex-wrap">
-                <h3 class="fw-bold mb-0">Termination</h3>
+                <h3 class="fw-bold mb-0 text-white">Termination</h3>
                 <div class="col-auto d-flex w-sm-100">
                     <button type="button" class="btn btn-dark btn-set-task w-sm-100" data-bs-toggle="modal" data-bs-target="#depadd"><i class="icofont-plus-circle me-2 fs-6"></i>Add Termination</button>
                 </div>
@@ -22,8 +26,8 @@
     <div class="row clearfix g-3">
         <div class="col-sm-12">
             <div class="card mb-3">
-                <div class="card-body">
-                    <table id="myProjectTable" class="table table-hover align-middle mb-0" style="width:100%">
+                <div class="card-body export-table bg-dark-subtle">
+                    <table id="example3" class="table table-bordered text-nowrap table-secondary key-buttons border-bottom w-100">
                         <thead>
                         <tr>
                             <th>No</th>
@@ -54,10 +58,6 @@
                                         <option {{$termination->status == 0 ? 'selected':''}} value="0">Inactive</option>
                                     </select>
                                 </form>
-                            </td>
-
-                            <td>
-
                             </td>
                             <td>
                                 <div class="btn-group" role="group" aria-label="Basic outlined example">

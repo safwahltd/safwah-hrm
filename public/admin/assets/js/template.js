@@ -61,7 +61,7 @@ $(function() {
             $('.table-responsive').css( "overflow", "auto" );
     })
 
-    // main theme color setting js
+    // main theme color settings js
     $('.choose-skin li').on('click', function () {
         const $body = $('body');
         const $this = $(this);
@@ -80,7 +80,7 @@ $(function() {
         }
     });
 
-    // light and dark theme setting js
+    // light and dark theme settings js
     var toggleSwitch = document.querySelector('.theme-switch input[type="checkbox"]');
     var toggleHcSwitch = document.querySelector('.theme-high-contrast input[type="checkbox"]');
     var currentTheme = localStorage.getItem('theme');

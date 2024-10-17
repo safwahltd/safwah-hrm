@@ -37,7 +37,7 @@ class AdminAuthController extends Controller
             if($user){
                 if ($user->status == 1){
                     if ($user->role == 'admin'){
-                        if (Auth::guard('web')->attempt($credentials)){
+                        if (Auth::guard('web')->attempt($credentials,$request->has('remember'))){
                             toastr()->success('Login Successfull');
                             return redirect()->route('admin.dashboard');
                         }
@@ -74,9 +74,11 @@ class AdminAuthController extends Controller
             return back();
         }
     }
-    public function logout()
+    public function logout(Request $request)
     {
         Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
         toastr()->success("Logout Successfully");
         return redirect()->route('login');
     }
