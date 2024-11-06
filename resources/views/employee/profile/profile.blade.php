@@ -1,4 +1,4 @@
-@extends('employee.layout.app')
+@extends('admin.layout.app')
 @section('title','Employee Profile')
 @section('body')
     <div class="row clearfix">

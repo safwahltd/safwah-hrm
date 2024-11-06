@@ -17,19 +17,17 @@ class EmployeeAccountController extends Controller
         return view('employee.profile.profile',compact('user'));
     }
     public function personalInfoUpdate(Request $request){
-        $user = User::find(auth()->user()->id);
+        $userInfo = UserInfos::where('user_id',auth()->user()->id)->first();
         try {
             $validate = Validator::make($request->all(),[
-                "personal_email" => [
-                    Rule::unique('user_infos')->ignore($user->userInfo->user_id),
-                ],
+                "personal_email" => Rule::unique('user_infos')->ignore($userInfo->id),
             ]);
             if($validate->fails())
             {
                 toastr()->error($validate->messages());
                 return redirect()->back();
             }
-            $userInfo = UserInfos::where('user_id',auth()->user()->id)->first();
+
             $userInfo->mobile = $request->mobile;
             $userInfo->official_mobile = $request->official_mobile;
             $userInfo->personal_email = $request->personal_email;

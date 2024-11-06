@@ -58,3 +58,14 @@
 <script src="{{asset('/')}}datatable/dataTables.responsive.min.js"></script>
 <script src="{{asset('/')}}datatable/responsive.bootstrap5.min.js"></script>
 <script src="{{asset('/')}}datatable/table-data.js"></script>
+<!-- Include Select2 JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('.select2-example').select2({
+            dropdownParent: $('body'), // Make sure dropdown appears outside modal
+            placeholder: "Search and select an option",
+            allowClear: true
+        });
+    });
+</script>

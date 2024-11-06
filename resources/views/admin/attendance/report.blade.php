@@ -10,7 +10,7 @@
     <div class="row align-items-center">
         <div class="border-0 mb-4">
             <div class="card-header py-3 no-bg bg-transparent d-flex align-items-center px-0 justify-content-between border-bottom flex-wrap">
-                <h3 class="fw-bold mb-0">Attendance Report</h3>
+                <h3 class="fw-bold mb-0 text-white">Attendance Report</h3>
             </div>
         </div>
     </div>
@@ -50,8 +50,8 @@
                 </div>
 
                 <!-- Filter Form -->
-                <div class="card-body export-table bg-dark-subtle">
-                    <table id="example3" class="table table-bordered text-nowrap table-secondary key-buttons border-bottom w-100">
+                <div class="card-body table-responsive p-2 bg-dark-subtle">
+                    <table id="basic-datatable" class="table table-bordered text-nowrap table-secondary key-buttons border-bottom w-100">
                         <thead>
                             <tr>
                                 <th class="bg-success text-white">User</th>

@@ -39,7 +39,7 @@
                             <tr>
                                 <td><span class="fw-bold">{{$loop->iteration}}</span></td>
                                 <td>{{$attendance->user->name}}<sub>({{$attendance->user->userInfo->employee_id}})</sub> </td>
-                                <td>{{$attendance->clock_in}}</td>
+                                <td>{{\Illuminate\Support\Carbon::parse($attendance->clock_in)->format('d M , 2024 h:m a')}}</td>
                                 <td>{{$attendance->clock_out}}</td>
                                 <td>{{$attendance->working_time }}</td>
                             </tr>

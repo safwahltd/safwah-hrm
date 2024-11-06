@@ -10,49 +10,61 @@ use Exception;
 class SettingController extends Controller
 {
     public function index(){
-        $companySetting = Setting::first();
-        return view('admin.settings.index',compact('companySetting'));
-    }
-    public function companySettingUpdate(Request $request,$id){
-        try {
-            $setting = Setting::find($id);
-            $setting->company_name = $request->company_name;
-            $setting->company_title = $request->company_title;
-            $setting->phone = $request->phone;
-            $setting->hotLine = $request->hotLine;
-            $setting->email = $request->email;
-            $setting->address = $request->address;
-            if ($request->file('logo')){
-                $logo = $request->file('logo');
-                $logoExtension = $logo->getClientOriginalExtension();
-                $logoName = time().'.'.$logoExtension;
-                $directory = 'upload/company-setting/';
-                $logo->move($directory,$logoName);
-                $logoUrl = $directory.$logoName;
-                $setting->logo = $logoUrl;
-            }
-            if ($request->file('favicon')){
-                $favicon = $request->file('favicon');
-                $faviconExtension = $favicon->getClientOriginalExtension();
-                $faviconName = time().'.'.$faviconExtension;
-                $directory = 'upload/company-setting/';
-                $favicon->move($directory,$faviconName);
-                $faviconUrl = $directory.$faviconName;
-                $setting->favicon = $faviconUrl;
-            }
-            $setting->website_link = $request->website_link;
-            $setting->app_link = $request->app_link;
-            $setting->ios_link = $request->ios_link;
-            $setting->meta_title = $request->meta_title;
-            $setting->meta_keyword = $request->meta_keyword;
-            $setting->meta_description = $request->meta_description;
-            $setting->meta_author = $request->meta_author;
-            $setting->save();
-            toastr()->success('update success.');
+        if(auth()->user()->hasPermission('admin settings index')){
+            $companySetting = Setting::first();
+            return view('admin.settings.index',compact('companySetting'));
+        }
+        else{
+            toastr()->error('Permission Denied');
             return back();
         }
-        catch (Exception $exception){
-            toastr()->error($exception->getMessage());
+    }
+    public function companySettingUpdate(Request $request,$id){
+        if(auth()->user()->hasPermission('admin company setting update')){
+            try {
+                $setting = Setting::find($id);
+                $setting->company_name = $request->company_name;
+                $setting->company_title = $request->company_title;
+                $setting->phone = $request->phone;
+                $setting->hotLine = $request->hotLine;
+                $setting->email = $request->email;
+                $setting->address = $request->address;
+                if ($request->file('logo')){
+                    $logo = $request->file('logo');
+                    $logoExtension = $logo->getClientOriginalExtension();
+                    $logoName = time().'.'.$logoExtension;
+                    $directory = 'upload/company-setting/';
+                    $logo->move($directory,$logoName);
+                    $logoUrl = $directory.$logoName;
+                    $setting->logo = $logoUrl;
+                }
+                if ($request->file('favicon')){
+                    $favicon = $request->file('favicon');
+                    $faviconExtension = $favicon->getClientOriginalExtension();
+                    $faviconName = time().'.'.$faviconExtension;
+                    $directory = 'upload/company-setting/';
+                    $favicon->move($directory,$faviconName);
+                    $faviconUrl = $directory.$faviconName;
+                    $setting->favicon = $faviconUrl;
+                }
+                $setting->website_link = $request->website_link;
+                $setting->app_link = $request->app_link;
+                $setting->ios_link = $request->ios_link;
+                $setting->meta_title = $request->meta_title;
+                $setting->meta_keyword = $request->meta_keyword;
+                $setting->meta_description = $request->meta_description;
+                $setting->meta_author = $request->meta_author;
+                $setting->save();
+                toastr()->success('update success.');
+                return back();
+            }
+            catch (Exception $exception){
+                toastr()->error($exception->getMessage());
+            }
+        }
+        else{
+            toastr()->error('Permission Denied');
+            return back();
         }
     }
     /*public function emailSetting(){

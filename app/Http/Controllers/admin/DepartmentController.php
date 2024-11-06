@@ -4,6 +4,7 @@ namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Department;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Exception;
@@ -13,101 +14,122 @@ class DepartmentController extends Controller
 
     public function index()
     {
-        return view('admin.department.index', [
-            'departments' => Department::latest()->simplePaginate(10),
-        ]);
+        if(auth()->user()->hasPermission('admin department index')){
+            return view('admin.department.index', [
+                'departments' => Department::latest()->simplePaginate(100),
+                'users' => User::whereNotIn('id',[1])->orderBy('name','asc')->get(),
+            ]);
+        }
+        else{
+            toastr()->error('Permission Denied');
+            return back();
+        }
     }
-
-
-    public function create()
-    {
-        //
+    public function edit($id){
+        $dept = Department::find($id);
+        $departments = Department::latest()->whereNotIn('id',[$dept->id])->simplePaginate(100);
+        $users = User::whereNotIn('id',[1])->orderBy('name','asc')->get();
+        return view('admin.department.edit',compact('dept','departments','users'));
     }
-
     public function store(Request $request)
     {
-        try {
-            $validate = Validator::make($request->all(),[
-                "department_name" => 'required',
-            ]);
-            if($validate->fails())
-            {
-                toastr()->error($validate->messages());
-                return redirect()->back();
+        if(auth()->user()->hasPermission('admin department store')){
+            try {
+                $validate = Validator::make($request->all(),[
+                    "department_name" => 'required',
+                ]);
+                if($validate->fails())
+                {
+                    toastr()->error($validate->messages());
+                    return redirect()->back();
+                }
+                $department = new Department();
+                $department->department_name = $request->department_name;
+                $department->department_head = $request->department_head;
+                $department->status = $request->status;
+                $department->save();
+                toastr()->success('Department Added Success.');
+                return back();
             }
-            $department = new Department();
-            $department->department_name = $request->department_name;
-            $department->department_head = $request->department_head;
-            $department->status = $request->status;
-            $department->save();
-            toastr()->success('Department Added Success.');
-            return back();
+            catch (Exception $exception){
+                toastr()->success($exception->getMessage());
+                return back();
+            }
         }
-        catch (Exception $exception){
-            toastr()->success($exception->getMessage());
+        else{
+            toastr()->error('Permission Denied');
             return back();
         }
     }
-
-    public function show(Department $department)
-    {
-        //
-    }
-
-    public function edit(Department $department)
-    {
-        //
-    }
-
     public function update(Request $request, Department $department)
     {
-        try {
-            $validate = Validator::make($request->all(),[
-                "department_name" => 'required',
-            ]);
-            if($validate->fails())
-            {
-                toastr()->error($validate->messages());
-                return redirect()->back();
+        if(auth()->user()->hasPermission('admin department update')){
+            try {
+                $validate = Validator::make($request->all(),[
+                    "department_name" => 'required',
+                ]);
+                if($validate->fails())
+                {
+                    toastr()->error($validate->messages());
+                    return redirect()->back();
+                }
+                $department->department_name = $request->department_name;
+                $department->department_head = $request->department_head;
+                $department->status = $request->status;
+                $department->save();
+                toastr()->success('Department Updated Success.');
+                return back();
             }
-            $department->department_name = $request->department_name;
-            $department->department_head = $request->department_head;
-            $department->status = $request->status;
-            $department->save();
-            toastr()->success('Department Updated Success.');
+            catch (Exception $exception){
+                toastr()->success($exception->getMessage());
+                return back();
+            }
+        }
+        else{
+            toastr()->error('Permission Denied');
             return back();
         }
-        catch (Exception $exception){
-            toastr()->success($exception->getMessage());
-            return back();
-        }
-    }
 
+    }
     public function destroy(Department $department)
     {
-        try {
-            $department->delete();
-            toastr()->success('Delete Department Success');
+        if(auth()->user()->hasPermission('admin department destroy')){
+            try {
+                $department->delete();
+                toastr()->success('Delete Department Success');
+                return back();
+            }
+            catch (Exception $e){
+                toastr()->error($e->getMessage());
+                return back();
+            }
+        }
+        else{
+            toastr()->error('Permission Denied');
             return back();
         }
-        catch (Exception $e){
-            toastr()->error($e->getMessage());
-            return back();
-        }
+
     }
     public function StatusUpdate(Request $request,$id)
     {
-        try {
-            $department = Department::find($id);
-            $department->status = $request->status;
-            $department->save();
-            toastr()->success('Status Change Department Success');
+        if(auth()->user()->hasPermission('admin department StatusUpdate')){
+            try {
+                $department = Department::find($id);
+                $department->status = $request->status;
+                $department->save();
+                toastr()->success('Status Change Department Success');
+                return back();
+            }
+            catch (Exception $e){
+                toastr()->error($e->getMessage());
+                return back();
+            }
+        }
+        else{
+            toastr()->error('Permission Denied');
             return back();
         }
-        catch (Exception $e){
-            toastr()->error($e->getMessage());
-            return back();
-        }
+
     }
 
 }

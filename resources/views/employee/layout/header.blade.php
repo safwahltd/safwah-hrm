@@ -6,7 +6,7 @@
             <div class="h-right d-flex align-items-center mr-5 mr-lg-0 order-1">
                 <div class="dropdown notifications">
                     <a class="nav-link dropdown-toggle pulse" href="#" role="button" data-bs-toggle="dropdown">
-                        <i class="icofont-alarm  text-white fs-5"></i><sup class="text-white m-0 fw-bold bg-success rounded-circle p-1">{{ count($notices) ?? '0' }}</sup>
+                        <i class="icofont-alarm  text-white fs-5"></i><sup class="text-white m-0 fw-bold bg-success rounded-circle p-1">{{ $noticeCount ?? '0' }}</sup>
                         <span class="pulse-ring text-white"></span>
                     </a>
                     <div id="NotificationsDiv" class="dropdown-menu rounded-lg shadow border-0 dropdown-animation dropdown-menu-sm-end p-0 m-0">

@@ -23,7 +23,7 @@
     <!-- Row End -->
     <div class="row g-3 py-1 pb-4">
         @foreach($users as $key => $user)
-        <div class="col-2">
+        <div class="col-3">
             <div class="card">
                 <div class="card-body">
                     <div class="">

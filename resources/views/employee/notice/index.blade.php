@@ -1,4 +1,4 @@
-@extends('employee.layout.app')
+@extends('admin.layout.app')
 @section('title','notices')
 @section('body')
     <style>

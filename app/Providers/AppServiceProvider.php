@@ -22,11 +22,13 @@ class AppServiceProvider extends ServiceProvider
             })->orderBy('created_at', 'desc')->get(),
             ]);
         });*/
-        View::composer(['employee.layout.app'],function ($view){
+        View::composer(['admin.layout.app'],function ($view){
             $view->with([
 //                'company' => Setting::first(),
                 'notices' => Notice::where('status',1)->whereDate('start_date', '<=', now())->where(function($query) {$query->whereNull('end_date')->orWhere('end_date', '>=', now());
             })->orderBy('created_at', 'desc')->latest()->take(10)->get(),
+                'noticeCount' => Notice::where('status',1)->whereDate('start_date', '<=', now())->where(function($query) {$query->whereNull('end_date')->orWhere('end_date', '>=', now());
+            })->count(),
             ]);
         });
 

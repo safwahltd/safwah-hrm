@@ -23,7 +23,7 @@
                 </a>
             </li>
             <li class="collapsed">
-                <a class="m-link {{--{{ Request::route()->getName() == 'employee.dashboard' ? 'active':''}}--}}" href="{{--{{route('employee.dashboard')}}--}}">
+                <a class="m-link {{ Request::route()->getName() == 'employee.salary.index' ? 'active':''}}" href="{{route('employee.salary.index')}}">
                     <i class="icofont-money fs-5 "></i> <span> Salary </span>
                 </a>
             </li>
@@ -37,7 +37,6 @@
                     <i class="icofont-ui-calendar fs-5 "></i> <span> Leave </span>
                 </a>
             </li>
-
             <li class="collapsed">
                 <a class="m-link {{--{{ Request::route()->getName() == 'employee.profile.details' ? 'active':''}}--}}" data-bs-toggle="collapse" data-bs-target="#client-Components" href="#"><i class="icofont-address-book fs-5 "></i> <span>Account Details</span> <span class="arrow icofont-dotted-down ms-auto text-end fs-5"></span></a>
                 <!-- Menu: Sub menu ul -->

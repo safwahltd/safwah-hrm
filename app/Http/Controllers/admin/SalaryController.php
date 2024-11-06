@@ -16,146 +16,168 @@ class SalaryController extends Controller
 {
     public function index(Request $request)
     {
-        if ($request->all()){
-            $year = $request->input('year');
-            $month = $request->input('month');
-            $users = User::where('status',1)->whereNotIn('id',[1])->get();
-            $salaries = Salary::with('user')->where(function($query) use ($year, $month) {
-                $query->when($year, function($q) use ($year) {
-                    $q->where('year', $year);
-                })
-                    ->when($month, function($q) use ($month) {
-                        $q->where('month', $month);
-                    });
-            })->latest()->paginate(50);
-            return view('admin.salary.index', compact('users', 'year', 'month', 'salaries'));
+        if(auth()->user()->hasPermission('admin salary index')){
+            if ($request->all()){
+                $year = $request->input('year');
+                $month = $request->input('month');
+                $users = User::where('status',1)->whereNotIn('id',[1])->get();
+                $salaries = Salary::with('user')->where(function($query) use ($year, $month) {
+                    $query->when($year, function($q) use ($year) {
+                        $q->where('year', $year);
+                    })
+                        ->when($month, function($q) use ($month) {
+                            $q->where('month', $month);
+                        });
+                })->latest()->paginate(50);
+                return view('admin.salary.index', compact('users', 'year', 'month', 'salaries'));
+            }
+            else{
+                $year = 0;
+                $month = 0;
+                $users = User::where('status',1)->whereNotIn('id',[1])->get();
+                $salaries = Salary::with('user')->latest()->paginate(20);
+                return view('admin.salary.index', compact('users', 'year', 'month', 'salaries'));
+            }
         }
         else{
-            $year = 0;
-            $month = 0;
-            $users = User::where('status',1)->whereNotIn('id',[1])->get();
-            $salaries = Salary::with('user')->latest()->paginate(20);
-            return view('admin.salary.index', compact('users', 'year', 'month', 'salaries'));
+            toastr()->error('Permission Denied');
+            return back();
         }
-
     }
-
     public function store(Request $request)
     {
-        try {
-            $validate = Validator::make($request->all(), [
-                'user_id' => 'required|exists:users,id',
-                'basic_salary' => 'required|numeric',
-                'house_rent' => 'nullable|numeric',
-                'medical_allowance' => 'nullable|numeric',
-                'conveyance_allowance' => 'nullable|numeric',
-                'others' => 'nullable|numeric',
-                'mobile_allowance' => 'nullable|numeric',
-                'bonus' => 'nullable|numeric',
-                'meal_deduction' => 'nullable|numeric',
-                'income_tax' => 'nullable|numeric',
-                'other_deduction' => 'nullable|numeric',
-                'attendance_deduction' => 'nullable|numeric',
-                'month' => 'required|integer|between:1,12',
-                'year' => 'required|integer|min:1900|max:'.date('Y'),
-            ]);
-            if ($validate->fails()) {
-                toastr()->error($validate->messages());
+        if(auth()->user()->hasPermission('admin salary store')){
+            try {
+                $validate = Validator::make($request->all(), [
+                    'user_id' => 'required|exists:users,id',
+                    'basic_salary' => 'required|numeric',
+                    'house_rent' => 'nullable|numeric',
+                    'medical_allowance' => 'nullable|numeric',
+                    'conveyance_allowance' => 'nullable|numeric',
+                    'others' => 'nullable|numeric',
+                    'mobile_allowance' => 'nullable|numeric',
+                    'bonus' => 'nullable|numeric',
+                    'meal_deduction' => 'nullable|numeric',
+                    'income_tax' => 'nullable|numeric',
+                    'other_deduction' => 'nullable|numeric',
+                    'attendance_deduction' => 'nullable|numeric',
+                    'month' => 'required|integer|between:1,12',
+                    'year' => 'required|integer|min:1900|max:'.date('Y'),
+                ]);
+                if ($validate->fails()) {
+                    toastr()->error($validate->messages());
+                    return back();
+                }
+                $checkSalary = Salary::where('user_id',$request->user_id)->where('month',$request->month)->where('year',$request->year)->first();
+                if ($checkSalary){
+                    toastr()->error('Already Have This Salary.');
+                    return back();
+                }
+                $salary = new Salary();
+                $salary->user_id = $request->user_id;
+                $salary->month = $request->month;
+                $salary->year = $request->year;
+                $salary->basic_salary = $request->basic_salary;
+                $salary->house_rent = $request->house_rent ? $request->house_rent:0;
+                $salary->medical_allowance = $request->medical_allowance ? $request->medical_allowance:0;
+                $salary->conveyance_allowance = $request->conveyance_allowance ? $request->conveyance_allowance:0;
+                $salary->others = $request->others ? $request->others:0;
+                $salary->mobile_allowance = $request->mobile_allowance ? $request->mobile_allowance:0;
+                $salary->bonus = $request->bonus ? $request->bonus:0;
+                $salary->meal_deduction = $request->meal_deduction ? $request->meal_deduction:0;
+                $salary->income_tax = $request->income_tax ? $request->income_tax:0;
+                $salary->other_deduction = $request->other_deduction ? $request->other_deduction:0;
+                $salary->attendance_deduction = $request->attendance_deduction ? $request->attendance_deduction:0;
+                $salary->status = $request->status;
+                $salary->log_id = auth()->user()->id;
+                $salary->saveOrFail();
+                toastr()->success('Salary created successfully.');
                 return back();
             }
-            $checkSalary = Salary::where('user_id',$request->user_id)->where('month',$request->month)->where('year',$request->year)->first();
-            if ($checkSalary){
-                toastr()->error('Already Have This Salary.');
+            catch (\Exception $e){
+                toastr()->error($e->getMessage());
                 return back();
             }
-            $salary = new Salary();
-            $salary->user_id = $request->user_id;
-            $salary->month = $request->month;
-            $salary->year = $request->year;
-            $salary->basic_salary = $request->basic_salary;
-            $salary->house_rent = $request->house_rent ? $request->house_rent:0;
-            $salary->medical_allowance = $request->medical_allowance ? $request->medical_allowance:0;
-            $salary->conveyance_allowance = $request->conveyance_allowance ? $request->conveyance_allowance:0;
-            $salary->others = $request->others ? $request->others:0;
-            $salary->mobile_allowance = $request->mobile_allowance ? $request->mobile_allowance:0;
-            $salary->bonus = $request->bonus ? $request->bonus:0;
-            $salary->meal_deduction = $request->meal_deduction ? $request->meal_deduction:0;
-            $salary->income_tax = $request->income_tax ? $request->income_tax:0;
-            $salary->other_deduction = $request->other_deduction ? $request->other_deduction:0;
-            $salary->attendance_deduction = $request->attendance_deduction ? $request->attendance_deduction:0;
-            $salary->status = $request->status;
-            $salary->log_id = auth()->user()->id;
-            $salary->saveOrFail();
-            toastr()->success('Salary created successfully.');
-            return back();
         }
-        catch (\Exception $e){
-            toastr()->error($e->getMessage());
+        else{
+            toastr()->error('Permission Denied');
             return back();
         }
     }
-
     public function update(Request $request, $id)
     {
-        try {
-            $validate = Validator::make($request->all(), [
-                'user_id' => 'required|exists:users,id',
-                'basic_salary' => 'required|numeric',
-                'house_rent' => 'nullable|numeric',
-                'medical_allowance' => 'nullable|numeric',
-                'conveyance_allowance' => 'nullable|numeric',
-                'others' => 'nullable|numeric',
-                'mobile_allowance' => 'nullable|numeric',
-                'bonus' => 'nullable|numeric',
-                'meal_deduction' => 'nullable|numeric',
-                'income_tax' => 'nullable|numeric',
-                'other_deduction' => 'nullable|numeric',
-                'attendance_deduction' => 'nullable|numeric',
-                'month' => 'required|integer|between:1,12',
-                'year' => 'required|integer|min:1900|max:'.date('Y'),
-            ]);
-            if ($validate->fails()) {
-                toastr()->error($validate->messages());
-                return back();
-            }
+        if(auth()->user()->hasPermission('admin salary update')){
+            try {
+                $validate = Validator::make($request->all(), [
+                    'user_id' => 'required|exists:users,id',
+                    'basic_salary' => 'required|numeric',
+                    'house_rent' => 'nullable|numeric',
+                    'medical_allowance' => 'nullable|numeric',
+                    'conveyance_allowance' => 'nullable|numeric',
+                    'others' => 'nullable|numeric',
+                    'mobile_allowance' => 'nullable|numeric',
+                    'bonus' => 'nullable|numeric',
+                    'meal_deduction' => 'nullable|numeric',
+                    'income_tax' => 'nullable|numeric',
+                    'other_deduction' => 'nullable|numeric',
+                    'attendance_deduction' => 'nullable|numeric',
+                    'month' => 'required|integer|between:1,12',
+                    'year' => 'required|integer|min:1900|max:'.date('Y'),
+                ]);
+                if ($validate->fails()) {
+                    toastr()->error($validate->messages());
+                    return back();
+                }
 
-            $salary = Salary::find($id);
-            $checkSalary = Salary::where('user_id',$request->user_id)->where('month',$request->month)->where('year',$request->year)->whereNotIn('id',[$salary->id])->first();
-            if ($checkSalary){
-                toastr()->error('Already Have This Salary.');
+                $salary = Salary::find($id);
+                $checkSalary = Salary::where('user_id',$request->user_id)->where('month',$request->month)->where('year',$request->year)->whereNotIn('id',[$salary->id])->first();
+                if ($checkSalary){
+                    toastr()->error('Already Have This Salary.');
+                    return back();
+                }
+                $salary->user_id = $request->user_id;
+                $salary->month = $request->month;
+                $salary->year = $request->year;
+                $salary->basic_salary = $request->basic_salary;
+                $salary->house_rent = $request->house_rent ? $request->house_rent:0;
+                $salary->medical_allowance = $request->medical_allowance ? $request->medical_allowance:0;
+                $salary->conveyance_allowance = $request->conveyance_allowance ? $request->conveyance_allowance:0;
+                $salary->others = $request->others ? $request->others:0;
+                $salary->mobile_allowance = $request->mobile_allowance ? $request->mobile_allowance:0;
+                $salary->bonus = $request->bonus ? $request->bonus:0;
+                $salary->meal_deduction = $request->meal_deduction ? $request->meal_deduction:0;
+                $salary->income_tax = $request->income_tax ? $request->income_tax:0;
+                $salary->other_deduction = $request->other_deduction ? $request->other_deduction:0;
+                $salary->attendance_deduction = $request->attendance_deduction ? $request->attendance_deduction:0;
+                $salary->status = $request->status;
+                $salary->log_id = auth()->user()->id;
+                $salary->saveOrFail();
+                toastr()->success('Salary updated successfully.');
                 return back();
             }
-            $salary->user_id = $request->user_id;
-            $salary->month = $request->month;
-            $salary->year = $request->year;
-            $salary->basic_salary = $request->basic_salary;
-            $salary->house_rent = $request->house_rent ? $request->house_rent:0;
-            $salary->medical_allowance = $request->medical_allowance ? $request->medical_allowance:0;
-            $salary->conveyance_allowance = $request->conveyance_allowance ? $request->conveyance_allowance:0;
-            $salary->others = $request->others ? $request->others:0;
-            $salary->mobile_allowance = $request->mobile_allowance ? $request->mobile_allowance:0;
-            $salary->bonus = $request->bonus ? $request->bonus:0;
-            $salary->meal_deduction = $request->meal_deduction ? $request->meal_deduction:0;
-            $salary->income_tax = $request->income_tax ? $request->income_tax:0;
-            $salary->other_deduction = $request->other_deduction ? $request->other_deduction:0;
-            $salary->attendance_deduction = $request->attendance_deduction ? $request->attendance_deduction:0;
-            $salary->status = $request->status;
-            $salary->log_id = auth()->user()->id;
-            $salary->saveOrFail();
-            toastr()->success('Salary updated successfully.');
-            return back();
+            catch (\Exception $e){
+                toastr()->error($e->getMessage());
+                return back();
+            }
         }
-        catch (\Exception $e){
-            toastr()->error($e->getMessage());
+        else{
+            toastr()->error('Permission Denied');
             return back();
         }
     }
     public function destroy($id)
     {
-        $salary = Salary::find($id);
-        $salary->delete();
-        toastr()->success('Salary deleted successfully.');
-        return back();
+        if(auth()->user()->hasPermission('admin salary destroy')){
+            $salary = Salary::find($id);
+            $salary->delete();
+            toastr()->success('Salary deleted successfully.');
+            return back();
+        }
+        else{
+            toastr()->error('Permission Denied');
+            return back();
+        }
+
     }
     public function getSalaryDetails($id)
     {
@@ -174,9 +196,6 @@ class SalaryController extends Controller
 
         return response()->json($employees);
     }
-
-
-    // Function to convert numbers to words
     function numberToWords($num) {
         $a = [
             '', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten',
@@ -226,7 +245,6 @@ class SalaryController extends Controller
 
         return implode(' ', $words);
     }
-
     public function download($id){
         $salary = Salary::find($id);
         /*$paymentDate = Carbon::parse($payment->payment_date);
@@ -244,5 +262,42 @@ class SalaryController extends Controller
 //        return view('admin.salary.pdf',compact('salary','totalAttendance','net','netWords'));
         $pdf = Pdf::loadView('admin.salary.pdf', compact('salary','totalAttendance','net','netWords'));
         return $pdf->download($salary->user->userInfo->employee_id.'_salary_slip.pdf');
+    }
+    public function employeeIndex(Request $request){
+//        if(auth()->user()->hasPermission('admin salary payment index')){
+            if ($request->all()) {
+                $year = $request->input('year');
+                $month = $request->input('month');
+                $day = $request->input('day', null);
+
+                $payments = SalaryPayment::where('user_id',auth()->user()->id)->with('user', 'salary')->where(function($query) use ($year, $month, $day) {
+                    $query->when($year, function($q) use ($year) {
+                        $q->whereYear('payment_date', $year);
+                    })
+                        ->when($month, function($q) use ($month) {
+                            $q->whereMonth('payment_date', $month);
+                        })
+                        ->when($day, function($q) use ($day) {
+                            $q->whereDay('payment_date', $day);
+                        });
+                })->latest()->paginate(50);
+                $salaries = Salary::where('status', '1')->get();
+
+                return view('employee.salary.index', compact('payments','salaries','year', 'month','day'));
+            }
+            else{
+                $year = 0;
+                $month = 0;
+                $day = 0;
+                $payments = SalaryPayment::with('user', 'salary')->where('user_id',auth()->user()->id)->latest()->paginate(20);
+                $salaries = Salary::where('status', '1')->get();
+                return view('employee.salary.index', compact('payments','salaries','year', 'month','day'));
+            }
+        /*}
+        else{
+            toastr()->error('Permission Denied');
+            return back();
+        }*/
+//        return view('employee.salary.index');
     }
 }

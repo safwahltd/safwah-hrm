@@ -1,4 +1,4 @@
-@extends('employee.layout.app')
+@extends('admin.layout.app')
 @section('title','Leave')
 @section('body')
     <style>
@@ -30,7 +30,7 @@
                             <th class="text-center">Leave <sub>(Date/Time)</sub></th>
                             <th>Days</th>
                             <th>Status</th>
-                            <th>Actions</th>
+                            <th class="text-center">Actions</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -66,9 +66,9 @@
                                     </span>
                                 </td>
                                 <td>
-                                    <div class="" role="group" aria-label="Basic outlined example">
+                                    <div class="d-flex justify-content-center" role="group" aria-label="Basic outlined example">
                                         @if($leave->status == 0)
-                                            <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#depedit{{$key}}"><i class="icofont-edit text-white "></i></button>
+                                            <a href="" class="btn btn-primary btn-sm me-1" data-bs-toggle="modal" data-bs-target="#depedit{{$key}}"><i class="icofont-edit text-white "></i></a>
                                             <form action="{{route('employee.leave.request.cancel',$leave->id)}}" method="post">
                                                 @csrf
                                                 <button type="submit" onclick="return confirm('are you sure to cancel request ? ')" class="btn btn-danger mx-1 text-white btn-sm"><i class="fa fa-xmark-circle text-white"></i> </button>

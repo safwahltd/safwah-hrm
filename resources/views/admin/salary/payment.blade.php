@@ -64,7 +64,7 @@
                             <tr>
                                 <td>{{ $payment->user->name }}</td>
                                 <td>{{ $payment->paid_amount }}</td>
-                                <td>{{ $payment->payment_date }}</td>
+                                <td>{{ \Illuminate\Support\Carbon::parse($payment->payment_date)->format('d M Y') }}</td>
                                 <td>{{ $payment->payment_method }}</td>
                                 <td>{{ $payment->payment_reference }}</td>
                                 <td>

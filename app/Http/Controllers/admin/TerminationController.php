@@ -13,74 +13,101 @@ use Exception;
 class TerminationController extends Controller
 {
     public function index(){
-        $terminations = Termination::latest()->paginate(20);
-        $users = User::where('role','employee')->orderBy('name','asc')->get();
-        return view('admin.termination.index',compact('terminations','users'));
-    }
-    public function store(Request $request){
-        try{
-            $validate = Validator::make($request->all(),[
-                'employee_id' => 'required',
-                'reason' => 'required',
-                'terminated_at' => 'required',
-            ]);
-            if($validate->fails()){
-                toastr()->error($validate->messages());
-                return back();
-            }
-            $termination = new Termination();
-            $termination->employee_id = $request->employee_id;
-            $termination->reason = $request->reason;
-            $termination->details = $request->details;
-            $termination->terminated_at = $request->terminated_at;
-            $termination->notice_date = now();
-            $termination->save();
-            toastr()->success('Termination Create Successfully.');
+        if(auth()->user()->hasPermission('admin termination index')){
+            $terminations = Termination::latest()->paginate(20);
+            $users = User::where('role','employee')->orderBy('name','asc')->get();
+            return view('admin.termination.index',compact('terminations','users'));
+        }
+        else{
+            toastr()->error('Permission Denied');
             return back();
         }
-        catch(Exception $e){
-            toastr()->error($e->getMessage());
+    }
+    public function store(Request $request){
+        if(auth()->user()->hasPermission('admin termination store')){
+            try{
+                $validate = Validator::make($request->all(),[
+                    'employee_id' => 'required',
+                    'reason' => 'required',
+                    'terminated_at' => 'required',
+                ]);
+                if($validate->fails()){
+                    toastr()->error($validate->messages());
+                    return back();
+                }
+                $termination = new Termination();
+                $termination->employee_id = $request->employee_id;
+                $termination->reason = $request->reason;
+                $termination->details = $request->details;
+                $termination->terminated_at = $request->terminated_at;
+                $termination->notice_date = now();
+                $termination->save();
+                toastr()->success('Termination Create Successfully.');
+                return back();
+            }
+            catch(Exception $e){
+                toastr()->error($e->getMessage());
+                return back();
+            }
+        }
+        else{
+            toastr()->error('Permission Denied');
+            return back();
+        }
+
+
+    }
+    public function update(Request $request,$id){
+        if(auth()->user()->hasPermission('admin termination update')){
+            try{
+                $validate = Validator::make($request->all(),[
+                    'employee_id' => 'required',
+                    'reason' => 'required',
+                    'terminated_at' => 'required',
+                ]);
+                if($validate->fails()){
+                    toastr()->error($validate->messages());
+                    return back();
+                }
+                $termination = Termination::find($id);
+                $termination->employee_id = $request->employee_id;
+                $termination->reason = $request->reason;
+                $termination->details = $request->details;
+                $termination->terminated_at = $request->terminated_at;
+                $termination->notice_date = now();
+                $termination->save();
+                toastr()->success('Termination Update Successfully.');
+                return back();
+            }
+            catch(Exception $e){
+                toastr()->error($e->getMessage());
+                return back();
+            }
+        }
+        else{
+            toastr()->error('Permission Denied');
             return back();
         }
 
     }
-    public function update(Request $request,$id){
-        try{
-            $validate = Validator::make($request->all(),[
-                'employee_id' => 'required',
-                'reason' => 'required',
-                'terminated_at' => 'required',
-            ]);
-            if($validate->fails()){
-                toastr()->error($validate->messages());
+    public function destroy($id){
+        if(auth()->user()->hasPermission('admin termination destroy')){
+            try{
+                $d = Termination::find($id);
+                $d->delete();
+                toastr()->success('Delete Successfully.');
                 return back();
             }
-            $termination = Termination::find($id);
-            $termination->employee_id = $request->employee_id;
-            $termination->reason = $request->reason;
-            $termination->details = $request->details;
-            $termination->terminated_at = $request->terminated_at;
-            $termination->notice_date = now();
-            $termination->save();
-            toastr()->success('Termination Update Successfully.');
+            catch(Exception $e){
+                toastr()->error($e->getMessage());
+                return back();
+            }
+        }
+        else{
+            toastr()->error('Permission Denied');
             return back();
         }
-        catch(Exception $e){
-            toastr()->error($e->getMessage());
-            return back();
-        }
-    }
-    public function destroy($id){
-        try{
-            $d = Termination::find($id);
-            $d->delete();
-            toastr()->success('Delete Successfully.');
-            return back();
-        }
-        catch(Exception $e){
-            toastr()->error($e->getMessage());
-            return back();
-        }
+
 
     }
     public function download($id){

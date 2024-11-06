@@ -4,58 +4,43 @@
 
             <!-- header rightbar icon -->
             <div class="h-right d-flex align-items-center mr-5 mr-lg-0 order-1">
-                {{--<div class="d-flex">
-                    <a class="nav-link text-primary collapsed" href="help.html" title="Get Help">
-                        <i class="icofont-info-square fs-5"></i>
-                    </a>
-                    <div class="avatar-list avatar-list-stacked px-3">
-                        <img class="avatar rounded-circle" src="{{asset('/')}}admin/assets/images/xs/avatar2.jpg" alt="">
-                        <img class="avatar rounded-circle" src="{{asset('/')}}admin/assets/images/xs/avatar1.jpg" alt="">
-                        <img class="avatar rounded-circle" src="{{asset('/')}}admin/assets/images/xs/avatar3.jpg" alt="">
-                        <img class="avatar rounded-circle" src="{{asset('/')}}admin/assets/images/xs/avatar4.jpg" alt="">
-                        <img class="avatar rounded-circle" src="{{asset('/')}}admin/assets/images/xs/avatar7.jpg" alt="">
-                        <img class="avatar rounded-circle" src="{{asset('/')}}admin/assets/images/xs/avatar8.jpg" alt="">
-                        <span class="avatar rounded-circle text-center pointer" data-bs-toggle="modal" data-bs-target="#addUser"><i class="icofont-ui-add"></i></span>
-                    </div>
-                </div>--}}
                 <div class="dropdown notifications">
                     <a class="nav-link dropdown-toggle pulse" href="#" role="button" data-bs-toggle="dropdown">
-                        <i class="icofont-alarm  text-white fs-5"></i>
+                        <i class="icofont-alarm  text-white fs-5"></i><sup class="text-white m-0 fw-bold bg-success rounded-circle p-1">{{ $noticeCount ?? '0' }}</sup>
                         <span class="pulse-ring text-white"></span>
                     </a>
                     <div id="NotificationsDiv" class="dropdown-menu rounded-lg shadow border-0 dropdown-animation dropdown-menu-sm-end p-0 m-0">
                         <div class="card border-0 w380">
                             <div class="card-header border-0 p-3">
                                 <h5 class="mb-0 font-weight-light d-flex justify-content-between">
-                                    <span>Notifications</span>
-                                    <span class="badge text-white">11</span>
+                                    <span>Notices</span>
                                 </h5>
                             </div>
                             <div class="tab-content card-body">
                                 <div class="tab-pane fade show active">
                                     <ul class="list-unstyled list mb-0">
-                                        <li class="py-2 mb-1 border-bottom">
-                                            <a href="javascript:void(0);" class="d-flex">
-                                                <img class="avatar rounded-circle" src="{{asset('/')}}admin/assets/images/xs/avatar1.jpg" alt="">
-                                                <div class="flex-fill ms-2">
-                                                    <p class="d-flex justify-content-between mb-0 "><span class="font-weight-bold">Dylan Hunter</span> <small>2MIN</small></p>
-                                                    <span class="">Added  2021-02-19 my-Task ui/ux Design <span class="badge bg-success">Review</span></span>
-                                                </div>
-                                            </a>
-                                        </li>
-                                        <li class="py-2">
-                                            <a href="javascript:void(0);" class="d-flex">
-                                                <img class="avatar rounded-circle" src="{{asset('/')}}admin/assets/images/xs/avatar7.jpg" alt="">
-                                                <div class="flex-fill ms-2">
-                                                    <p class="d-flex justify-content-between mb-0 "><span class="font-weight-bold">Zoe Wright</span> <small class="">1DAY</small></p>
-                                                    <span class="">Add Calander Event</span>
-                                                </div>
-                                            </a>
-                                        </li>
+                                        @if($notices->count())
+                                            @foreach($notices as $key => $notice)
+                                                <li class="py-2 mb-1 border-bottom">
+                                                    <a href="{{route('employee.notice.list')}}#notice{{$key}}" class="d-flex">
+                                                        <img class="avatar rounded-circle" src="{{asset('/')}}admin/assets/images/xs/avatar1.jpg" alt="">
+                                                        <div class="flex-fill ms-2">
+                                                            <strong></strong>
+                                                            <p class="d-flex justify-content-between mb-0 ">
+                                                                <span class="font-weight-bold">{{ $notice->title }}</span> <small>{{ $notice->created_at->diffForHumans() }}</small>
+                                                            <p>{{ \Illuminate\Support\Str::limit($notice->content, 70) }}</p>
+                                                            </p>
+                                                        </div>
+                                                    </a>
+                                                </li>
+                                            @endforeach
+                                        @else
+                                            <a class="dropdown-item" href="#">No new notices</a>
+                                        @endif
                                     </ul>
                                 </div>
                             </div>
-                            <a class="card-footer text-center border-top-0" href="#"> View all notifications</a>
+                            <a class="card-footer text-center border-top-0" href="{{route('employee.notice.list')}}"> View All Notices</a>
                         </div>
                     </div>
                 </div>
@@ -73,8 +58,8 @@
                                 <div class="d-flex py-1">
                                     <img class="avatar rounded-circle" src="{{asset('/')}}admin/assets/images/profile_av.png" alt="profile">
                                     <div class="flex-fill ms-3">
-                                        <p class="mb-0"><span class="font-weight-bold text-white">{{auth()->user()->name}}</span></p>
-                                        <small class="text-white">{{auth()->user()->email}}</small>
+                                        <p class="mb-0"><span class="font-weight-bold">{{auth()->user()->name}}</span></p>
+                                        <small class="">{{auth()->user()->email}}</small>
                                     </div>
                                 </div>
 
@@ -93,15 +78,6 @@
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="px-md-1">
-                    <a href="#offcanvas_setting" data-bs-toggle="offcanvas" aria-expanded="false" title="template setting">
-                        <svg class="svg-stroke text-white" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                            <path d="M10.325 4.317c.426 -1.756 2.924 -1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543 -.94 3.31 .826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756 .426 1.756 2.924 0 3.35a1.724 1.724 0 0 0 -1.066 2.573c.94 1.543 -.826 3.31 -2.37 2.37a1.724 1.724 0 0 0 -2.572 1.065c-.426 1.756 -2.924 1.756 -3.35 0a1.724 1.724 0 0 0 -2.573 -1.066c-1.543 .94 -3.31 -.826 -2.37 -2.37a1.724 1.724 0 0 0 -1.065 -2.572c-1.756 -.426 -1.756 -2.924 0 -3.35a1.724 1.724 0 0 0 1.066 -2.573c-.94 -1.543 .826 -3.31 2.37 -2.37c1 .608 2.296 .07 2.572 -1.065z"></path>
-                            <path d="M9 12a3 3 0 1 0 6 0a3 3 0 0 0 -6 0"></path>
-                        </svg>
-                    </a>
                 </div>
             </div>
 

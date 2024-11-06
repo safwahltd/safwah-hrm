@@ -16,7 +16,7 @@ class EmployeeAuth
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (Auth::check() && auth()->user()->role == 'employee'){
+        if (Auth::check()){
             return $next($request);
         }
         else{

@@ -16,7 +16,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 class LeaveController extends Controller
 {
     public function employeeLeaveIndex(){
-        $leaves = Leave::where('user_id',auth()->user()->id)->paginate(20);
+        $leaves = Leave::where('user_id',auth()->user()->id)->latest()->paginate(20);
         return view('employee.leave.index',compact('leaves'));
     }
     public function employeeLeaveRequest(Request $request){
@@ -99,6 +99,8 @@ class LeaveController extends Controller
                     if ($leaveBalance->half_day_leave > $leavee){
                         $leaveRequest->start_time = $request->start_time;
                         $leaveRequest->end_time = $request->end_time;
+                        $leaveRequest->start_date = today();
+                        $leaveRequest->end_date = today();
                         $leaveRequest->reason = $request->reason;
                         $leaveRequest->address_contact = $request->address_contact;
                         $leaveRequest->concern_person = $request->concern_person;
@@ -197,6 +199,8 @@ class LeaveController extends Controller
                 if ($leaveBalance->half_day_leave > 0){
                     $leaveRequest->start_time = $request->start_time;
                     $leaveRequest->end_time = $request->end_time;
+                    $leaveRequest->start_date = today();
+                    $leaveRequest->end_date = today();
                     $leaveRequest->reason = $request->reason;
                     $leaveRequest->address_contact = $request->address_contact;
                     $leaveRequest->concern_person = $request->concern_person;
@@ -230,238 +234,219 @@ class LeaveController extends Controller
         return $pdf->download($data->user->name.'_'.$data->id.'_leave_request.pdf');
     }
     public function adminIndex(){
-        $leaves = Leave::latest()->paginate(20);
-        return view('admin.leave.index',compact('leaves'));
+        if(auth()->user()->hasPermission('admin leave requests')){
+            $leaves = Leave::latest()->paginate(20);
+            return view('admin.leave.index',compact('leaves'));
+        }
+        else{
+            toastr()->error('Permission Denied');
+            return back();
+        }
     }
     public function AdminRequestUpdate(Request $request,$id){
-        try{
-            $validate = Validator::make($request->all(),[
-                'status' => 'required',
-            ]);
-            if($validate->fails()){
-                toastr()->error($validate->messages());
-                return back();
-            }
-            $leave = Leave::find($id);
-            $leaveBalance = UserInfos::where('user_id',$leave->user_id)->first();
-            if ($leave->status == 0){
-                if ($request->status == 1){
-                    if($leave->leave_type == 'casual'){
-                        if ($leaveBalance->casual_leave >= $leave->days_taken){
+        if(auth()->user()->hasPermission('admin leave update')){
+            try{
+                $validate = Validator::make($request->all(),[
+                    'status' => 'required',
+                ]);
+                if($validate->fails()){
+                    toastr()->error($validate->messages());
+                    return back();
+                }
+                $leave = Leave::find($id);
+                $leaveBalance = UserInfos::where('user_id',$leave->user_id)->first();
+                if ($leave->status == 0){
+                    if ($request->status == 1){
+                        if($leave->leave_type == 'casual'){
+                            if ($leaveBalance->casual_leave >= $leave->days_taken){
+                                $leave->status = $request->status;
+                                $leaveBalance->casual_leave = ($leaveBalance->casual_leave - $leave->days_taken);
+                                $leave->approved_by = auth()->user()->id;
+                                $leave->save();
+                                $leaveBalance->save();
+                                toastr()->success('update successfully.');
+                                return back();
+                            }
+                            else{
+                                toastr()->error('Not Enough Leave Balance');
+                                return back();
+                            }
+                        }
+                        if($leave->leave_type == 'sick'){
+                            if ($leaveBalance->sick_leave >= $leave->days_taken){
+                                $leave->status = $request->status;
+                                $leaveBalance->sick_leave = ($leaveBalance->sick_leave - $leave->days_taken);
+                                $leave->approved_by = auth()->user()->id;
+                                $leave->save();
+                                $leaveBalance->save();
+                                toastr()->success('update successfully.');
+                                return back();
+                            }else{
+                                toastr()->error('Not Enough Leave Balance');
+                                return back();
+                            }
+                        }
+                        if($leave->leave_type == 'half_day'){
                             $leave->status = $request->status;
-                            $leaveBalance->casual_leave = ($leaveBalance->casual_leave - $leave->days_taken);
+                            $leave->approved_by = auth()->user()->id;
+                            $leaveBalance->half_day_leave = ($leaveBalance->half_day_leave - 1);
+                            $leave->save();
+                            $leaveBalance->save();
+                            toastr()->success('update successfully.');
+                            return back();
+                        }
+                    }
+                    if ($request->status == 2 || $request->status == 3){
+                        $leave->status = $request->status;
+                        $leave->approved_by = auth()->user()->id;
+                        $leave->save();
+                        toastr()->success('update successfully.');
+                        return back();
+                    }
+                }
+                if ($leave->status == 1){
+                    if ($request->status == 0 || $request->status == 2 || $request->status == 3){
+                        if($leave->leave_type == 'casual'){
+                            $leave->status = $request->status;
+                            $leaveBalance->casual_leave = ($leaveBalance->casual_leave + $leave->days_taken);
                             $leave->approved_by = auth()->user()->id;
                             $leave->save();
                             $leaveBalance->save();
                             toastr()->success('update successfully.');
                             return back();
+                        }
+                        if($leave->leave_type == 'sick'){
+                            $leave->status = $request->status;
+                            $leaveBalance->sick_leave = ($leaveBalance->sick_leave + $leave->days_taken);
+                            $leave->approved_by = auth()->user()->id;
+                            $leave->save();
+                            $leaveBalance->save();
+                            toastr()->success('update successfully.');
+                            return back();
+                        }
+                        if($leave->leave_type == 'half_day'){
+                            $leave->status = $request->status;
+                            $leave->approved_by = auth()->user()->id;
+                            $leaveBalance->half_day_leave = ($leaveBalance->half_day_leave + 1);
+                            $leave->save();
+                            $leaveBalance->save();
+                            toastr()->success('update successfully.');
+                            return back();
+                        }
+                    }
+                }
+                if ($leave->status = 2){
+                    if ($request->status = 1){
+                        if($leave->leave_type == 'casual'){
+                            if ($leaveBalance->casual_leave >= $leave->days_taken){
+                                $leave->status = $request->status;
+                                $leaveBalance->casual_leave = ($leaveBalance->casual_leave - $leave->days_taken);
+                                $leave->approved_by = auth()->user()->id;
+                                $leave->save();
+                                $leaveBalance->save();
+                                toastr()->success('update successfully.');
+                                return back();
+                            }
+                            else{
+                                toastr()->error('Not Enough Leave Balance');
+                                return back();
+                            }
+                        }
+                        if($leave->leave_type == 'sick'){
+                            if ($leaveBalance->sick_leave >= $leave->days_taken){
+                                $leave->status = $request->status;
+                                $leaveBalance->sick_leave = ($leaveBalance->sick_leave - $leave->days_taken);
+                                $leave->approved_by = auth()->user()->id;
+                                $leave->save();
+                                $leaveBalance->save();
+                                toastr()->success('update successfully.');
+                                return back();
+                            }
+                            else{
+                                toastr()->error('Not Enough Leave Balance');
+                                return back();
+                            }
+                        }
+                        if($leave->leave_type == 'half_day'){
+                            $leave->status = $request->status;
+                            $leave->approved_by = auth()->user()->id;
+                            $leaveBalance->half_day_leave = ($leaveBalance->half_day_leave - 1);
+                            $leave->save();
+                            $leaveBalance->save();
+                            toastr()->success('update successfully.');
+                            return back();
+                        }
+                    }
+                    if ($request->status == 0 || $request->status == 3){
+                        $leave->status = $request->status;
+                        $leave->approved_by = auth()->user()->id;
+                        $leave->save();
+                        toastr()->success('update successfully.');
+                        return back();
+                    }
+                }
+                if ($leave->status == 3){
+                    if ($request->status == 1){
+                        if($leave->leave_type = 'casual'){
+                            if ($leaveBalance->casual_leave >= $leave->days_taken){
+                                $leave->status = $request->status;
+                                $leaveBalance->casual_leave = ($leaveBalance->casual_leave - $leave->days_taken);
+                                $leave->approved_by = auth()->user()->id;
+                                $leave->save();
+                                $leaveBalance->save();
+                                toastr()->success('update successfully.');
+                                return back();
+                            }
                         }
                         else{
                             toastr()->error('Not Enough Leave Balance');
                             return back();
                         }
-                    }
-                    if($leave->leave_type == 'sick'){
-                        if ($leaveBalance->sick_leave >= $leave->days_taken){
-                            $leave->status = $request->status;
-                            $leaveBalance->sick_leave = ($leaveBalance->sick_leave - $leave->days_taken);
-                            $leave->approved_by = auth()->user()->id;
-                            $leave->save();
-                            $leaveBalance->save();
-                            toastr()->success('update successfully.');
-                            return back();
+                        if($leave->leave_type == 'sick'){
+                            if($leaveBalance->sick_leave >= $leave->days_taken){
+                                $leave->status = $request->status;
+                                $leaveBalance->sick_leave = ($leaveBalance->sick_leave - $leave->days_taken);
+                                $leave->approved_by = auth()->user()->id;
+                                $leave->save();
+                                $leaveBalance->save();
+                                toastr()->success('update successfully.');
+                                return back();
+                            }
+
                         }else{
                             toastr()->error('Not Enough Leave Balance');
                             return back();
                         }
-                    }
-                    if($leave->leave_type == 'half_day'){
-                        $leave->status = $request->status;
-                        $leave->approved_by = auth()->user()->id;
-                        $leaveBalance->half_day_leave = ($leaveBalance->half_day_leave - 1);
-                        $leave->save();
-                        $leaveBalance->save();
-                        toastr()->success('update successfully.');
-                        return back();
-                    }
-                }
-                if ($request->status == 2 || $request->status == 3){
-                    $leave->status = $request->status;
-                    $leave->approved_by = auth()->user()->id;
-                    $leave->save();
-                    toastr()->success('update successfully.');
-                    return back();
-                }
-            }
-            if ($leave->status == 1){
-                if ($request->status == 0 || $request->status == 2 || $request->status == 3){
-                    if($leave->leave_type == 'casual'){
-                        $leave->status = $request->status;
-                        $leaveBalance->casual_leave = ($leaveBalance->casual_leave + $leave->days_taken);
-                        $leave->approved_by = auth()->user()->id;
-                        $leave->save();
-                        $leaveBalance->save();
-                        toastr()->success('update successfully.');
-                        return back();
-                    }
-                    if($leave->leave_type == 'sick'){
-                        $leave->status = $request->status;
-                        $leaveBalance->sick_leave = ($leaveBalance->sick_leave + $leave->days_taken);
-                        $leave->approved_by = auth()->user()->id;
-                        $leave->save();
-                        $leaveBalance->save();
-                        toastr()->success('update successfully.');
-                        return back();
-                    }
-                    if($leave->leave_type == 'half_day'){
-                        $leave->status = $request->status;
-                        $leave->approved_by = auth()->user()->id;
-                        $leaveBalance->half_day_leave = ($leaveBalance->half_day_leave + 1);
-                        $leave->save();
-                        $leaveBalance->save();
-                        toastr()->success('update successfully.');
-                        return back();
-                    }
-                }
-            }
-            if ($leave->status = 2){
-                if ($request->status = 1){
-                    if($leave->leave_type == 'casual'){
-                        if ($leaveBalance->casual_leave >= $leave->days_taken){
+                        if($leave->leave_type == 'half_day'){
                             $leave->status = $request->status;
-                            $leaveBalance->casual_leave = ($leaveBalance->casual_leave - $leave->days_taken);
                             $leave->approved_by = auth()->user()->id;
-                            $leave->save();
-                            $leaveBalance->save();
-                            toastr()->success('update successfully.');
-                            return back();
-                        }
-                        else{
-                            toastr()->error('Not Enough Leave Balance');
-                            return back();
-                        }
-                    }
-                    if($leave->leave_type == 'sick'){
-                        if ($leaveBalance->sick_leave >= $leave->days_taken){
-                            $leave->status = $request->status;
-                            $leaveBalance->sick_leave = ($leaveBalance->sick_leave - $leave->days_taken);
-                            $leave->approved_by = auth()->user()->id;
-                            $leave->save();
-                            $leaveBalance->save();
-                            toastr()->success('update successfully.');
-                            return back();
-                        }
-                        else{
-                            toastr()->error('Not Enough Leave Balance');
-                            return back();
-                        }
-                    }
-                    if($leave->leave_type == 'half_day'){
-                        $leave->status = $request->status;
-                        $leave->approved_by = auth()->user()->id;
-                        $leaveBalance->half_day_leave = ($leaveBalance->half_day_leave - 1);
-                        $leave->save();
-                        $leaveBalance->save();
-                        toastr()->success('update successfully.');
-                        return back();
-                    }
-                }
-                if ($request->status == 0 || $request->status == 3){
-                    $leave->status = $request->status;
-                    $leave->approved_by = auth()->user()->id;
-                    $leave->save();
-                    toastr()->success('update successfully.');
-                    return back();
-                }
-            }
-            if ($leave->status == 3){
-                if ($request->status == 1){
-                    if($leave->leave_type = 'casual'){
-                        if ($leaveBalance->casual_leave >= $leave->days_taken){
-                            $leave->status = $request->status;
-                            $leaveBalance->casual_leave = ($leaveBalance->casual_leave - $leave->days_taken);
-                            $leave->approved_by = auth()->user()->id;
+                            $leaveBalance->half_day_leave = ($leaveBalance->half_day_leave - 1);
                             $leave->save();
                             $leaveBalance->save();
                             toastr()->success('update successfully.');
                             return back();
                         }
                     }
-                    else{
-                        toastr()->error('Not Enough Leave Balance');
+                    if ($request->status == 0 || $request->status == 2){
+                        $leave->status = $request->status;
+                        $leave->approved_by = auth()->user()->id;
+                        $leave->save();
+                        toastr()->success('update successfully.');
                         return back();
                     }
-                    if($leave->leave_type == 'sick'){
-                        if($leaveBalance->sick_leave >= $leave->days_taken){
-                            $leave->status = $request->status;
-                            $leaveBalance->sick_leave = ($leaveBalance->sick_leave - $leave->days_taken);
-                            $leave->approved_by = auth()->user()->id;
-                            $leave->save();
-                            $leaveBalance->save();
-                            toastr()->success('update successfully.');
-                            return back();
-                        }
+                }
 
-                    }else{
-                        toastr()->error('Not Enough Leave Balance');
-                        return back();
-                    }
-                    if($leave->leave_type == 'half_day'){
-                        $leave->status = $request->status;
-                        $leave->approved_by = auth()->user()->id;
-                        $leaveBalance->half_day_leave = ($leaveBalance->half_day_leave - 1);
-                        $leave->save();
-                        $leaveBalance->save();
-                        toastr()->success('update successfully.');
-                        return back();
-                    }
-                }
-                if ($request->status == 0 || $request->status == 2){
-                    $leave->status = $request->status;
-                    $leave->approved_by = auth()->user()->id;
-                    $leave->save();
-                    toastr()->success('update successfully.');
-                    return back();
-                }
             }
-
+            catch(Exception $e){
+                toastr()->error($e->getMessage());
+                return back();
+            }
         }
-        catch(Exception $e){
-            toastr()->error($e->getMessage());
+        else{
+            toastr()->error('Permission Denied');
             return back();
         }
+
     }
-    public function AdminReport(){
-        $leaves = Leave::latest()->paginate(20);
-        $users = User::whereNotIn('id',[1])->latest()->paginate(20);
-        // Initialize array to hold the report data
-        $report = [];
 
-        // Loop through users
-        foreach ($users as $user) {
-            // Initialize user data
-            $userData = [
-                'name' => $user->name,
-                'id' => $user->userInfo->employee_id,
-                'half_day' => []
-            ];
-
-            // Loop through all months of the year
-            foreach (range(1, 12) as $month) {
-                // Get half-day leaves count for the user in the current month
-                $halfDayCount = Leave::where('user_id', $user->id)
-                    ->where('leave_type', 'half_day')
-                    ->whereMonth('created_at', $month)
-                    ->whereYear('created_at', Carbon::now()->year)
-                    ->count();
-
-                // Store in user's data
-                $userData['half_day'][Carbon::create()->month($month)->format('F')] = $halfDayCount;
-            }
-
-            // Add user data to report
-            $report[] = $userData;
-        }
-        return view('admin.leave.report',compact('leaves','users','report'));
-    }
 }

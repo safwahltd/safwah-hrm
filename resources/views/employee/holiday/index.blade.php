@@ -1,4 +1,4 @@
-@extends('employee.layout.app')
+@extends('admin.layout.app')
 @section('title','Holidays')
 @section('body')
     <div class="row align-items-center">
