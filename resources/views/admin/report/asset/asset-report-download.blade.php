@@ -42,14 +42,14 @@
 <body>
 <div class="">
     <div class="row" style="margin-top: 4px;">
-        <div class="">
-            <h4 align="center">Asset Report</h4>
+        <div style="border-top: 1px solid black; border-left: 1px solid #000000; border-right: 1px solid black; margin:0">
+            <h4 style="padding:15px; margin: 0" align="center">Asset Report</h4>
         </div>
         <table style="width:100% ; text-align: center ;margin-bottom: 4px">
-            <tr style="background-color: aliceblue; font-size: 12px">
+            <tr style="background-color: aliceblue; font-size: 10px; text-transform: uppercase">
                 <th>SL</th>
                 <th>Name</th>
-                <th>ID</th>
+                <th>Id</th>
                 <th>Designation</th>
                 <th>Asset Name</th>
                 <th>Asset Id</th>
@@ -59,7 +59,7 @@
                 <th>Status</th>
             </tr>
             @foreach($assets as $asset)
-                <tr style="font-size: 12px">
+                <tr style="font-size: 10px">
                     <td align="center"><span class="fw-bold">{{$loop->iteration}}</span></td>
                     <td align="center"><span class="fw-bold">{{$asset->user->name}}</span></td>
                     <td align="center"><span class="fw-bold">{{$asset->user->userInfo->employee_id}}</span></td>
