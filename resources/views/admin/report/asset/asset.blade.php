@@ -8,25 +8,45 @@
             </div>
         </div>
     </div>
-    <div class="row">
-        <div class="col-md-12">
-            <form method="get" target="_blank" action="{{route('admin.asset.report.show')}}">
-                <label for="Month" class="text-white mx-2">Employee</label>
-                <select class="form-control-lg select2-example"  name="user_id" id="user_id">
-                    <option value="">All</option>
-                    @foreach($users as $user)
-                        <option value="{{ $user->id }}">{{ $user->name }}</option>
-                    @endforeach
-                </select>
-                <label for="status" class="text-white mx-2">Status</label>
-                <select class="form-control-sm" name="status" id="status">
-                    <option value="">All</option>
-                    <option  value="1">Active</option>
-                    <option  value="0">Inactive</option>
-                </select>
-                <button class="form-control-sm text-white bg-success px-3"  type="submit">Show Report</button>
-            </form>
-        </div>
+    <div class="row g-3 mb-3">
+        <form method="get" target="_blank" action="{{route('admin.asset.report.show')}}">
+            @csrf
+            <div class="row">
+                <div class="col my-2">
+                    <div class="card ">
+                        <div class="card-header"><label for="leave_type" class="text-dark">Employee</label></div>
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <select class="form-control select2-example"  name="user_id" id="user_id">
+                                    <option value="">All</option>
+                                    @foreach($users as $user)
+                                        <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col my-2">
+                    <div class="card ">
+                        <div class="card-header"><label for="leave_type" class="text-dark">Status</label></div>
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <select class="form-control-sm" name="status" id="status">
+                                    <option value="">All</option>
+                                    <option  value="1">Active</option>
+                                    <option  value="0">Inactive</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="my-3 text-center">
+                <button class="form-control-lg text-white bg-dark px-3"  type="submit">Show Report</button>
+            </div>
+
+        </form>
     </div>
 @endsection
 

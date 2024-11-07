@@ -1,15 +1,15 @@
 @extends('admin.layout.app')
-@section('title','Leave Report')
+@section('title','Attendance Report')
 @section('body')
     <div class="row align-items-center">
         <div class="border-0 mb-4">
             <div class="card-header py-3 no-bg bg-transparent d-flex align-items-center px-0 justify-content-between border-bottom flex-wrap">
-                <h3 class="fw-bold mb-0 text-white">Leave Report</h3>
+                <h3 class="fw-bold mb-0 text-white">Attendance Report</h3>
             </div>
         </div>
     </div>
     <div class="row g-3 mb-3">
-        <form method="get" target="_blank" action="{{route('admin.leave.report.show')}}">
+        <form method="get" target="_blank" action="{{route('admin.attendance.report.show')}}">
             @csrf
             <div class="row">
                 <div class="col my-2">
@@ -56,28 +56,15 @@
                         </div>
                     </div>
                 </div>
-                <div class="col my-2">
-                    <div class="card">
-                        <div class="card-header"><label for="leave_type" class="text-dark">Type</label></div>
-                        <div class="card-body">
-                            <div class="d-flex align-items-center">
-                                <select class="form-control-sm"  name="leave_type" id="leave_type">
-                                    <option value="all">All Type</option>
-                                    <option value="sick">Sick</option>
-                                    <option value="casual">Casual Day</option>
-                                    <option value="half_day">Half Day</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
             <div class="my-3 text-center">
                 <button class="form-control-lg text-white bg-dark px-3"  type="submit">Show Report</button>
             </div>
 
         </form>
-    </div><!-- Row End -->
+    </div>
 @endsection
+
+
 
 

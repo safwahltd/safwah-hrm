@@ -21,6 +21,7 @@ use App\Http\Controllers\admin\SalaryController;
 use App\Http\Controllers\admin\SalaryPaymentController;
 use App\Http\Controllers\BillingController;
 use App\Http\Controllers\admin\ReportController;
+use App\Http\Controllers\admin\WorkingDayController;
 
 
 Route::get('/', [AdminAuthController::class, 'login'])->name('login');
@@ -116,9 +117,11 @@ Route::middleware(['employee.auth'])->prefix('employee/')->group(function () {
                 Route::delete('/billings-destroy/{id}','destroy')->name('admin.billings.destroy');
             });*/
             Route::controller(ReportController::class)->prefix('report')->group(function (){
-                Route::get('/daily','daily')->name('admin.daily.report');
+                Route::get('/daily-report','daily')->name('admin.daily.report');
+                Route::get('/daily-report-show','dailyReport')->name('admin.daily.report.show');
+                Route::get('/daily-report-download','dailyReportDownload')->name('admin.download.daily.report');
                 Route::get('/payment','payment')->name('admin.payment.report');
-                Route::get('/attendance', 'attendance')->name('admin.attendance.report');
+//                Route::get('/attendance', 'attendance')->name('admin.attendance.report');
                 Route::get('/leave', 'leave')->name('admin.leave.report');
                 Route::get('/leave-report-show', 'leaveReportShow')->name('admin.leave.report.show');
                 Route::get('/download-leave-report', 'leaveReportDownload')->name('admin.download.leave.report');
@@ -128,12 +131,20 @@ Route::middleware(['employee.auth'])->prefix('employee/')->group(function () {
                 Route::get('/asset-report', 'asset')->name('admin.asset.report');
                 Route::get('/asset-report-show', 'assetReportShow')->name('admin.asset.report.show');
                 Route::get('/download-asset-report', 'assetReportDownload')->name('admin.download.asset.report');
+                Route::get('/attendance-report', 'attendance')->name('admin.attendance.report');
+                Route::get('/attendance-report-show', 'attendanceReportShow')->name('admin.attendance.report.show');
+                Route::get('/download-attendance-report', 'attendanceReportDownload')->name('admin.download.attendance.report');
             });
             Route::get('/update-password', [AdminAuthController::class, 'password'])->name('admin.password.index');
             Route::post('/update-password-confirm', [AdminAuthController::class, 'updatePassword'])->name('admin.password.update');
             Route::get('/update-user-password', [AdminAuthController::class, 'userPassword'])->name('admin.user.password.index');
             Route::post('/update-user-password-confirm', [AdminAuthController::class, 'updateUserPassword'])->name('admin.user.password.update');
-
+            Route::controller(WorkingDayController::class)->group(function (){
+                Route::get('/working-day','index')->name('admin.workingDay.index');
+                Route::post('/working-day-store','store')->name('admin.workingDay.store');
+                Route::put('/working-day-update/{id}','update')->name('admin.workingDay.update');
+                Route::put('/working-day-destroy/{id}','destroy')->name('admin.workingDay.destroy');
+            });
         });
 
         ####################################### /* Admin Panel End Here  */###################################################################
