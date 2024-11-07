@@ -1,4 +1,4 @@
-@extends('employee.layout.app')
+@extends('admin.layout.app')
 @section('title','Leave')
 @section('body')
     <style>
@@ -6,6 +6,17 @@
             display: none; /* Hide all input groups by default */
         }
     </style>
+    <div class="row align-items-center">
+        <div class="border-0 mb-4">
+            <div class="card-header py-3 no-bg bg-transparent d-flex align-items-center px-0 justify-content-between border-bottom flex-wrap">
+                <h3 class="fw-bold mb-0 text-white">Leave</h3>
+                <div class="col-auto d-flex w-sm-100">
+                    <button type="button" class="btn btn-dark btn-set-task w-sm-100" data-bs-toggle="modal" data-bs-target="#requestAdd"><i class="icofont-plus-circle me-2 fs-6"></i>Leave Request</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Row end  -->
     <div class="row clearfix g-3">
         <div class="col-sm-12">
             <div class="card mb-3">
@@ -19,7 +30,7 @@
                             <th class="text-center">Leave <sub>(Date/Time)</sub></th>
                             <th>Days</th>
                             <th>Status</th>
-                            <th>Actions</th>
+                            <th class="text-center">Actions</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -55,9 +66,9 @@
                                     </span>
                                 </td>
                                 <td>
-                                    <div class="" role="group" aria-label="Basic outlined example">
+                                    <div class="d-flex justify-content-center" role="group" aria-label="Basic outlined example">
                                         @if($leave->status == 0)
-                                            <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#depedit{{$key}}"><i class="icofont-edit text-white "></i></button>
+                                            <a href="" class="btn btn-primary btn-sm me-1" data-bs-toggle="modal" data-bs-target="#depedit{{$key}}"><i class="icofont-edit text-white "></i></a>
                                             <form action="{{route('employee.leave.request.cancel',$leave->id)}}" method="post">
                                                 @csrf
                                                 <button type="submit" onclick="return confirm('are you sure to cancel request ? ')" class="btn btn-danger mx-1 text-white btn-sm"><i class="fa fa-xmark-circle text-white"></i> </button>

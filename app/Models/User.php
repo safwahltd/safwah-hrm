@@ -84,4 +84,13 @@ class User extends Authenticatable
         }
         return false;
     }
+    public function salary()
+    {
+        return $this->hasOne(Salary::class);
+    }
+
+    public function salaryPayments()
+    {
+        return $this->hasMany(SalaryPayment::class);
+    }
 }

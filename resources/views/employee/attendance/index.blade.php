@@ -1,10 +1,10 @@
-@extends('employee.layout.app')
+@extends('admin.layout.app')
 @section('title','My Attendance')
 @section('body')
     <div class="row align-items-center">
         <div class="border-0 mb-4">
             <div class="card-header py-3 no-bg bg-transparent d-flex align-items-center px-0 justify-content-between border-bottom flex-wrap">
-                <h3 class="fw-bold mb-0">Attendance</h3>
+                <h3 class="fw-bold mb-0 text-white">Attendance</h3>
             </div>
         </div>
     </div>

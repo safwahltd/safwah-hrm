@@ -4,10 +4,50 @@
 
             <!-- header rightbar icon -->
             <div class="h-right d-flex align-items-center mr-5 mr-lg-0 order-1">
+                <div class="dropdown notifications">
+                    <a class="nav-link dropdown-toggle pulse" href="#" role="button" data-bs-toggle="dropdown">
+                        <i class="icofont-alarm  text-white fs-5"></i><sup class="text-white m-0 fw-bold bg-success rounded-circle p-1">{{ $noticeCount ?? '0' }}</sup>
+                        <span class="pulse-ring text-white"></span>
+                    </a>
+                    <div id="NotificationsDiv" class="dropdown-menu rounded-lg shadow border-0 dropdown-animation dropdown-menu-sm-end p-0 m-0">
+                        <div class="card border-0 w380">
+                            <div class="card-header border-0 p-3">
+                                <h5 class="mb-0 font-weight-light d-flex justify-content-between">
+                                    <span>Notices</span>
+                                </h5>
+                            </div>
+                            <div class="tab-content card-body">
+                                <div class="tab-pane fade show active">
+                                    <ul class="list-unstyled list mb-0">
+                                        @if($notices->count())
+                                            @foreach($notices as $key => $notice)
+                                            <li class="py-2 mb-1 border-bottom">
+                                                <a href="{{route('employee.notice.list')}}#notice{{$key}}" class="d-flex">
+                                                    <img class="avatar rounded-circle" src="{{asset('/')}}admin/assets/images/xs/avatar1.jpg" alt="">
+                                                    <div class="flex-fill ms-2">
+                                                        <strong></strong>
+                                                        <p class="d-flex justify-content-between mb-0 ">
+                                                            <span class="font-weight-bold">{{ $notice->title }}</span> <small>{{ $notice->created_at->diffForHumans() }}</small>
+                                                            <p>{{ \Illuminate\Support\Str::limit($notice->content, 70) }}</p>
+                                                        </p>
+                                                    </div>
+                                                </a>
+                                            </li>
+                                            @endforeach
+                                        @else
+                                            <a class="dropdown-item" href="#">No new notices</a>
+                                        @endif
+                                    </ul>
+                                </div>
+                            </div>
+                            <a class="card-footer text-center border-top-0" href="{{route('employee.notice.list')}}"> View All Notices</a>
+                        </div>
+                    </div>
+                </div>
                 <div class="dropdown user-profile ml-2 ml-sm-3 d-flex align-items-center">
                     <div class="u-info me-2">
-                        <p class="mb-0 text-end line-height-sm "><span class="font-weight-bold">{{auth()->user()->name ?? 'N/A'}}</span></p>
-                        <small>{{ucwords(auth()->user()->role)}} Profile</small>
+                        <p class="mb-0 text-end line-height-sm "><span class="font-weight-bold text-white">{{auth()->user()->name ?? 'N/A'}}</span></p>
+                        <small class="text-white">{{ucwords(auth()->user()->role)}} Profile</small>
                     </div>
                     <a class="nav-link dropdown-toggle pulse p-0" href="#" role="button" data-bs-toggle="dropdown" data-bs-display="static">
                         @if(file_exists(auth()->user()->userInfo->image))
@@ -49,20 +89,12 @@
                         </div>
                     </div>
                 </div>
-                <div class="px-md-1">
-                    <a href="#offcanvas_setting" data-bs-toggle="offcanvas" aria-expanded="false" title="template setting">
-                        <svg class="svg-stroke" xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
-                            <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
-                            <path d="M10.325 4.317c.426 -1.756 2.924 -1.756 3.35 0a1.724 1.724 0 0 0 2.573 1.066c1.543 -.94 3.31 .826 2.37 2.37a1.724 1.724 0 0 0 1.065 2.572c1.756 .426 1.756 2.924 0 3.35a1.724 1.724 0 0 0 -1.066 2.573c.94 1.543 -.826 3.31 -2.37 2.37a1.724 1.724 0 0 0 -2.572 1.065c-.426 1.756 -2.924 1.756 -3.35 0a1.724 1.724 0 0 0 -2.573 -1.066c-1.543 .94 -3.31 -.826 -2.37 -2.37a1.724 1.724 0 0 0 -1.065 -2.572c-1.756 -.426 -1.756 -2.924 0 -3.35a1.724 1.724 0 0 0 1.066 -2.573c-.94 -1.543 .826 -3.31 2.37 -2.37c1 .608 2.296 .07 2.572 -1.065z"></path>
-                            <path d="M9 12a3 3 0 1 0 6 0a3 3 0 0 0 -6 0"></path>
-                        </svg>
-                    </a>
-                </div>
+
             </div>
 
             <!-- menu toggler -->
             <button class="navbar-toggler p-0 border-0 menu-toggle order-3" type="button" data-bs-toggle="collapse" data-bs-target="#mainHeader">
-                <span class="fa fa-bars"></span>
+                <span class="fa fa-bars text-white"></span>
             </button>
 
             <!-- main menu Search-->

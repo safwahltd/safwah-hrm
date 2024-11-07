@@ -1,11 +1,11 @@
-@extends('employee.layout.app')
+@extends('admin.layout.app')
 @section('title','Employee Profile')
 @section('body')
     <div class="row clearfix">
         <div class="col-md-12">
             <div class="card border-0 mb-4 no-bg">
                 <div class="card-header py-3 px-0 d-flex align-items-center  justify-content-between border-bottom">
-                    <h3 class=" fw-bold flex-fill mb-0">Employee Profile</h3>
+                    <h3 class=" fw-bold flex-fill mb-0 text-white">Employee Profile</h3>
                 </div>
             </div>
         </div>
@@ -14,7 +14,7 @@
 
     <div class="row g-3">
         <div class="col-xl-12 col-lg-12 col-md-12">
-            <div class="card teacher-card  mb-3">
+            <div class="card bg-secondary-subtle teacher-card mb-3">
                 <div class="card-body  d-flex teacher-fulldeatil">
                     <div class="profile-teacher pe-xl-4 pe-md-2 pe-sm-4 pe-0 text-center w220 mx-sm-0 mx-auto">
                             @if($user->userInfo->image == '')
@@ -104,7 +104,7 @@
             </div>
             <div class="row g-3">
                 <div class="col-xxl-6 col-xl-6 col-lg-6 col-md-12">
-                    <div class="card">
+                    <div class="card bg-secondary-subtle">
                         <div class="card-header py-3 d-flex justify-content-between">
                             <h6 class="mb-0 fw-bold ">General Informations</h6>
                             <button type="button" class="btn p-0" data-bs-toggle="modal" data-bs-target="#generalInfo"><i class="icofont-edit text-primary fs-6"></i></button>
@@ -154,9 +154,10 @@
                             </ul>
                         </div>
                     </div>
-                    <div class="card my-2">
+                    <div class="card bg-secondary-subtle my-2">
                         <div class="card-header py-3  d-flex justify-content-between">
                             <h6 class="mb-0 fw-bold"><i class="fa-solid fa-people-roof"></i> Family Information</h6>
+                            <button type="button" class="btn p-0" data-bs-toggle="modal" data-bs-target="#generalInfo"><i class="icofont-edit text-primary fs-6"></i></button>
                         </div>
                         <div class="card-body">
                             <ul class="list-unstyled mb-0">
@@ -198,7 +199,7 @@
 
                 </div>
                 <div class="col-xxl-6 col-xl-6 col-lg-6 col-md-12">
-                    <div class="card">
+                    <div class="card bg-secondary-subtle">
                         <div class="card-header py-3 d-flex justify-content-between">
                             <h6 class="mb-0 fw-bold "><i class="fa-solid fa-building-columns"></i> Bank information</h6>
                             <button type="button" class="btn p-0" data-bs-toggle="modal" data-bs-target="#bankInfo"><i class="icofont-edit text-primary fs-6"></i></button>
@@ -328,7 +329,7 @@
     <!-- Edit Employee Personal Info-->
     <div class="modal fade" id="personalInfo" tabindex="-1"  aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
-            <div class="modal-content">
+            <div class="modal-content bg-secondary-subtle">
                 <div class="modal-header">
                     <h5 class="modal-title  fw-bold" id="edit1Label"> Personal Informations</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -414,7 +415,7 @@
     <!-- Edit Employee General Info-->
     <div class="modal fade" id="generalInfo" tabindex="-1"  aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
-            <div class="modal-content">
+            <div class="modal-content bg-secondary-subtle">
                 <div class="modal-header">
                     <h5 class="modal-title  fw-bold" id="edit1Label"> General Information</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -489,7 +490,7 @@
     <!-- Edit Bank Personal Info-->
     <div class="modal fade" id="bankInfo" tabindex="-1"  aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
-            <div class="modal-content">
+            <div class="modal-content bg-secondary-subtle">
                 <div class="modal-header">
                     <h5 class="modal-title  fw-bold" id="edit2Label"> Bank information</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>

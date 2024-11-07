@@ -13,12 +13,7 @@ class AdminAuthController extends Controller
     public function login()
     {
         if (auth()->check()){
-            if (auth()->user()->role == 'admin'){
-                return redirect()->route('admin.dashboard');
-            }
-            if (auth()->user()->role == 'employee'){
-                return redirect()->route('employee.dashboard');
-            }
+            return redirect()->route('admin.dashboard');
         }
         return view('admin.auth.login');
     }
@@ -36,33 +31,19 @@ class AdminAuthController extends Controller
             $user = User::where('email',$request->email)->first();
             if($user){
                 if ($user->status == 1){
-                    if ($user->role == 'admin'){
-                        if (Auth::guard('web')->attempt($credentials)){
-                            toastr()->success('Login Successfull');
-                            return redirect()->route('admin.dashboard');
-                        }
-                        else{
-                            toastr()->error("Invalid Credentials!");
-                            return back();
-                        }
+                    if (Auth::guard('web')->attempt($credentials,$request->has('remember'))){
+                        toastr()->success('Login Success.');
+                        return redirect()->route('admin.dashboard');
                     }
-                    elseif ($user->role == 'employee'){
-                        if (Auth::guard('web')->attempt($credentials)){
-                            toastr()->success('Login Successfull');
-                            return redirect()->route('employee.dashboard');
-                        }
-                        else{
-                            toastr()->error("Invalid Credentials!");
-                            return back();
-                        }
+                    else{
+                        toastr()->error("Invalid Credentials!");
+                        return back();
                     }
-
                 }
                 else{
                     toastr()->error("Your account is Inactive!");
                     return back();
                 }
-
                 }
             else{
                 toastr()->error("You Are Not Registered!");
@@ -74,10 +55,80 @@ class AdminAuthController extends Controller
             return back();
         }
     }
-    public function logout()
+    public function logout(Request $request)
     {
         Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
         toastr()->success("Logout Successfully");
         return redirect()->route('login');
+    }
+    public function password(){
+        return view('admin.auth.password');
+    }
+    public function updatePassword(Request $request){
+        try {
+            $validate = Validator::make($request->all(),[
+                'old_password'=> 'required',
+                'password' => 'min:6|required_with:confirm_password|same:confirm_password',
+                'confirm_password' => 'min:6'
+            ]);
+            if ($validate->fails()){
+                toastr()->error($validate->messages());
+                return back();
+            }
+            $user = User::find(auth()->user()->id);
+            if ($user) {
+                if (password_verify($request->old_password, $user->password)) {
+                    $user->password = bcrypt($request->password);
+                    $user->save();
+                    toastr()->success('Password Change Successfully');
+                    return back();
+                }
+                else {
+                    toastr()->error('Current Password Not Matched.');
+                    return back();
+                }
+            }
+            else {
+                toastr()->error('Data Not Found');
+                return back();
+            }
+        }
+        catch (Exception $e){
+            toastr()->error($e->getMessage());
+            return back();
+        }
+    }
+    public function userPassword(){
+        $users = User::whereNotIn('id',[1])->orderBy('name','asc')->get();
+        return view('admin.user.password',compact('users'));
+    }
+    public function updateUserPassword(Request $request){
+        try {
+            $validate = Validator::make($request->all(),[
+                'password' => 'min:6|required_with:confirm_password|same:confirm_password',
+                'confirm_password' => 'min:6'
+            ]);
+            if ($validate->fails()){
+                toastr()->error($validate->messages());
+                return back();
+            }
+            $user = User::find($request->user_id);
+            if ($user) {
+                $user->password = bcrypt($request->password);
+                $user->save();
+                toastr()->success('Password Change Successfully');
+                return back();
+            }
+            else {
+                toastr()->error('Data Not Found');
+                return back();
+            }
+        }
+        catch (Exception $e){
+            toastr()->error($e->getMessage());
+            return back();
+        }
     }
 }

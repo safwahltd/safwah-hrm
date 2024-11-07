@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use App\Models\Permission;
+use App\Models\Setting;
 use App\Models\User;
 use App\Models\UserInfos;
 use Illuminate\Database\Seeder;
@@ -37,7 +38,7 @@ class DatabaseSeeder extends Seeder
                 'email' => 'admin@gmail.com',
             ]);
         }
-        /* Permission Create */
+        /* Role Permission */
         $routeCollection = Route::getRoutes();
         $middlewareGroup = 'admin.auth';
         $routeNames = [];
@@ -45,7 +46,7 @@ class DatabaseSeeder extends Seeder
             $middleWares = $route->gatherMiddleware();
             if (in_array($middlewareGroup,$middleWares)){
                 $routeName = $route->getName();
-                if ($routeName !== 'admin.dashboard' && $routeName !== 'logout'){
+                if ($routeName !== 'admin.dashboard' && $routeName !== 'admin.logout'){
                     array_push($routeNames,$routeName);
                 }
             }
@@ -55,11 +56,27 @@ class DatabaseSeeder extends Seeder
                 $permission = $name;
                 $permission = trim(strtolower($permission));
                 $permission = preg_replace('/[\s.,-]+/', ' ', $permission);
-                Permission::create([
-                    'name' => $permission
-                ]);
+                $per = Permission::where('name',$permission)->first();
+                if (!$per){
+                    Permission::create([
+                        'name' => $permission
+                    ]);
+                }
             }
         }
 
+        /* Setting */
+        $sitting = Setting::find(1);
+        if (!$sitting){
+            \App\Models\Setting::create([
+                'id' => 1,
+                'company_name' => 'SAFWAH LIMITED',
+                'company_title' => 'A Path For Prosperity',
+                'phone' => '+880 9611-656104',
+                'hotLine' => '+880 9611-656104',
+                'email' => 'safwahmart@gmail.com',
+                'address' => 'Kha-9, Confidence Center, Level-10/B, Shahajadpur, Gulshan-2, Dhaka-1212, Bangladesh',
+            ]);
+        }
     }
 }

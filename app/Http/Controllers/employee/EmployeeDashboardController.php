@@ -22,4 +22,5 @@ class EmployeeDashboardController extends Controller
         return view('employee.dashboard.index',compact('attendance','holidays','attendances','totalAttend','leavesPending'));
     }
 
+
 }

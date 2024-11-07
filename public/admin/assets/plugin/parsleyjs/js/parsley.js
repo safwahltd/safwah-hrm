@@ -2162,7 +2162,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
   });
 
   // ### PARSLEY auto-binding
-  // Prevent it by setting `ParsleyConfig.autoBind` to `false`
+  // Prevent it by settings `ParsleyConfig.autoBind` to `false`
   if (false !== window.ParsleyConfig.autoBind) {
     $(function () {
       // Works only on `data-parsley-validate`.

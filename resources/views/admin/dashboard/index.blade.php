@@ -1,20 +1,11 @@
 @extends('admin.layout.app')
 @section('title','Dashboard')
 @section('body')
-    <div class="row clearfix g-3">
-        <div class="col-xl-8 col-lg-12 col-md-12 flex-column">
+    @if(auth()->user()->role == 'admin')
+        <div class="row clearfix g-3">
+        <div class="col-xl-8 col-lg-8 col-md-6 flex-column">
             <div class="row g-3">
-                <div class="col-md-12">
-                    <div class="card">
-                        <div class="card-header py-3 d-flex justify-content-between bg-transparent border-bottom-0">
-                            <h6 class="mb-0 fw-bold ">Employees Info</h6>
-                        </div>
-                        <div class="card-body">
-                            <div class="ac-line-transparent" id="apex-emplyoeeAnalytics"></div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6">
+                <div class="col-md-12 col-xl-6 col-lg-6 col-6">
                     <div class="card">
                         <div class="card-header py-3 d-flex justify-content-between bg-transparent border-bottom-0">
                             <h6 class="mb-0 fw-bold ">Employees Availability</h6>
@@ -22,288 +13,173 @@
                         <div class="card-body">
                             <div class="row g-2 row-deck">
                                 <div class="col-md-6 col-sm-6">
-                                    <div class="card">
-                                        <div class="card-body ">
-                                            <i class="icofont-checked fs-3"></i>
-                                            <h6 class="mt-3 mb-0 fw-bold small-14">Attendance</h6>
-                                            <span class="text-muted">400</span>
+                                    <a href="{{route('admin.attendance.list')}}">
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <i class="icofont-checked fs-3"></i>
+                                                <h6 class="mt-3 mb-0 fw-bold small-14">Today Attendance</h6>
+                                                <span class="text-black">{{count($totalPresent)}}</span>
+                                            </div>
                                         </div>
-                                    </div>
+                                    </a>
                                 </div>
                                 <div class="col-md-6 col-sm-6">
-                                    <div class="card">
-                                        <div class="card-body ">
-                                            <i class="icofont-stopwatch fs-3"></i>
-                                            <h6 class="mt-3 mb-0 fw-bold small-14">Late Coming</h6>
-                                            <span class="text-muted">17</span>
+                                    <a href="{{route('admin.attendance.list')}}">
+                                        <div class="card">
+                                            <div class="card-body ">
+                                                <i class="icofont-stopwatch fs-3"></i>
+                                                <h6 class="mt-3 mb-0 fw-bold small-14">Today Late Coming</h6>
+                                                <span class="text-black">{{$totalLateAttend}}</span>
+                                            </div>
                                         </div>
-                                    </div>
+                                    </a>
                                 </div>
                                 <div class="col-md-6 col-sm-6">
-                                    <div class="card">
-                                        <div class="card-body ">
-                                            <i class="icofont-ban fs-3"></i>
-                                            <h6 class="mt-3 mb-0 fw-bold small-14">Absent</h6>
-                                            <span class="text-muted">06</span>
+                                    <a href="{{route('admin.attendance.list')}}">
+                                        <div class="card">
+                                            <div class="card-body ">
+                                                <i class="icofont-ban fs-3"></i>
+                                                <h6 class="mt-3 mb-0 fw-bold small-14">Today Absent</h6>
+                                                <span class="text-black">{{$absentEmployees}}</span>
+                                            </div>
                                         </div>
-                                    </div>
+                                    </a>
                                 </div>
                                 <div class="col-md-6 col-sm-6">
-                                    <div class="card">
-                                        <div class="card-body ">
-                                            <i class="icofont-beach-bed fs-3"></i>
-                                            <h6 class="mt-3 mb-0 fw-bold small-14">Leave Apply</h6>
-                                            <span class="text-muted">14</span>
+                                    <a href="{{route('admin.leave.requests')}}">
+                                        <div class="card">
+                                            <div class="card-body ">
+                                                <i class="icofont-beach-bed fs-3"></i>
+                                                <h6 class="mt-3 mb-0 fw-bold small-14">Leave Apply</h6>
+                                                <span class="text-black">{{$leaveApply}}</span>
+                                            </div>
                                         </div>
-                                    </div>
+                                    </a>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-6">
+                <div class="col-md-12 col-xl-6 col-lg-6 col-6">
                     <div class="card">
                         <div class="card-header py-3 d-flex justify-content-between bg-transparent border-bottom-0">
                             <h6 class="mb-0 fw-bold ">Total Employees</h6>
-                            <h4 class="mb-0 fw-bold ">423</h4>
+                            <h4 class="mb-0 fw-bold ">{{count($totalEmployees)}}</h4>
                         </div>
                         <div class="card-body">
                             <div class="mt-3" id="apex-MainCategories"></div>
                         </div>
                     </div>
                 </div>
-                <div class="col-md-12">
-                    <div class="card">
-                        <div class="card-header py-3 d-flex justify-content-between bg-transparent border-bottom-0">
-                            <h6 class="mb-0 fw-bold ">Top Hiring Sources</h6>
-                        </div>
-                        <div class="card-body">
-                            <div id="hiringsources"></div>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
-        <div class="col-xl-4 col-lg-12 col-md-12">
+        <div class="col-xl-4 col-lg-4 col-md-6">
             <div class="row g-3 row-deck">
-                <div class="col-md-6 col-lg-6 col-xl-12">
-                    <div class="card bg-primary">
-                        <div class="card-body row">
-                            <div class="col">
-                                <span class="avatar lg bg-white rounded-circle text-center d-flex align-items-center justify-content-center"><i class="icofont-file-text fs-5"></i></span>
-                                <h1 class="mt-3 mb-0 fw-bold text-white">1546</h1>
-                                <span class="text-white">Applications</span>
-                            </div>
-                            <div class="col">
-                                <img class="img-fluid" src="{{asset('/')}}admin/assets/images/interview.svg" alt="interview">
+                <div class="col-md-6 col-lg-6 col-xl-6 col-6">
+                    <a href="{{route('departments.index')}}">
+                        <div class="card bg-primary">
+                            <div class="card-body row">
+                                <div class="col">
+                                    <h1 class="mt-3 mb-0 fw-bold text-white">{{$departments}}</h1>
+                                    <span class="text-white">Departments</span>
+                                </div>
+                                <div class="col">
+                                    <img class="img-fluid" src="{{asset('/')}}admin/assets/images/interview.svg" alt="interview">
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    </a>
                 </div>
-                <div class="col-md-6 col-lg-6 col-xl-12  flex-column">
-                    <div class="card mb-3">
-                        <div class="card-body">
-                            <div class="d-flex align-items-center flex-fill">
-                                <span class="avatar lg light-success-bg rounded-circle text-center d-flex align-items-center justify-content-center"><i class="icofont-users-alt-2 fs-5"></i></span>
-                                <div class="d-flex flex-column ps-3  flex-fill">
-                                    <h6 class="fw-bold mb-0 fs-4">246</h6>
-                                    <span class="text-muted">Interviews</span>
+                <div class="col-md-6 col-lg-6 col-xl-6 col-6">
+                    <a href="{{route('designations.index')}}">
+                        <div class="card bg-primary">
+                            <div class="card-body row">
+                                <div class="col">
+                                    <h1 class="mt-3 mb-0 fw-bold text-white">{{$designations}}</h1>
+                                    <span class="text-white">Designation</span>
                                 </div>
-                                <i class="icofont-chart-bar-graph fs-3 text-muted"></i>
+                                <div class="col">
+                                    <img class="img-fluid" src="{{asset('/')}}admin/assets/images/interview.svg" alt="interview">
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="card">
-                        <div class="card-body">
-                            <div class="d-flex align-items-center flex-fill">
-                                <span class="avatar lg light-success-bg rounded-circle text-center d-flex align-items-center justify-content-center"><i class="icofont-holding-hands fs-5"></i></span>
-                                <div class="d-flex flex-column ps-3 flex-fill">
-                                    <h6 class="fw-bold mb-0 fs-4">101</h6>
-                                    <span class="text-muted">Hired</span>
+                    </a>
+                </div>
+                <div class="col-md-6 col-lg-6 col-xl-6 col-6">
+                    <a href="{{route('admin.termination.index')}}">
+                        <div class="card bg-primary">
+                            <div class="card-body row">
+                                <div class="col">
+                                    <h1 class="mt-3 mb-0 fw-bold text-white">{{$terminations}}</h1>
+                                    <span class="text-white">Termination</span>
                                 </div>
-                                <i class="icofont-chart-line fs-3 text-muted"></i>
+                                <div class="col">
+                                    <img class="img-fluid" src="{{asset('/')}}admin/assets/images/interview.svg" alt="interview">
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    </a>
+                </div>
+                <div class="col-md-6 col-lg-6 col-xl-6 col-6">
+                    <a href="{{route('asset.index')}}">
+                        <div class="card bg-primary">
+                            <div class="card-body row">
+                                <div class="col">
+                                    <h1 class="mt-3 mb-0 fw-bold text-white">{{$assets}}</h1>
+                                    <span class="text-white">Assets</span>
+                                </div>
+                                <div class="col">
+                                    <img class="img-fluid" src="{{asset('/')}}admin/assets/images/interview.svg" alt="interview">
+                                </div>
+                            </div>
+                        </div>
+                    </a>
                 </div>
                 <div class="col-md-12 col-lg-12 col-xl-12">
                     <div class="card">
                         <div class="card-header py-3 d-flex justify-content-between bg-transparent border-bottom-0">
-                            <h6 class="mb-0 fw-bold ">Upcomming Interviews</h6>
+                            <h6 class="mb-0 fw-bold ">Upcomming Holidays</h6>
                         </div>
                         <div class="card-body">
-                            <div class="flex-grow-1">
-                                <div class="py-2 d-flex align-items-center border-bottom flex-wrap">
-                                    <div class="d-flex align-items-center flex-fill">
-                                        <img class="avatar lg rounded-circle img-thumbnail" src="{{asset('/')}}admin/assets/images/lg/avatar2.jpg" alt="profile">
-                                        <div class="d-flex flex-column ps-3">
-                                            <h6 class="fw-bold mb-0 small-14">Natalie Gibson</h6>
-                                            <span class="text-muted">Ui/UX Designer</span>
+                            <div class="holiday-details">
+                                <div class="holiday-calendar">
+                                    <div class="holiday-calendar-content">
+                                        <div class="row">
+                                            <table id="myProjectTable" class="table table-hover table-striped align-middle mb-0" style="width:100%">
+                                                <thead class="bg-primary">
+                                                <tr class="bg-secondary">
+                                                    <th  class="bg-primary-subtle">Name</th>
+                                                    <th  class="bg-primary-subtle">Date</th>
+                                                    <th  class="bg-primary-subtle">Total</th>
+                                                    <th  class="bg-primary-subtle">Status</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                @forelse($holidays as $key => $holiday)
+                                                    <tr class="fw-bold">
+                                                        <td><small>{{$holiday->name}}</small></td>
+                                                        <td>
+                                                            <small>{{ \Illuminate\Support\Carbon::parse($holiday->date_from)->format('d M') }} -</small>
+                                                            <small>{{ \Illuminate\Support\Carbon::parse($holiday->date_to)->format('d M, Y') }}</small>
+                                                        </td>
+                                                        <td><small>{{ $holiday->total_day }} {{$holiday->total_day <= 1 ? 'day':'days'}}</small></td>
+                                                        <td><span class="p-1 px-3 rounded-2 text-white {{ $holiday->date_to > \Illuminate\Support\Carbon::now() ? 'bg-success' : 'bg-danger' }}">{{ $holiday->date_to > \Illuminate\Support\Carbon::now() ? 'In Coming' : 'Passed' }}</span></td>
+                                                    </tr>
+                                                @empty
+                                                    <tr>
+                                                        <td colspan="4" class="text-center"><span class="fw-bold">No Result</span></td>
+                                                    </tr>
+                                                @endforelse
+                                                </tbody>
+                                            </table>
                                         </div>
                                     </div>
-                                    <div class="time-block text-truncate">
-                                        <i class="icofont-clock-time"></i> 1.30 - 1:30
-                                    </div>
+
                                 </div>
-                                <div class="py-2 d-flex align-items-center border-bottom flex-wrap">
-                                    <div class="d-flex align-items-center flex-fill">
-                                        <img class="avatar lg rounded-circle img-thumbnail" src="{{asset('/')}}admin/assets/images/lg/avatar9.jpg" alt="profile">
-                                        <div class="d-flex flex-column ps-3">
-                                            <h6 class="fw-bold mb-0 small-14">Peter	Piperg</h6>
-                                            <span class="text-muted">Web Design</span>
-                                        </div>
-                                    </div>
-                                    <div class="time-block text-truncate">
-                                        <i class="icofont-clock-time"></i> 9.00 - 1:30
-                                    </div>
-                                </div>
-                                <div class="py-2 d-flex align-items-center border-bottom flex-wrap">
-                                    <div class="d-flex align-items-center flex-fill">
-                                        <img class="avatar lg rounded-circle img-thumbnail" src="{{asset('/')}}admin/assets/images/lg/avatar12.jpg" alt="profile">
-                                        <div class="d-flex flex-column ps-3">
-                                            <h6 class="fw-bold mb-0 small-14">Robert Young</h6>
-                                            <span class="text-muted">PHP Developer</span>
-                                        </div>
-                                    </div>
-                                    <div class="time-block text-truncate">
-                                        <i class="icofont-clock-time"></i> 1.30 - 2:30
-                                    </div>
-                                </div>
-                                <div class="py-2 d-flex align-items-center border-bottom flex-wrap">
-                                    <div class="d-flex align-items-center flex-fill">
-                                        <img class="avatar lg rounded-circle img-thumbnail" src="{{asset('/')}}admin/assets/images/lg/avatar8.jpg" alt="profile">
-                                        <div class="d-flex flex-column ps-3">
-                                            <h6 class="fw-bold mb-0 small-14">Victoria Vbell</h6>
-                                            <span class="text-muted">IOS Developer</span>
-                                        </div>
-                                    </div>
-                                    <div class="time-block text-truncate">
-                                        <i class="icofont-clock-time"></i> 2.00 - 3:30
-                                    </div>
-                                </div>
-                                <div class="py-2 d-flex align-items-center border-bottom flex-wrap">
-                                    <div class="d-flex align-items-center flex-fill">
-                                        <img class="avatar lg rounded-circle img-thumbnail" src="{{asset('/')}}admin/assets/images/lg/avatar7.jpg" alt="profile">
-                                        <div class="d-flex flex-column ps-3">
-                                            <h6 class="fw-bold mb-0 small-14">Mary Butler</h6>
-                                            <span class="text-muted">Writer</span>
-                                        </div>
-                                    </div>
-                                    <div class="time-block text-truncate">
-                                        <i class="icofont-clock-time"></i> 4.00 - 4:30
-                                    </div>
-                                </div>
-                                <div class="py-2 d-flex align-items-center border-bottom flex-wrap">
-                                    <div class="d-flex align-items-center flex-fill">
-                                        <img class="avatar lg rounded-circle img-thumbnail" src="{{asset('/')}}admin/assets/images/lg/avatar3.jpg" alt="profile">
-                                        <div class="d-flex flex-column ps-3">
-                                            <h6 class="fw-bold mb-0 small-14">Youn Bel</h6>
-                                            <span class="text-muted">Unity 3d</span>
-                                        </div>
-                                    </div>
-                                    <div class="time-block text-truncate">
-                                        <i class="icofont-clock-time"></i> 7.00 - 8.00
-                                    </div>
-                                </div>
-                                <div class="py-2 d-flex align-items-center  flex-wrap">
-                                    <div class="d-flex align-items-center flex-fill">
-                                        <img class="avatar lg rounded-circle img-thumbnail" src="{{asset('/')}}admin/assets/images/lg/avatar2.jpg" alt="profile">
-                                        <div class="d-flex flex-column ps-3">
-                                            <h6 class="fw-bold mb-0 small-14">Gibson Butler</h6>
-                                            <span class="text-muted">Networking</span>
-                                        </div>
-                                    </div>
-                                    <div class="time-block text-truncate">
-                                        <i class="icofont-clock-time"></i> 8.00 - 9.00
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-12">
-            <div class="card light-danger-bg">
-                <div class="card-header py-3 d-flex justify-content-between bg-transparent border-bottom-0">
-                    <h6 class="mb-0 fw-bold ">Top Perfrormers</h6>
-                </div>
-                <div class="card-body">
-                    <div class="row g-3 align-items-center">
-                        <div class="col-md-12 col-lg-4 col-xl-4 col-xxl-2">
-                            <p>You have 140 <span class="fw-bold">influencers </span> in your company.</p>
-                            <div class="d-flex  justify-content-between text-center">
-                                <div class="">
-                                    <h3 class="fw-bold">350</h3>
-                                    <span class="small">New Task</span>
-                                </div>
-                                <div class="">
-                                    <h3 class="fw-bold">130</h3>
-                                    <span class="small">Task Completed</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-12 col-lg-12 col-xl-12 col-xxl-10">
-                            <div class="row g-3 row-cols-2 row-cols-sm-3 row-cols-md-3 row-cols-lg-3 row-cols-xl-3 row-cols-xxl-6 row-deck top-perfomer">
-                                <div class="col">
-                                    <div class="card shadow">
-                                        <div class="card-body text-center d-flex flex-column justify-content-center">
-                                            <img class="avatar lg rounded-circle img-thumbnail mx-auto" src="{{asset('/')}}admin/assets/images/lg/avatar2.jpg" alt="profile">
-                                            <h6 class="fw-bold my-2 small-14">Luke Short</h6>
-                                            <span class="text-muted mb-2">@Short</span>
-                                            <h4 class="fw-bold text-primary fs-3">80%</h4>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col">
-                                    <div class="card shadow">
-                                        <div class="card-body text-center d-flex flex-column justify-content-center">
-                                            <img class="avatar lg rounded-circle img-thumbnail mx-auto" src="{{asset('/')}}admin/assets/images/lg/avatar5.jpg" alt="profile">
-                                            <h6 class="fw-bold my-2 small-14">John Hard</h6>
-                                            <span class="text-muted mb-2">@rdacre</span>
-                                            <h4 class="fw-bold text-primary fs-3">70%</h4>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col">
-                                    <div class="card shadow">
-                                        <div class="card-body text-center d-flex flex-column justify-content-center">
-                                            <img class="avatar lg rounded-circle img-thumbnail mx-auto" src="{{asset('/')}}admin/assets/images/lg/avatar8.jpg" alt="profile">
-                                            <h6 class="fw-bold my-2 small-14">Paul Rees</h6>
-                                            <span class="text-muted mb-2">@Rees</span>
-                                            <h4 class="fw-bold text-primary fs-3">77%</h4>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col">
-                                    <div class="card shadow">
-                                        <div class="card-body text-center d-flex flex-column justify-content-center">
-                                            <img class="avatar lg rounded-circle img-thumbnail mx-auto" src="{{asset('/')}}admin/assets/images/lg/avatar9.jpg" alt="profile">
-                                            <h6 class="fw-bold my-2 small-14">Rachel Parr</h6>
-                                            <span class="text-muted mb-2">@Parr</span>
-                                            <h4 class="fw-bold text-primary fs-3">85%</h4>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col">
-                                    <div class="card shadow">
-                                        <div class="card-body text-center d-flex flex-column justify-content-center">
-                                            <img class="avatar lg rounded-circle img-thumbnail mx-auto" src="{{asset('/')}}admin/assets/images/lg/avatar12.jpg" alt="profile">
-                                            <h6 class="fw-bold my-2 small-14">Eric Reid</h6>
-                                            <span class="text-muted mb-2">@Eric</span>
-                                            <h4 class="fw-bold text-primary fs-3">95%</h4>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col">
-                                    <div class="card shadow">
-                                        <div class="card-body text-center d-flex flex-column justify-content-center">
-                                            <img class="avatar lg rounded-circle img-thumbnail mx-auto" src="{{asset('/')}}admin/assets/images/lg/avatar3.jpg" alt="profile">
-                                            <h6 class="fw-bold my-2 small-14">Jan Ince</h6>
-                                            <span class="text-muted mb-2">@Ince</span>
-                                            <h4 class="fw-bold text-primary fs-3">97%</h4>
-                                        </div>
-                                    </div>
+                                <div class="holiday-btn">
+                                    <a href="{{route('holidays.index')}}" class="btn btn-primary p-1 my-2">
+                                        View All <i class="fe fe-arrow-right-circle"></i>
+                                    </a>
                                 </div>
                             </div>
                         </div>
@@ -312,4 +188,321 @@
             </div>
         </div>
     </div><!-- Row End -->
+    @else
+        <div class="row">
+            <div class="col-xxl-12 col-lg-12 col-md-12">
+                <div class="row">
+                    <div class="col-lg-6 col-md-12 my-1">
+                        <div class="card bg-primary-gradient my-1">
+                            <div class="card-body">
+                                <div class="d-flex">
+                                    <div class="">
+                                        <h4>Welcome Back, <span class="fw-bold">{{auth()->user()->name ?? 'N/A'}}</span></h4>
+                                    </div>
+                                    <div class="">
+                                        @if(file_exists(auth()->user()->userInfo->image))
+                                            <img src="{{asset(auth()->user()->userInfo->image)}}" alt="profile"  width="100" height="100" style="border-radius: 100%" class="img-responsive">
+                                        @else
+                                            <img class="img-responsive" src="{{asset('/')}}admin/assets/images/lg/avatar3.jpg"  width="100" style="border-radius: 100%" height="100"  alt="profile">
+                                        @endif
+
+                                    </div>
+                                </div>
+                                <div class="">
+                                    <a href="{{route('employee.profile.details')}}" class="btn btn-primary">View Profile</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card bg-dark-subtle my-1">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-7">
+
+                                        <div class="">
+                                            <p class="mb-0">Working Time</p>
+                                            <small class="fw-bold" id="workingTime">{{ $attendance->working_time ?? ''}}{{--{{ \Illuminate\Support\Carbon::parse($attendance->clock_in)->format('jS F Y, h:i a')}}--}}</small>
+                                        </div>
+                                        <div class="">
+                                            <p class="mb-0">Clock In</p>
+                                            <small class="fw-bold" id="clock_in_time">{{ $attendance->clock_in ?? ''}}{{--{{ \Illuminate\Support\Carbon::parse($attendance->clock_in)->format('jS F Y, h:i a')}}--}}</small>
+                                        </div>
+                                        <div class="">
+                                            <p class="mb-0">Clock Out</p>
+                                            <small class="fw-bold" id="clock_out_time">{{ $attendance->clock_out ?? ''}} {{--{{ \Illuminate\Support\Carbon::parse($attendance->clock_out)->format('jS F Y, h:i a')}}--}}</small>
+                                        </div>
+                                    </div>
+                                    <div class="col-5 align-content-center">
+                                        <button class="btn btn-primary" hidden id="clockInBtn"><i class="fa-solid fa-play"></i> Clock In</button>
+                                        <button class="btn text-white btn-danger" hidden id="clockOutBtn"><i class="fa-solid fa-person-walking-arrow-right "></i> Clock Out</button>
+                                        <div class="" id="clockInCLockOut">
+                                            <button class="btn btn-primary" hidden id="clockInBtn"><i class="fa-solid fa-play"></i> Clock In</button>
+                                            <button class="btn text-white btn-danger" hidden id="clockOutBtn"><i class="fa-sharp fa-solid fa-person-walking-arrow-right"></i> Clock Out</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                {{--<div class="clock-in-list">
+                                    <ul class="nav">
+                                        <li>
+                                            <p>Remaining</p>
+                                            <h6>2 Hrs 36 Min</h6>
+                                        </li>
+                                        <li>
+                                            <p>Overtime</p>
+                                            <h6>0 Hrs 00 Min</h6>
+                                        </li>
+                                        <li>
+                                            <p>Break</p>
+                                            <h6>1 Hrs 20 Min</h6>
+                                        </li>
+                                    </ul>
+                                </div>--}}
+                                <div class="view-attendance">
+                                    <a href="{{route('employee.attendance.list')}}" class="btn btn-primary p-1 my-2">
+                                        View Attendance <i class="fe fe-arrow-right-circle"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card info-card my-1">
+                            <div class="card-body">
+                                <h4 class="fw-bold">Upcoming Holidays</h4>
+                                <div class="holiday-details">
+                                    <div class="holiday-calendar">
+                                        <div class="holiday-calendar-content">
+                                            <div class="row">
+                                                <table id="myProjectTable" class="table table-hover table-striped align-middle mb-0" style="width:100%">
+                                                    <thead class="bg-primary">
+                                                    <tr class="bg-secondary">
+                                                        <th  class="bg-primary-subtle">Name</th>
+                                                        <th  class="bg-primary-subtle">Date</th>
+                                                        <th  class="bg-primary-subtle">Total</th>
+                                                        <th  class="bg-primary-subtle">Status</th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    @forelse($holidays as $key => $holiday)
+                                                        <tr class="fw-bold">
+                                                            <td><small>{{$holiday->name}}</small></td>
+                                                            <td>
+                                                                <small>{{ \Illuminate\Support\Carbon::parse($holiday->date_from)->format('d M') }} -</small>
+                                                                <small>{{ \Illuminate\Support\Carbon::parse($holiday->date_to)->format('d M, Y') }}</small>
+                                                            </td>
+                                                            <td><small>{{ $holiday->total_day }} {{$holiday->total_day <= 1 ? 'day':'days'}}</small></td>
+                                                            <td><span class="p-1 px-3 rounded-2 text-white {{ $holiday->date_to > \Illuminate\Support\Carbon::now() ? 'bg-success' : 'bg-danger' }}">{{ $holiday->date_to > \Illuminate\Support\Carbon::now() ? 'In Coming' : 'Passed' }}</span></td>
+                                                        </tr>
+                                                    @empty
+                                                        <tr>
+                                                            <td colspan="4" class="text-center"><span class="fw-bold">No Result</span></td>
+                                                        </tr>
+                                                    @endforelse
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="holiday-btn">
+                                        <a href="{{route('employee.holiday.index')}}" class="btn btn-primary p-1 my-2">
+                                            View All <i class="fe fe-arrow-right-circle"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-6 col-md-12 my-1">
+                        <div class="card flex-fill my-1">
+                            <div class="card-body">
+                                <div class="statistic-header d-flex">
+                                    <h5 class="fw-bold">Attendance & Leaves {{ \Illuminate\Support\Carbon::now()->year }}</h5>
+                                </div>
+                                <div class="attendance-list">
+                                    <div class="row p-3">
+                                        <div class="col-md-4">
+                                            <div class="attendance-details">
+                                                <h4 class="text-primary">{{$totalAttend}}</h4>
+                                                <p>Working Days</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="attendance-details">
+                                                <h4 class="text-primary">{{ 20 }}</h4>
+                                                <p>Total Leave</p>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-4">
+                                            <div class="attendance-details">
+                                                <h4 class="text-pink">{{ ( 10 - auth()->user()->userInfo->sick_leave ) + ( 10 - auth()->user()->userInfo->casual_leave ) }}</h4>
+                                                <p>Leaves Taken</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="attendance-details">
+                                                <h4 class="text-success">{{ 20 - ( 10 - auth()->user()->userInfo->sick_leave ) + ( 10 - auth()->user()->userInfo->casual_leave ) }}</h4>
+                                                <p>Leaves Left</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="attendance-details">
+                                                <h4 class="text-purple">{{$leavesPending}}</h4>
+                                                <p>Pending Approval</p>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                                <div class="view-attendance">
+                                    <a href="{{route('employee.leave')}}" class="btn btn-primary">
+                                        Apply Leave <i class="fa fa-arrow-right"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card flex-fill my-1">
+                            <div class="card-body">
+                                <div class="statistic-header">
+                                    <h4>Working hours</h4>
+                                </div>
+                                <div class="working-hour-info">
+                                    <div id="working_chart" class="table-responsive">
+                                        <table class="table table-striped">
+                                            <thead>
+                                            <tr>
+                                                <th>Date</th>
+                                                <th>Working Hours</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            @foreach($attendances as $attendance)
+                                                <tr>
+                                                    <td>{{ \Illuminate\Support\Carbon::parse($attendance->created_at)->format('d M,Y')}}</td>
+                                                    <td>{{$attendance->working_time }} hour</td>
+                                                </tr>
+                                            @endforeach
+                                            </tbody>
+
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
 @endsection
+@push('js')
+    @if(auth()->user()->role == 'admin')
+        <script>
+        $(document).ready(function() {
+           var male = {{$totalEmployeeMale}};
+           var female = {{$totalEmployeeFeMale}};
+           var other = {{$totalEmployeeOther}};
+
+            var options = {
+                align: 'center',
+                chart: {
+                    height: 250,
+                    type: 'donut',
+                    align: 'center',
+                },
+                labels: ['Man', 'Women','Other'],
+                dataLabels: {
+                    enabled: false,
+                },
+                legend: {
+                    position: 'bottom',
+                    horizontalAlign: 'center',
+                    show: true,
+                },
+                colors: ['var(--chart-color5)', 'var(--chart-color3)','var(--chart-color2)'],
+                series: [male, female,other],
+                responsive: [{
+                    breakpoint: 1000,
+                    options: {
+                        chart: {
+                            width: 200
+                        },
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }]
+            }
+            var chart = new ApexCharts( document.querySelector("#apex-MainCategories"),options);
+            chart.render();
+        });
+    </script>
+    @else
+        <script>
+            $(document).ready(function () {
+                function updateButtonStatus() {
+                    $.ajax({
+                        url: '{{route('employee.clock.status')}}',
+                        type: 'GET',
+                        success: function (response) {
+                            if (response.isClockedIn) {
+                                $('#clockInBtn').attr('hidden', true);
+                                $('#clockOutBtn').removeAttr('hidden');
+                            } else {
+                                $('#clockInBtn').removeAttr('hidden');
+                                $('#clockOutBtn').attr('hidden', true);
+                            }
+                        },
+                        error: function () {
+                            toastr.error('Error fetching clock status.');
+                        }
+                    });
+                }
+                // Initial check on page load
+                updateButtonStatus();
+
+                $('#clockInBtn').on('click', function () {
+                    $.ajax({
+                        url: '{{route('employee.clock.in')}}',
+                        type: 'POST',
+                        data: {
+                            _token: '{{ csrf_token() }}'
+                        },
+                        success: function (response) {
+                            toastr.success(response.message);
+                            $('#clockInBtn').attr('hidden', true);
+                            $('#clockOutBtn').removeAttr('hidden');
+                            $('#clock_in_time').text(response.clockIn);
+                        },
+                        error: function (xhr) {
+                            // alert(xhr.responseJSON.message);
+                            toastr.error(xhr.responseJSON.message);
+                        }
+                    });
+
+                });
+
+                $('#clockOutBtn').on('click', function () {
+                    if (confirm('Are you sure you want to clock Out ?')) {
+                        $.ajax({
+                            url: '{{route('employee.clock.out')}}',
+                            type: 'POST',
+                            data: {
+                                _token: '{{ csrf_token() }}'
+                            },
+                            success: function (response) {
+                                toastr.success(response.message);
+                                $('#clockOutBtn').attr('hidden', true);
+                                $('#clockInBtn').removeAttr('hidden');
+                                $('#clock_out_time').text(response.clockOut);
+                                $('#workingTime').text(response.working_time);
+                            },
+                            error: function (xhr) {
+                                // alert(xhr.responseJSON.message);
+                                toastr.error(xhr.responseJSON.message);
+                            }
+                        });
+                    }
+                });
+            });
+        </script>
+    @endif
+@endpush

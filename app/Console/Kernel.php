@@ -12,8 +12,8 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        $schedule->command('app:manage-leave')->yearly();
-        $schedule->command('app:manage-leave-half-day')->monthly();
+        $schedule->command('app:manage-leave')->yearly()->at('00:00');
+        $schedule->command('app:manage-leave-half-day')->monthly()->at('00:00');
     }
     protected function commands(): void
     {

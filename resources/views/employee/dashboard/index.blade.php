@@ -1,24 +1,11 @@
-@extends('employee.layout.app')
-@section('title','Your Dashboard')
+@extends('admin.layout.app')
+@section('title','Dashboard')
 @section('body')
-{{--    <div class="row">
-        <div class="col-md-12">
-            <div class="employee-alert-box">
-                <div class="alert alert-outline-success alert-dismissible fade show">
-                    <div class="employee-alert-request">
-                        <i class="far fa-circle-question"></i>
-                        Your Leave Request on <span>“24th April 2024”</span> has been Approved!!!
-                    </div>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"><i class="fas fa-xmark"></i></button>
-                </div>
-            </div>
-        </div>
-    </div>--}}
     <div class="row">
         <div class="col-xxl-12 col-lg-12 col-md-12">
             <div class="row">
-                <div class="col-lg-6 col-md-12">
-                    <div class="card bg-primary-gradient">
+                <div class="col-lg-6 col-md-12 my-1">
+                    <div class="card bg-primary-gradient my-1">
                         <div class="card-body">
                             <div class="d-flex">
                                 <div class="">
@@ -38,7 +25,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="card bg-dark-subtle">
+                    <div class="card bg-dark-subtle my-1">
                         <div class="card-body">
                             <div class="row">
                                 <div class="col-7">
@@ -88,7 +75,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="card info-card">
+                    <div class="card info-card my-1">
                         <div class="card-body">
                             <h4 class="fw-bold">Upcoming Holidays</h4>
                             <div class="holiday-details">
@@ -135,8 +122,8 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-6 col-md-12">
-                    <div class="card flex-fill">
+                <div class="col-lg-6 col-md-12 my-1">
+                    <div class="card flex-fill my-1">
                         <div class="card-body">
                             <div class="statistic-header d-flex">
                                 <h5 class="fw-bold">Attendance & Leaves {{ \Illuminate\Support\Carbon::now()->year }}</h5>
@@ -184,7 +171,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="card flex-fill">
+                    <div class="card flex-fill my-1">
                         <div class="card-body">
                             <div class="statistic-header">
                                 <h4>Working hours</h4>

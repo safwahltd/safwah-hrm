@@ -23,7 +23,7 @@
                 </a>
             </li>
             <li class="collapsed">
-                <a class="m-link {{--{{ Request::route()->getName() == 'employee.dashboard' ? 'active':''}}--}}" href="{{--{{route('employee.dashboard')}}--}}">
+                <a class="m-link {{ Request::route()->getName() == 'employee.salary.index' ? 'active':''}}" href="{{route('employee.salary.index')}}">
                     <i class="icofont-money fs-5 "></i> <span> Salary </span>
                 </a>
             </li>
@@ -37,24 +37,18 @@
                     <i class="icofont-ui-calendar fs-5 "></i> <span> Leave </span>
                 </a>
             </li>
-
             <li class="collapsed">
                 <a class="m-link {{--{{ Request::route()->getName() == 'employee.profile.details' ? 'active':''}}--}}" data-bs-toggle="collapse" data-bs-target="#client-Components" href="#"><i class="icofont-address-book fs-5 "></i> <span>Account Details</span> <span class="arrow icofont-dotted-down ms-auto text-end fs-5"></span></a>
                 <!-- Menu: Sub menu ul -->
                 <ul class="sub-menu collapse {{ Request::route()->getName() == 'employee.profile.details' ? 'show':''}}" id="client-Components">
                     <li><a class="ms-link {{ Request::route()->getName() == 'employee.profile.details' ? 'active':''}}" href="{{route('employee.profile.details')}}"> <span>Profile</span></a></li>
-                    <li><a class="ms-link " href="#"> <span> Password Change</span></a></li>
-                    {{--<li><a class="ms-link " href=""> <span> Personal Info </span></a></li>
-                    <li><a class="ms-link " href=""> <span> Bank Info </span></a></li>
-                    <li><a class="ms-link " href=""> <span> Family Info </span></a></li>
-                    <li><a class="ms-link " href=""> <span> Experience</span></a></li>--}}
                 </ul>
             </li>
-            <li class="collapsed">
+            {{--<li class="collapsed">
                 <a class="m-link" href="#">
                     <i class="icofont-chat fs-5"></i> <span> Chat </span>
                 </a>
-            </li>
+            </li>--}}
             <li class="collapsed">
                 <a class="m-link btn" onclick="return confirm('are you sure to logout ?') ? document.getElementById('logoutSideBar').submit():''">
                     <i class="icofont-logout fs-5"></i> <span> Logout </span>

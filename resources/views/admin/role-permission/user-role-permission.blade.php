@@ -4,7 +4,7 @@
     <div class="row align-items-center">
         <div class="border-0 mb-4">
             <div class="card-header py-3 no-bg bg-transparent d-flex align-items-center px-0 justify-content-between border-bottom flex-wrap">
-                <h3 class="fw-bold mb-0">User Role</h3>
+                <h3 class="fw-bold mb-0 text-white">User Role</h3>
             </div>
         </div>
     </div>
@@ -13,8 +13,8 @@
     <div class="row clearfix g-3">
         <div class="col-sm-12">
             <div class="card mb-3">
-                <div class="card-body">
-                    <table id="myProjectTable" class="table table-hover align-middle mb-0" style="width:100%">
+                <div class="card-body export-table bg-dark-subtle">
+                    <table id="file-datatable" class="table table-bordered text-nowrap table-secondary key-buttons border-bottom w-100">
                         <thead>
                         <tr>
                             <th>No</th>
