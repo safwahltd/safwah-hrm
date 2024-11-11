@@ -47,11 +47,7 @@
                             <li><a class="ms-link {{ Request::route()->getName() == 'employee.profile.details' ? 'active':''}}" href="{{route('employee.profile.details')}}"> <span>Profile</span></a></li>
                         </ul>
                     </li>
-                    <li class="collapsed">
-                        <a class="m-link" href="#">
-                            <i class="icofont-chat fs-5"></i> <span> Chat </span>
-                        </a>
-                    </li>
+
             @endif
             @if(auth()->user()->hasPermission('holidays index')
                 || auth()->user()->hasPermission('departments index')
@@ -82,7 +78,10 @@
                     @endif
                     @if(auth()->user()->hasPermission('admin attendance list'))
                             <li><a class="ms-link {{ Request::route()->getName() == 'admin.attendance.list' ? 'active':'' }}" href="{{route('admin.attendance.list')}}"><span>Attendance</span></a></li>
-                        @endif
+                    @endif
+                    @if(auth()->user()->hasPermission('admin attendance details'))
+                            <li><a class="ms-link {{ Request::route()->getName() == 'admin.attendance.details' ? 'active':'' }}" href="{{route('admin.attendance.details')}}"><span>Attendance Details</span></a></li>
+                    @endif
 
                     @if(auth()->user()->hasPermission('admin leave requests'))
                         <li><a class="ms-link {{ Request::route()->getName() == 'admin.leave.requests' ? 'active':'' }}" href="{{route('admin.leave.requests')}}"><span>Leave Request</span></a></li>
@@ -159,8 +158,12 @@
                                 <li><a class="ms-link {{ Request::route()->getName() == 'admin.salary.report' ? 'active':'' }}" href="{{route('admin.salary.report')}}"><span> Salary Report </span></a></li>
                                 @endif
                                 <li><a class="ms-link" href="#"><span> User Report </span></a></li>
+                                @if(auth()->user()->hasPermission('admin asset report'))
                                 <li><a class="ms-link {{ Request::route()->getName() == 'admin.asset.report' ? 'active':'' }}" href="{{route('admin.asset.report')}}"><span> Assets Report </span></a></li>
+                                @endif
+                                @if(auth()->user()->hasPermission('admin payslip report'))
                                 <li><a class="ms-link" href="#"><span> Payslip Report </span></a></li>
+                                @endif
                                 @if(auth()->user()->hasPermission('admin attendance report'))
                                     <li><a class="ms-link {{ Request::route()->getName() == 'admin.attendance.report' ? 'active':'' }}" href="{{route('admin.attendance.report')}}"><span>Attendance Report</span></a></li>
                                 @endif

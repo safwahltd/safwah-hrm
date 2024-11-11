@@ -173,6 +173,7 @@
     <script>
         $(document).ready(function() {
             $('#salary_id').change(function() {
+                console.log('click');
                 var salaryId = $(this).val();
                 if (salaryId) {
                     $.ajax({

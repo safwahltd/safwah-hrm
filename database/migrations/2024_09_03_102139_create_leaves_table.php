@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('leave_type');
             $table->date('start_date')->nullable();
             $table->date('end_date')->nullable();
+            $table->text('dates')->nullable();
             $table->time('start_time')->nullable();
             $table->time('end_time')->nullable();
             $table->bigInteger('days_taken')->nullable();

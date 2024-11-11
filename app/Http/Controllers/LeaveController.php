@@ -21,102 +21,113 @@ class LeaveController extends Controller
     }
     public function employeeLeaveRequest(Request $request){
         try {
-            $validate = Validator::make($request->all(),[
-               'leave_type' => 'required' ,
-               'reason' => 'required',
-               'address_contact' => 'required',
-               'concern_person' => 'required',
-            ]);
-            if ($validate->fails()){
-                toastr()->error($validate->messages());
-                return back();
-            }
-            /* Total days count */
-            $startDate = new \DateTime($request->start_date);
-            $endDate = new \DateTime($request->end_date);
-            $total = $startDate->diff($endDate);
+            $leave = Leave::where('user_id',auth()->user()->id)->whereJsonContains('dates',$request->start_date)->orWhereJsonContains('dates',$request->end_date)->first();
+            if (!$leave){
+                $validate = Validator::make($request->all(),[
+                    'leave_type' => 'required' ,
+                    'reason' => 'required',
+                    'address_contact' => 'required',
+                    'concern_person' => 'required',
+                ]);
+                if ($validate->fails()){
+                    toastr()->error($validate->messages());
+                    return back();
+                }
+                /* Total days count */
+                $startDate = Carbon::parse($request->start_date);
+                $endDate = Carbon::parse($request->end_date);
+                $total = $startDate->diff($endDate);
+                $dates = collect();
 
-            $leaveRequest = new Leave();
-            $leaveRequest->user_id = auth()->user()->id;
-            $leaveRequest->leave_type = $request->leave_type;
+                $currentDate = $startDate->copy();
 
-            if ($startDate == $endDate){
-                $leaveRequest->days_taken = 1;
+                while ($currentDate->lte($endDate)) {
+                    $dates->push($currentDate->toDateString());  // Add the date to the collection
+                    $currentDate->addDay();  // Move to the next day
+                }
+                $leaveRequest = new Leave();
+                $leaveRequest->user_id = auth()->user()->id;
+                $leaveRequest->leave_type = $request->leave_type;
+                $leaveRequest->days_taken = count($dates);
+                $leaveBalance = UserInfos::where('user_id',auth()->user()->id)->first();
+                if ($request->leave_type == 'sick'){
+                    if ($leaveBalance->sick_leave > 0){
+                        if ($leaveBalance->sick_leave >= $leaveRequest->days_taken){
+                            $leaveRequest->reason = $request->reason;
+                            $leaveRequest->start_date = $request->start_date;
+                            $leaveRequest->end_date = $request->end_date;
+                            $leaveRequest->dates = json_encode($dates);
+                            $leaveRequest->address_contact = $request->address_contact;
+                            $leaveRequest->concern_person = $request->concern_person;
+                            $leaveRequest->save();
+                            toastr()->success('Leave Request Send Success.');
+                            return back();
+                        }
+                        else{
+                            toastr()->error('Not Enough Leave Balance.');
+                            return back();
+                        }
+                    }
+                    else{
+                        toastr()->error('Not Enough Leave Balance.');
+                        return back();
+                    }
+                }
+                if ($request->leave_type == 'casual'){
+                    if ($leaveBalance->casual_leave > 0){
+                        if ($leaveBalance->casual_leave >= $leaveRequest->days_taken){
+                            $leaveRequest->reason = $request->reason;
+                            $leaveRequest->start_date = $request->start_date;
+                            $leaveRequest->end_date = $request->end_date;
+                            $leaveRequest->dates = json_encode($dates);
+                            $leaveRequest->address_contact = $request->address_contact;
+                            $leaveRequest->concern_person = $request->concern_person;
+                            $leaveRequest->save();
+                            toastr()->success('Leave Request Send Success.');
+                            return back();
+                        }
+                        else{
+                            toastr()->error('Not Enough Leave Balance.');
+                            return back();
+                        }
+                    }
+                    else{
+                        toastr()->error('Not Enough Leave Balance.');
+                        return back();
+                    }
+                }
+                if ($request->leave_type == 'half_day'){
+                    $startOfMonth = Carbon::now()->startOfMonth();
+                    $endOfMonth = Carbon::now()->endOfMonth();
+                    $leavee = Leave::where('user_id',auth()->user()->id)->whereNot('start_time',null)->whereBetween('created_at', [$startOfMonth, $endOfMonth])->where('status',1)->count();
+                    if ($leaveBalance->half_day_leave > 0){
+                        if ($leaveBalance->half_day_leave > $leavee){
+                            $leaveRequest->start_time = $request->start_time;
+                            $leaveRequest->end_time = $request->end_time;
+                            $leaveRequest->start_date = today();
+                            $leaveRequest->end_date = today();
+                            $leaveRequest->dates = json_encode(today());
+                            $leaveRequest->reason = $request->reason;
+                            $leaveRequest->address_contact = $request->address_contact;
+                            $leaveRequest->concern_person = $request->concern_person;
+                            $leaveRequest->save();
+                            toastr()->success('Leave Request Send Success.');
+                            return back();
+                        }
+                        else{
+                            toastr()->error('Not Enough Leave Balance.');
+                            return back();
+                        }
+                    }
+                    else{
+                        toastr()->error('Not Enough Leave Balance.');
+                        return back();
+                    }
+                }
             }
             else{
-                $leaveRequest->days_taken = $total->days + 1;
-            }
-            $leaveBalance = UserInfos::where('user_id',auth()->user()->id)->first();
-            if ($request->leave_type == 'sick'){
-                if ($leaveBalance->sick_leave > 0){
-                    if ($leaveBalance->sick_leave >= $leaveRequest->days_taken){
-                        $leaveRequest->reason = $request->reason;
-                        $leaveRequest->start_date = $request->start_date;
-                        $leaveRequest->end_date = $request->end_date;
-                        $leaveRequest->address_contact = $request->address_contact;
-                        $leaveRequest->concern_person = $request->concern_person;
-                        $leaveRequest->save();
-                        toastr()->success('Leave Request Send Success.');
-                        return back();
-                    }
-                    else{
-                        toastr()->error('Not Enough Leave Balance.');
-                        return back();
-                    }
-                }
-                else{
-                    toastr()->error('Not Enough Leave Balance.');
-                    return back();
-                }
-            }
-            if ($request->leave_type == 'casual'){
-                if ($leaveBalance->casual_leave > 0){
-                    if ($leaveBalance->casual_leave >= $leaveRequest->days_taken){
-                        $leaveRequest->reason = $request->reason;
-                        $leaveRequest->start_date = $request->start_date;
-                        $leaveRequest->end_date = $request->end_date;
-                        $leaveRequest->address_contact = $request->address_contact;
-                        $leaveRequest->concern_person = $request->concern_person;
-                        $leaveRequest->save();
-                        toastr()->success('Leave Request Send Success.');
-                        return back();
-                    }
-                    else{
-                        toastr()->error('Not Enough Leave Balance.');
-                        return back();
-                    }
-                }
-                else{
-                    toastr()->error('Not Enough Leave Balance.');
-                    return back();
-                }
-            }
-            if ($request->leave_type == 'half_day'){
-                $startOfMonth = Carbon::now()->startOfMonth();
-                $endOfMonth = Carbon::now()->endOfMonth();
-                $leavee = Leave::where('user_id',auth()->user()->id)->whereNot('start_time',null)->whereBetween('created_at', [$startOfMonth, $endOfMonth])->where('status',1)->count();
-                if ($leaveBalance->half_day_leave > 0){
-                    if ($leaveBalance->half_day_leave > $leavee){
-                        $leaveRequest->start_time = $request->start_time;
-                        $leaveRequest->end_time = $request->end_time;
-                        $leaveRequest->start_date = today();
-                        $leaveRequest->end_date = today();
-                        $leaveRequest->reason = $request->reason;
-                        $leaveRequest->address_contact = $request->address_contact;
-                        $leaveRequest->concern_person = $request->concern_person;
-                        $leaveRequest->save();
-                        toastr()->success('Leave Request Send Success.');
-                        return back();
-                    }
-                    else{
-                        toastr()->error('Not Enough Leave Balance.');
-                        return back();
-                    }
-                }
-                else{
-                    toastr()->error('Not Enough Leave Balance.');
-                    return back();
-                }
+                toastr()->error('Already Spent This Day/Days Leave.');
+                return back();
             }
         }
         catch (Exception $e){
@@ -137,9 +148,17 @@ class LeaveController extends Controller
                 return back();
             }
             /* Total days count */
-            $startDate = new \DateTime($request->start_date);
-            $endDate = new \DateTime($request->end_date);
+            $startDate = Carbon::parse($request->start_date);
+            $endDate = Carbon::parse($request->end_date);
             $total = $startDate->diff($endDate);
+            $dates = collect();
+
+            $currentDate = $startDate->copy();
+
+            while ($currentDate->lte($endDate)) {
+                $dates->push($currentDate->toDateString());  // Add the date to the collection
+                $currentDate->addDay();  // Move to the next day
+            }
 
             $leaveRequest = Leave::find($id);
             $leaveRequest->user_id = auth()->user()->id;
@@ -157,6 +176,7 @@ class LeaveController extends Controller
                         $leaveRequest->reason = $request->reason;
                         $leaveRequest->start_date = $request->start_date;
                         $leaveRequest->end_date = $request->end_date;
+                        $leaveRequest->dates = json_encode($dates);
                         $leaveRequest->address_contact = $request->address_contact;
                         $leaveRequest->concern_person = $request->concern_person;
                         $leaveRequest->save();
@@ -179,6 +199,7 @@ class LeaveController extends Controller
                         $leaveRequest->reason = $request->reason;
                         $leaveRequest->start_date = $request->start_date;
                         $leaveRequest->end_date = $request->end_date;
+                        $leaveRequest->dates = json_encode($dates);
                         $leaveRequest->address_contact = $request->address_contact;
                         $leaveRequest->concern_person = $request->concern_person;
                         $leaveRequest->save();
@@ -201,6 +222,7 @@ class LeaveController extends Controller
                     $leaveRequest->end_time = $request->end_time;
                     $leaveRequest->start_date = today();
                     $leaveRequest->end_date = today();
+                    $leaveRequest->dates = json_encode(today());
                     $leaveRequest->reason = $request->reason;
                     $leaveRequest->address_contact = $request->address_contact;
                     $leaveRequest->concern_person = $request->concern_person;

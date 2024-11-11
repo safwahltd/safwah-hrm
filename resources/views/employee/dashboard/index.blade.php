@@ -132,7 +132,7 @@
                                 <div class="row p-3">
                                     <div class="col-md-4">
                                         <div class="attendance-details">
-                                            <h4 class="text-primary">{{$totalAttend}}</h4>
+                                            <h4 class="text-primary">{{ $totalWorkingDay }}</h4>
                                             <p>Working Days</p>
                                         </div>
                                     </div>

@@ -4,7 +4,11 @@ namespace App\Http\Controllers\employee;
 
 use App\Exports\AttendanceExport;
 use App\Models\Attendance;
+use App\Models\Holiday;
+use App\Models\Leave;
 use App\Models\User;
+use App\Models\WorkingDay;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Exception;
@@ -12,6 +16,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use DateTime;
 use DateTimeZone;
+use Illuminate\Support\Facades\Validator;
 use Maatwebsite\Excel\Facades\Excel;
 
 
@@ -21,15 +26,15 @@ class AttendanceController extends Controller
         $attendances = Attendance::where('user_id',auth()->user()->id)->latest()->paginate(30);
         return view('employee.attendance.index',compact('attendances'));
     }
-     public function adminAttendanceList(){
-         if(auth()->user()->hasPermission('admin attendance list')){
-             $attendances = Attendance::latest()->paginate(30);
-             return view('admin.attendance.index',compact('attendances'));
-         }
-         else{
-             toastr()->error('Permission Denied');
-             return back();
-         }
+    public function adminAttendanceList(){
+        if(auth()->user()->hasPermission('admin attendance list')){
+            $attendances = Attendance::latest()->paginate(30);
+            return view('admin.attendance.index',compact('attendances'));
+        }
+        else{
+            toastr()->error('Permission Denied');
+            return back();
+        }
     }
     public function getClockStatus()
     {
@@ -72,9 +77,9 @@ class AttendanceController extends Controller
         $attendanceNew->save();
 
         return response()->json([
-                'message' => 'Clocked in successfully.',
-                'clockIn' => $clockIn,
-            ]);
+            'message' => 'Clocked in successfully.',
+            'clockIn' => $clockIn,
+        ]);
     }
     public function clockOut(Request $request)
     {
@@ -129,7 +134,7 @@ class AttendanceController extends Controller
         // Get the total number of days in the current month
         $totalDays = $endOfMonth->day;
 
-      // Generate a list of all dates in the current month
+        // Generate a list of all dates in the current month
         $datess = [];
         $currentDay = $startOfMonth->copy();
         while ($currentDay->lte($endOfMonth)) {
@@ -192,10 +197,10 @@ class AttendanceController extends Controller
         $attendances = Attendance::where('user_id',auth()->user()->id)->get();
 
         $events = $attendances->map(function($attendance) {
-            $clock_in = Carbon::parse($attendance->clock_in)->format('H:m:s');
-            $clock_out = Carbon::parse($attendance->clock_out)->format('H:m:s');
+            $clock_in = Carbon::parse($attendance->clock_in)->format('H:m');
+            $clock_out = Carbon::parse($attendance->clock_out)->format('H:m');
             return [
-                'title' => "In: {$clock_in},Out: {$clock_out}",
+                'title' => "In: $clock_in,Out: $clock_out",
                 'start' => $attendance->clock_in_date . 'T' . $clock_in,
                 'end' => $attendance->clock_in_date . 'T' . $clock_out,
             ];
@@ -217,4 +222,213 @@ class AttendanceController extends Controller
             return back();
         }
     }
+    public function details(){
+        $users = User::orderBy('name','asc')->where('status',1)->whereNotIn('id',[1])->get();
+        return view('admin.attendance.details.month',compact('users'));
+    }
+    public function attendanceMonthly(Request $request){
+        if(auth()->user()->hasPermission('admin attendance month details')){
+            try {
+            $validate = Validator::make($request->all(),[
+                'user_id' => 'required',
+                'month' => 'required',
+                'year' => 'required',
+            ]);
+            if ($validate->fails()){
+                toastr()->error($validate->messages());
+                return back();
+            }
+            $user_id = $request->input('user_id');
+            $month = $request->input('month', Carbon::now()->month);
+            $year = $request->input('year');
+            $daysInaMonth = Carbon::create($year, $month, 1)->daysInMonth;
+            $startDate = Carbon::create($year, $month, 1);
+            $endDate = $startDate->copy()->endOfMonth();
+            $allDates = [];
+            for ($date = $startDate; $date <= $endDate; $date->addDay()) {
+                $allDates[] = $date->toDateString(); // Store the dates in an array
+            }
+            for ($day = 1; $day <= $daysInaMonth; $day++) {
+                $attendancesForDay = Attendance::with('user')->where(function($query) use ($user_id, $year, $month, $day) {
+                    $query->when($user_id, function($q) use ($user_id) {
+                        $q->where('user_id', $user_id);
+                    })->when($year, function($q) use ($year) {
+                        $q->whereYear('clock_in', $year);
+                    })->when($month, function($q) use ($month) {
+                        $q->whereMonth('clock_in', $month);
+                    });
+                })->get()->groupBy(function ($item) {
+                    return \Carbon\Carbon::parse($item->clock_in)->toDateString();
+                });
+
+                $attendanceData = collect($allDates)->mapWithKeys(function ($date) use ($attendancesForDay) {
+                    return [$date => $attendancesForDay->get($date, collect())];
+                });
+            }
+            $user = User::find($user_id);
+            $present = count($attendancesForDay);
+            $lateCount = [];
+            foreach ($attendancesForDay as $attendance){
+                foreach ($attendance as $att){
+                    if (!in_array(\Carbon\Carbon::parse($att->clock_in)->format('y-m-d'),$lateCount)){
+                        if ( \Carbon\Carbon::parse($att->clock_in)->format('H:i:s') > '09:15:00' ){
+                            array_push($lateCount,\Carbon\Carbon::parse($att->clock_in)->format('y-m-d'));
+                        }
+                    }
+                }
+            }
+            $workingDaysRecord = WorkingDay::where('year', $year)->where('month', $month)->first();
+            /* start holiday */
+            $holidays = Holiday::when($month, function($q) use ($month) {
+                $q->whereMonth('date_from', $month);
+            })->when($month, function($q) use ($month) {
+                $q->whereMonth('date_to', $month);
+            })->when($year, function($q) use ($year) {
+                $q->whereYear('date_from', $year);
+            })->when($month, function($q) use ($year) {
+                $q->whereYear('date_to', $year);
+            })->pluck('dates')->toArray();
+            $holidayDates = [];
+            if ($holidays){
+                foreach ($holidays as $holiday){
+                    foreach (json_decode($holiday) as $h){
+                        if (!in_array($h,$holidayDates)){
+                            array_push($holidayDates,$h);
+                        }
+                    }
+                }
+            }
+
+            /* end Holiday */
+            $leaves = Leave::where('user_id',$user->id)->when($month, function($q) use ($month) {
+                $q->whereMonth('start_date', $month);
+            })->when($year, function($q) use ($year) {
+                $q->whereYear('start_date', $year);
+            })->whereIn('leave_type',['sick','casual'])->where('status',1)->pluck('dates')->toArray();
+            $leaveDates = [];
+            if ($leaves){
+                foreach ($leaves as $leave){
+                    foreach (json_decode($leave) as $lev){
+                        if (!in_array($lev,$leaveDates)){
+                            array_push($leaveDates,$lev);
+                        }
+                    }
+                }
+            }
+            return view('admin.attendance.details.month-wise-attendance', compact('attendanceData','holidayDates','workingDaysRecord','present', 'lateCount','leaveDates','year', 'month','user'));
+            }
+            catch (Exception $e){
+                toastr()->error($e->getMessage());
+                return back();
+            }
+        }
+        else{
+            toastr()->error('Permission Denied');
+            return back();
+        }
+    }
+    public function attendanceMonthlyDownload(Request $request){
+        if(auth()->user()->hasPermission('admin attendance details download')){
+            try {
+            $validate = Validator::make($request->all(),[
+                'user_id' => 'required',
+                'month' => 'required',
+                'year' => 'required',
+            ]);
+            if ($validate->fails()){
+                toastr()->error($validate->messages());
+                return back();
+            }
+            $user_id = $request->input('user_id');
+            $month = $request->input('month', Carbon::now()->month);
+            $year = $request->input('year');
+            $daysInaMonth = Carbon::create($year, $month, 1)->daysInMonth;
+            $startDate = Carbon::create($year, $month, 1);
+            $endDate = $startDate->copy()->endOfMonth();
+            $allDates = [];
+            for ($date = $startDate; $date <= $endDate; $date->addDay()) {
+                $allDates[] = $date->toDateString(); // Store the dates in an array
+            }
+            for ($day = 1; $day <= $daysInaMonth; $day++) {
+                $attendancesForDay = Attendance::with('user')->where(function($query) use ($user_id, $year, $month, $day) {
+                    $query->when($user_id, function($q) use ($user_id) {
+                        $q->where('user_id', $user_id);
+                    })->when($year, function($q) use ($year) {
+                        $q->whereYear('clock_in', $year);
+                    })->when($month, function($q) use ($month) {
+                        $q->whereMonth('clock_in', $month);
+                    });
+                })->get()->groupBy(function ($item) {
+                    return \Carbon\Carbon::parse($item->clock_in)->toDateString();
+                });
+
+                $attendanceData = collect($allDates)->mapWithKeys(function ($date) use ($attendancesForDay) {
+                    return [$date => $attendancesForDay->get($date, collect())];
+                });
+            }
+            $user = User::find($user_id);
+            $present = count($attendancesForDay);
+            $lateCount = [];
+            foreach ($attendancesForDay as $attendance){
+                foreach ($attendance as $att){
+                    if (!in_array(\Carbon\Carbon::parse($att->clock_in)->format('y-m-d'),$lateCount)){
+                        if ( \Carbon\Carbon::parse($att->clock_in)->format('H:i:s') > '09:15:00' ){
+                            array_push($lateCount,\Carbon\Carbon::parse($att->clock_in)->format('y-m-d'));
+                        }
+                    }
+                }
+            }
+            $workingDaysRecord = WorkingDay::where('year', $year)->where('month', $month)->first();
+            /* start holiday */
+            $holidays = Holiday::when($month, function($q) use ($month) {
+                $q->whereMonth('date_from', $month);
+            })->when($month, function($q) use ($month) {
+                $q->whereMonth('date_to', $month);
+            })->when($year, function($q) use ($year) {
+                $q->whereYear('date_from', $year);
+            })->when($month, function($q) use ($year) {
+                $q->whereYear('date_to', $year);
+            })->pluck('dates')->toArray();
+            $holidayDates = [];
+            if ($holidays){
+                foreach ($holidays as $holiday){
+                    foreach (json_decode($holiday) as $h){
+                        if (!in_array($h,$holidayDates)){
+                            array_push($holidayDates,$h);
+                        }
+                    }
+                }
+            }
+
+            /* end Holiday */
+            $leaves = Leave::where('user_id',$user->id)->when($month, function($q) use ($month) {
+                $q->whereMonth('start_date', $month);
+            })->when($year, function($q) use ($year) {
+                $q->whereYear('start_date', $year);
+            })->whereIn('leave_type',['sick','casual'])->where('status',1)->pluck('dates')->toArray();
+            $leaveDates = [];
+            if ($leaves){
+                foreach ($leaves as $leave){
+                    foreach (json_decode($leave) as $lev){
+                        if (!in_array($lev,$leaveDates)){
+                            array_push($leaveDates,$lev);
+                        }
+                    }
+                }
+            }
+//            return view('admin.attendance.details.month-wise-attendance-download', compact('attendanceData','holidayDates','workingDaysRecord','present', 'lateCount','leaveDates','year', 'month','user'));
+            $pdf = Pdf::loadView('admin.attendance.details.month-wise-attendance-download', compact('attendanceData','holidayDates','workingDaysRecord','present', 'lateCount','leaveDates','year', 'month','user'));
+            return $pdf->download('attendance_report.pdf');
+            }
+            catch (Exception $e){
+                toastr()->error($e->getMessage());
+                return back();
+            }
+        }
+        else{
+            toastr()->error('Permission Denied');
+            return back();
+        }
+    }
+
 }

@@ -8,20 +8,88 @@
                 <div class="card-header py-3 px-0 d-sm-flex align-items-center  justify-content-between border-bottom">
                     <h3 class="fw-bold flex-fill mb-0 mt-sm-0 text-white">Employee</h3>
                     <button type="button" class="btn btn-dark me-1 mt-1 w-sm-100" data-bs-toggle="modal" data-bs-target="#createemp"><i class="icofont-plus-circle me-2 fs-6"></i>Add Employee</button>
-                    <div class="dropdown">
-                        <button class="btn btn-primary dropdown-toggle mt-1  w-sm-100" type="button" id="dropdownMenuButton2" data-bs-toggle="dropdown" aria-expanded="false">
-                            Status
-                        </button>
-                        <ul class="dropdown-menu  dropdown-menu-end" aria-labelledby="dropdownMenuButton2">
-                            <li><a class="dropdown-item" href="#">All</a></li>
-                        </ul>
-                    </div>
                 </div>
             </div>
         </div>
     </div>
     <!-- Row End -->
     <div class="row g-3 py-1 pb-4">
+        <form method="get" action="{{ route('employees.index') }}">
+            @csrf
+            <div class="row">
+                <div class="col my-2">
+                    <div class="card ">
+                        <div class="card-header">
+                            <label for="leave_type" class="text-dark">Employee</label>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <select class="form-control-lg select2-example"  name="user_id" id="user_id">
+                                    <option value="">All Employee</option>
+                                    @foreach($userss as $user)
+                                        <option {{$user_id == $user->id ? 'selected':''}} value="{{ $user->id }}">{{ $user->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col my-2">
+                    <div class="card">
+                        <div class="card-header">
+                            <label for="leave_type" class="text-dark">Status</label>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <select class="form-control-sm"  name="status" id="status">
+                                    <option value="">All Type</option>
+                                    <option value="1">Active</option>
+                                    <option value="0">Inactive</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col my-2">
+                    <div class="card">
+                        <div class="card-header"><label for="leave_type" class="text-dark">Employee Type</label></div>
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <select class="form-control-sm"  name="type" id="type">
+                                    <option value="">All</option>
+                                    <option {{$type == 'Intern' ? 'selected':''}} value="Intern">Intern</option>
+                                    <option {{$type == 'Probationary' ? 'selected':''}} value="Probationary">Probationary</option>
+                                    <option {{$type == 'Confirm' ? 'selected':''}} value="Confirm">Confirm</option>
+                                    <option {{$type == 'Part_Time' ? 'selected':''}} value="Part_Time">Part Time</option>
+                                    <option {{$type == 'Contractual' ? 'selected':''}} value="Contractual">Contractual</option>
+                                    <option {{$type == 'Remote' ? 'selected':''}} value="Remote">Remote</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col my-2">
+                    <div class="card">
+                        <div class="card-header"><label for="leave_type" class="text-dark">Designation</label></div>
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <select class="form-control-sm"  name="designation" id="designation">
+                                    <option value="">All</option>
+                                    @foreach($designations as $designation)
+                                        <option value="{{$designation->id}}" {{$designation_id == $designation->id ? 'selected':''}} >{{$designation->name}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col my-2">
+                    <div class="d-flex my-4 align-items-center">
+                        <button class="form-control-lg text-white bg-success px-3"  type="submit">Filter</button>
+                    </div>
+                </div>
+            </div>
+        </form>
         @foreach($users as $key => $user)
         <div class="col-3">
             <div class="card">

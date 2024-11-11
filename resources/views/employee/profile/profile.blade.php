@@ -1,16 +1,6 @@
 @extends('admin.layout.app')
 @section('title','Employee Profile')
 @section('body')
-    <div class="row clearfix">
-        <div class="col-md-12">
-            <div class="card border-0 mb-4 no-bg">
-                <div class="card-header py-3 px-0 d-flex align-items-center  justify-content-between border-bottom">
-                    <h3 class=" fw-bold flex-fill mb-0 text-white">Employee Profile</h3>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Row End -->
 
     <div class="row g-3">
         <div class="col-xl-12 col-lg-12 col-md-12">
@@ -76,7 +66,6 @@
                                     <i class="icofont-email"></i>
                                     <span class="ms-2 small">{{$user->userInfo->personal_email ?? 'N/A'}} ( Personal )</span>
                                 </div>
-
                             </div>
                             <div class="col-xl-5">
                                 <div class="d-flex align-items-center">
@@ -86,18 +75,21 @@
                             </div>
                             <div class="col-xl-5">
                                 <div class="d-flex align-items-center">
-                                    <i class="icofont-address-book"></i>
-                                    <span class="ms-2 small"><span class="text-danger">Present :</span> {{$user->userInfo->present_address ?? 'N/A'}}</span>
-                                </div>
-                            </div>
-                            <div class="col-xl-5">
-                                <div class="d-flex align-items-center">
-                                    <i class="icofont-address-book"></i>
-                                    <span class="ms-2 small"><span class="text-danger">Permanent :</span> {{$user->userInfo->permanent_address ?? 'N/A'}}</span>
+                                    <i class="icofont-birthday-cake"></i>
+                                    <span class="ms-2 small">{{ $user->userInfo->gender ?? 'N/A'}}</span>
                                 </div>
                             </div>
 
-
+                        </div>
+                        <div class="row">
+                            <div class="col-md-5 d-flex align-items-center">
+                                <i class="icofont-address-book"></i>
+                                <span class="ms-2 small"><span class="text-danger">Present :</span> {{$user->userInfo->present_address ?? 'N/A'}}</span>
+                            </div>
+                            <div class="col-md-5 d-flex align-items-center p-1">
+                                <i class="icofont-address-book"></i>
+                                <span class="ms-2 small"><span class="text-danger">Permanent :</span> {{$user->userInfo->permanent_address ?? 'N/A'}}</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -339,6 +331,10 @@
                         <form action="{{route('employee.personal.info.update')}}" method="post">
                             @csrf
                             <div class="row g-3 mb-3">
+                                <div class="col-6">
+                                    <label for="nameUpdate" class="form-label">Name</label>
+                                    <input type="text" class="form-control" name="name" placeholder="name" id="nameUpdate" value="{{$user->userInfo->name}}">
+                                </div>
                                 <div class="col-6">
                                     <label for="mobile1" class="form-label">Personal Mobile</label>
                                     <input type="number" class="form-control" name="mobile" placeholder="mobile" id="mobile1" value="{{$user->userInfo->mobile}}">

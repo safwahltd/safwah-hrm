@@ -55,7 +55,6 @@ class AttendanceExport implements WithTitle,FromCollection,WithHeadings,WithMapp
             // Add the user row to the report collection
             $report->push((object) $userData);
         }
-
         return $report;
     }
 

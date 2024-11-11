@@ -64,7 +64,7 @@
                     <div class="card">
                         <div class="card-header py-3 d-flex justify-content-between bg-transparent border-bottom-0">
                             <h6 class="mb-0 fw-bold ">Total Employees</h6>
-                            <h4 class="mb-0 fw-bold ">{{count($totalEmployees)}}</h4>
+                            <h5 class="mb-0 fw-bold ">{{count($totalEmployees)}}</h5>
                         </div>
                         <div class="card-body">
                             <div class="mt-3" id="apex-MainCategories"></div>
@@ -138,7 +138,7 @@
                 <div class="col-md-12 col-lg-12 col-xl-12">
                     <div class="card">
                         <div class="card-header py-3 d-flex justify-content-between bg-transparent border-bottom-0">
-                            <h6 class="mb-0 fw-bold ">Upcomming Holidays</h6>
+                            <h6 class="mb-0 fw-bold ">Upcoming Holidays</h6>
                         </div>
                         <div class="card-body">
                             <div class="holiday-details">
@@ -163,7 +163,7 @@
                                                             <small>{{ \Illuminate\Support\Carbon::parse($holiday->date_to)->format('d M, Y') }}</small>
                                                         </td>
                                                         <td><small>{{ $holiday->total_day }} {{$holiday->total_day <= 1 ? 'day':'days'}}</small></td>
-                                                        <td><span class="p-1 px-3 rounded-2 text-white {{ $holiday->date_to > \Illuminate\Support\Carbon::now() ? 'bg-success' : 'bg-danger' }}">{{ $holiday->date_to > \Illuminate\Support\Carbon::now() ? 'In Coming' : 'Passed' }}</span></td>
+                                                        <td><span style="font-size: 7px" class="p-1 rounded-2 text-white {{ $holiday->date_to > \Illuminate\Support\Carbon::now() ? 'bg-success' : 'bg-danger' }}">{{ $holiday->date_to > \Illuminate\Support\Carbon::now() ? 'In Coming' : 'Passed' }}</span></td>
                                                     </tr>
                                                 @empty
                                                     <tr>
@@ -197,7 +197,7 @@
                             <div class="card-body">
                                 <div class="d-flex">
                                     <div class="">
-                                        <h4>Welcome Back, <span class="fw-bold">{{auth()->user()->name ?? 'N/A'}}</span></h4>
+                                        <h5>Welcome Back, <span class="fw-bold">{{auth()->user()->name ?? 'N/A'}}</span></h5>
                                     </div>
                                     <div class="">
                                         @if(file_exists(auth()->user()->userInfo->image))
@@ -224,12 +224,25 @@
                                         </div>
                                         <div class="">
                                             <p class="mb-0">Clock In</p>
-                                            <small class="fw-bold" id="clock_in_time">{{ $attendance->clock_in ?? ''}}{{--{{ \Illuminate\Support\Carbon::parse($attendance->clock_in)->format('jS F Y, h:i a')}}--}}</small>
+                                            <small class="fw-bold" id="clock_in_time">
+                                                @if($attendance)
+                                                {{ $attendance->clock_in ? \Illuminate\Support\Carbon::parse($attendance->clock_in)->format('d M, Y H:i a'): 'Not Clock In Yet'}}
+                                                @else
+                                                    Not Clock In Yet
+                                                @endif
+                                            </small>
                                         </div>
                                         <div class="">
                                             <p class="mb-0">Clock Out</p>
-                                            <small class="fw-bold" id="clock_out_time">{{ $attendance->clock_out ?? ''}} {{--{{ \Illuminate\Support\Carbon::parse($attendance->clock_out)->format('jS F Y, h:i a')}}--}}</small>
+                                            <small class="fw-bold" id="clock_out_time">
+                                                @if($attendance)
+                                                {{ $attendance->clock_out ? \Illuminate\Support\Carbon::parse($attendance->clock_out)->format('d M, Y H:i a') : 'Not Clock Out Yet'}}
+                                                @else
+                                                    Not Clock Out Yet
+                                                @endif
+                                            </small>
                                         </div>
+
                                     </div>
                                     <div class="col-5 align-content-center">
                                         <button class="btn btn-primary" hidden id="clockInBtn"><i class="fa-solid fa-play"></i> Clock In</button>
@@ -265,7 +278,7 @@
                         </div>
                         <div class="card info-card my-1">
                             <div class="card-body">
-                                <h4 class="fw-bold">Upcoming Holidays</h4>
+                                <h5 class="fw-bold">Upcoming Holidays</h5>
                                 <div class="holiday-details">
                                     <div class="holiday-calendar">
                                         <div class="holiday-calendar-content">
@@ -288,7 +301,7 @@
                                                                 <small>{{ \Illuminate\Support\Carbon::parse($holiday->date_to)->format('d M, Y') }}</small>
                                                             </td>
                                                             <td><small>{{ $holiday->total_day }} {{$holiday->total_day <= 1 ? 'day':'days'}}</small></td>
-                                                            <td><span class="p-1 px-3 rounded-2 text-white {{ $holiday->date_to > \Illuminate\Support\Carbon::now() ? 'bg-success' : 'bg-danger' }}">{{ $holiday->date_to > \Illuminate\Support\Carbon::now() ? 'In Coming' : 'Passed' }}</span></td>
+                                                            <td><span style="font-size: 10px" class="p-1 px-3 rounded-2 text-white {{ $holiday->date_to > \Illuminate\Support\Carbon::now() ? 'bg-success' : 'bg-danger' }}">{{ $holiday->date_to > \Illuminate\Support\Carbon::now() ? 'In Coming' : 'Passed' }}</span></td>
                                                         </tr>
                                                     @empty
                                                         <tr>
@@ -314,39 +327,58 @@
                         <div class="card flex-fill my-1">
                             <div class="card-body">
                                 <div class="statistic-header d-flex">
-                                    <h5 class="fw-bold">Attendance & Leaves {{ \Illuminate\Support\Carbon::now()->year }}</h5>
+                                    <h6 class="fw-bold text-uppercase">Attendance & Leaves {{ \Illuminate\Support\Carbon::now()->year }}</h6>
                                 </div>
                                 <div class="attendance-list">
                                     <div class="row p-3">
                                         <div class="col-md-4">
                                             <div class="attendance-details">
-                                                <h4 class="text-primary">{{$totalAttend}}</h4>
-                                                <p>Working Days</p>
+                                                <h5 class="fw-bold text-primary">{{$totalWorkingDay}}</h5>
+                                                <p class="fw-bold text-uppercase">Working Days</p>
                                             </div>
                                         </div>
                                         <div class="col-md-4">
                                             <div class="attendance-details">
-                                                <h4 class="text-primary">{{ 20 }}</h4>
-                                                <p>Total Leave</p>
+                                                <h5 class="fw-bold text-primary">{{$totalAttend}}</h5>
+                                                <p class="fw-bold text-uppercase">Total Attend</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="attendance-details">
+                                                <h5 class="fw-bold text-primary">{{ $totalWorkingDay - $totalAttend }}</h5>
+                                                <p class="fw-bold text-uppercase">Total Absent</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="attendance-details">
+                                                <h5 class="fw-bold text-primary">{{ $totalHolidays }}</h5>
+                                                <p class="fw-bold text-uppercase">Holidays</p>
                                             </div>
                                         </div>
 
                                         <div class="col-md-4">
                                             <div class="attendance-details">
-                                                <h4 class="text-pink">{{ ( 10 - auth()->user()->userInfo->sick_leave ) + ( 10 - auth()->user()->userInfo->casual_leave ) }}</h4>
-                                                <p>Leaves Taken</p>
+                                                <h5 class="fw-bold text-primary">{{ 20 }}</h5>
+                                                <p class="fw-bold text-uppercase">Total Leave</p>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-4">
+                                            <div class="attendance-details">
+                                                <h5 class="fw-bold text-pink">{{ ( 10 - auth()->user()->userInfo->sick_leave ) + ( 10 - auth()->user()->userInfo->casual_leave ) }}</h5>
+                                                <p class="fw-bold text-uppercase">Leaves Taken</p>
                                             </div>
                                         </div>
                                         <div class="col-md-4">
                                             <div class="attendance-details">
-                                                <h4 class="text-success">{{ 20 - ( 10 - auth()->user()->userInfo->sick_leave ) + ( 10 - auth()->user()->userInfo->casual_leave ) }}</h4>
-                                                <p>Leaves Left</p>
+                                                <h5 class="fw-bold text-success">{{ 20 - ( 10 - auth()->user()->userInfo->sick_leave ) + ( 10 - auth()->user()->userInfo->casual_leave ) }}</h5>
+                                                <p class="fw-bold text-uppercase">Leaves Left</p>
                                             </div>
                                         </div>
                                         <div class="col-md-4">
                                             <div class="attendance-details">
-                                                <h4 class="text-purple">{{$leavesPending}}</h4>
-                                                <p>Pending Approval</p>
+                                                <h5 class="fw-bold text-purple">{{$leavesPending}}</h5>
+                                                <p class="fw-bold text-uppercase">Pending Approval</p>
                                             </div>
                                         </div>
 
@@ -362,7 +394,7 @@
                         <div class="card flex-fill my-1">
                             <div class="card-body">
                                 <div class="statistic-header">
-                                    <h4>Working hours</h4>
+                                    <h5>Working hours</h5>
                                 </div>
                                 <div class="working-hour-info">
                                     <div id="working_chart" class="table-responsive">

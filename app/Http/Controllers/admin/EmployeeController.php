@@ -16,13 +16,60 @@ use Illuminate\Validation\Rule;
 
 class EmployeeController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         if(auth()->user()->hasPermission('employees index')){
+            if ($request->all()){
+                $user_id = $request->user_id;
+                $status = $request->status;
+                $designation_id = $request->designation;
+                $type = $request->type;
+                if ($status == ''){
+                    $users = User::whereNotIn('role',['admin'])
+                        ->when($user_id, function ($q) use ($user_id) {
+                            return $q->where('id', $user_id);
+                        })->when($status, function ($q) use ($status) {
+                            return $q->where('status', $status);
+                        })->when($designation_id, function ($q) use ($designation_id) {
+                            return $q->whereHas('userInfo', function ($q) use ($designation_id) {
+                                $q->where('designation', $designation_id);
+                            });
+                        })->when($type, function ($q) use ($type) {
+                            return $q->whereHas('userInfo', function ($q) use ($type) {
+                                $q->where('employee_type', $type);
+                            });
+                        })
+                        ->get();
+                }
+                else{
+                    $users = User::whereNotIn('role',['admin'])
+                        ->when($user_id, function ($q) use ($user_id) {
+                            return $q->where('id', $user_id);
+                        })
+                        ->where('status', $status)
+                        ->when($designation_id, function ($q) use ($designation_id) {
+                            return $q->whereHas('userInfo', function ($q) use ($designation_id) {
+                                $q->where('designation', $designation_id);
+                            });
+                        })->when($type, function ($q) use ($type) {
+                            return $q->whereHas('userInfo', function ($q) use ($type) {
+                                $q->where('employee_type', $type);
+                            });
+                        })->get();
+                }
+                $designations = Designation::where('status',1)->get();
+                $roles = Role::where('status',1)->get();
+                $userss = User::whereNotIn('role',['admin'])->get();
+                return view('admin.user.index',compact('designations','users','roles','userss','user_id','designation_id','type'));
+            }
+            $user_id = 0;
+            $type = 0;
+            $designation_id = 0;
             $designations = Designation::where('status',1)->get();
+            $userss = User::latest()->whereNotIn('role',['admin'])->get();
             $users = User::latest()->whereNotIn('role',['admin'])->get();
             $roles = Role::where('status',1)->get();
-            return view('admin.user.index',compact('designations','users','roles'));
+            return view('admin.user.index',compact('designations','users','roles','userss','user_id','designation_id','type'));
         }
         else{
             toastr()->error('Permission Denied');

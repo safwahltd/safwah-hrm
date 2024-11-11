@@ -29,9 +29,9 @@
                             @forelse($attendances as $key => $attendance)
                                 <tr>
                                     <td><span class="fw-bold">{{$loop->iteration}}</span></td>
-                                    <td>{{$attendance->clock_in}}</td>
-                                    <td>{{$attendance->clock_out}}</td>
-                                    <td>{{$attendance->working_time }}</td>
+                                    <td>{{\Illuminate\Support\Carbon::parse($attendance->clock_in)->format('d M,Y h:i a' )}}</td>
+                                    <td>{{\Illuminate\Support\Carbon::parse($attendance->clock_out)->format('d M,Y H:i a' )}}</td>
+                                    <td>{{ $attendance->working_time }}</td>
                                 </tr>
                             @empty
                                 <tr>
