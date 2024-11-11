@@ -47,7 +47,7 @@
                 <div class="dropdown user-profile ml-2 ml-sm-3 d-flex align-items-center">
                     <div class="u-info me-2">
                         <p class="mb-0 text-end line-height-sm "><span class="font-weight-bold text-white">{{auth()->user()->name}}</span></p>
-                        <small class="text-white">{{ ucwords(auth()->user()->role)}} Profile</small>
+                        <small class="text-white">{{ ucwords(auth()->user()->role)}} </small>
                     </div>
                     <a class="nav-link dropdown-toggle pulse p-0" href="#" role="button" data-bs-toggle="dropdown" data-bs-display="static">
                         <img class="avatar lg rounded-circle img-thumbnail" src="{{asset('/')}}admin/assets/images/profile_av.png" alt="profile">

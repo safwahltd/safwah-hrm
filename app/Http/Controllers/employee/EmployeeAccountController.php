@@ -27,7 +27,7 @@ class EmployeeAccountController extends Controller
                 toastr()->error($validate->messages());
                 return redirect()->back();
             }
-
+            $userInfo->name = $request->name;
             $userInfo->mobile = $request->mobile;
             $userInfo->official_mobile = $request->official_mobile;
             $userInfo->personal_email = $request->personal_email;
@@ -42,6 +42,10 @@ class EmployeeAccountController extends Controller
             $userInfo->github = $request->github;
             $userInfo->biography = $request->biography;
             $userInfo->save();
+
+            $user = User::find(auth()->user()->id);
+            $user->name = $request->name;
+            $user->save();
 
             toastr()->success('Update Info Success.');
             return back();

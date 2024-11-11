@@ -1,4 +1,5 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 <!-- Jquery Core Js -->
 <script src="{{asset('/')}}admin/assets/bundles/libscripts.bundle.js"></script>
 

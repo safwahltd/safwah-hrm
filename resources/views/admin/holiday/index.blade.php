@@ -74,18 +74,18 @@
                                                 @method('PUT')
                                                 <div class="modal-body">
                                                     <div class="mb-3">
-                                                        <label for="nameEdit" class="form-label">Holiday Name</label>
-                                                        <input type="text" name="name" value="{{$holiday->name}}" class="form-control" id="nameEdit">
+                                                        <label for="nameEdit" class="form-label">Holiday Name <span class="text-danger">*</span></label>
+                                                        <input type="text" name="name" value="{{$holiday->name}}" class="form-control" id="nameEdit" required>
                                                     </div>
                                                     <div class="deadline-form">
                                                         <div class="row g-3 mb-3">
                                                             <div class="col-sm-6">
-                                                                <label for="holiday_head" class="form-label">From</label>
-                                                                <input type="date" value="{{$holiday->date_from}}" name="date_from" class="form-control">
+                                                                <label for="holiday_head" class="form-label">From <span class="text-danger">*</span></label>
+                                                                <input type="date" value="{{$holiday->date_from}}" name="date_from" class="form-control" required>
                                                             </div>
                                                             <div class="col-sm-6">
-                                                                <label for="holiday_head" class="form-label">To</label>
-                                                                <input type="date" value="{{$holiday->date_to}}" name="date_to" class="form-control">
+                                                                <label for="holiday_head" class="form-label">To <span class="text-danger">*</span></label>
+                                                                <input type="date" value="{{$holiday->date_to}}" name="date_to" class="form-control" required>
                                                             </div>
                                                             <div class="col-sm-6">
                                                                 <label for="status" class="form-label">Status</label>
@@ -131,18 +131,18 @@
                     @csrf
                     <div class="modal-body">
                         <div class="mb-3">
-                            <label for="name" class="form-label">holiday Name</label>
-                            <input type="text" name="name" class="form-control" id="name">
+                            <label for="name" class="form-label">holiday Name <span class="text-danger">*</span></label>
+                            <input type="text" name="name" class="form-control" id="name" required>
                         </div>
                         <div class="deadline-form">
                             <div class="row g-3 mb-3">
                                 <div class="col-sm-6">
-                                    <label for="holiday_head" class="form-label">From</label>
-                                    <input type="date" name="date_from" class="form-control">
+                                    <label for="holiday_head" class="form-label">From <span class="text-danger">*</span></label>
+                                    <input type="date" name="date_from" class="form-control" required>
                                 </div>
                                 <div class="col-sm-6">
-                                    <label for="holiday_head" class="form-label">To</label>
-                                    <input type="date" name="date_to" class="form-control">
+                                    <label for="holiday_head" class="form-label">To <span class="text-danger">*</span></label>
+                                    <input type="date" name="date_to" class="form-control" required>
                                 </div>
                                 <div class="col-sm-6">
                                     <label for="status" class="form-label">Status</label>

@@ -50,7 +50,7 @@
                 </div>
                 <table style="width:100% ; text-align: center ;margin-bottom: 4px">
                     <thead>
-                    <tr style="background-color: aliceblue; font-size: 14px">
+                    <tr style="background-color: #5c636a; text-transform: uppercase; color: white; font-size: 12px">
                         <th>SL</th>
                         <th>Name</th>
                         <th>Id</th>

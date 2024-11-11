@@ -165,16 +165,16 @@
                         <div class="deadline-form">
                             <div class="row g-3 mb-3">
                                 <div class="col-sm-6">
-                                    <label for="month" class="form-label">Month <span class="text-danger">*</span></label>
-                                    <select class="form-control" name="month" id="month" required>
+                                    <label for="monthAdd" class="form-label">Month <span class="text-danger">*</span></label>
+                                    <select class="form-control" name="month" id="monthAdd" required>
                                         @for ($i = 1; $i <= 12; $i++)
                                             <option value="{{ $i }}">{{ date('F', mktime(0, 0, 0, $i, 1)) }}</option>
                                         @endfor
                                     </select>
                                 </div>
                                 <div class="col-sm-6">
-                                    <label for="year" class="form-label">Year <span class="text-danger">*</span></label>
-                                    <select class="form-control" name="year" id="year" required>
+                                    <label for="yearAdd" class="form-label">Year <span class="text-danger">*</span></label>
+                                    <select class="form-control" name="year" id="yearAdd" required>
                                         @for ($i = date('Y'); $i >= 2022; $i--)
                                             <option value="{{ $i }}">{{ $i }}</option>
                                         @endfor
@@ -258,9 +258,10 @@
     </script>
     <script>
         $(document).ready(function () {
-            $('#month, #year').on('change', function () {
-                var month = $('#month').val();
-                var year = $('#year').val();
+            $('#monthAdd, #yearAdd').on('change', function () {
+                var month = $('#monthAdd').val();
+                var year = $('#yearAdd').val();
+                console.log(month,year);
 
                 if (month && year) {
                     $.ajax({

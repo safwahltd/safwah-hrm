@@ -12,7 +12,17 @@
 
 <!-- Plugin Js-->
 <script src="{{asset('/')}}admin/assets/bundles/apexcharts.bundle.js"></script>
-
+<!-- Include Select2 JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+<script>
+    $(document).ready(function() {
+        $('.select2-example').select2({
+            dropdownParent: $('body'), // Make sure dropdown appears outside modal
+            placeholder: "Search and select an option",
+            allowClear: true
+        });
+    });
+</script>
 <!-- Jquery Page Js -->
 <script src="{{asset('/')}}admin/assets/js/template.js"></script>
 <script src="{{asset('/')}}admin/assets/js/page/hr.js"></script>
@@ -39,7 +49,6 @@
     @elseif(Session::has('error'))
     toastr.error("{{ Session::get('error') }}");
     @endif
-
 </script>
 {{--<script src="https://kit.fontawesome.com/1b84ef290f.js" crossorigin="anonymous"></script>--}}
 @stack('js')
@@ -59,3 +68,4 @@
 <script src="{{asset('/')}}datatable/dataTables.responsive.min.js"></script>
 <script src="{{asset('/')}}datatable/responsive.bootstrap5.min.js"></script>
 <script src="{{asset('/')}}datatable/table-data.js"></script>
+

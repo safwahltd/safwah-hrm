@@ -42,14 +42,14 @@
 <body>
 <div class="">
     <div class="row" style="margin-top: 4px;">
-        <div class="">
-            <h4 align="center">Leave Report For {{$month == '' ? 'All': date('F', mktime(0, 0, 0, $month, 1)) }}  {{$year}} </h4>
+        <div class="" style="background-color: #00a686; color: white">
+            <h4 align="center" style="padding: 3px;">Leave Report For {{$month == '' ? 'All': date('F', mktime(0, 0, 0, $month, 1)) }}  {{$year}} </h4>
         </div>
         <table style="width:100% ;  text-align: center ; padding: 2px ;margin-bottom: 4px">
-            <tr style="background-color: aliceblue; font-size: 14px">
+            <tr style="background-color: #5c636a; font-size: 12px; color: white; text-transform: uppercase">
                 <th>SL</th>
                 <th>Name</th>
-                <th>E.ID</th>
+                <th>Id</th>
                 <th>Designation</th>
                 @if($type == 'half_day' || $type == 'all')
                     <th>Half Day</th>
@@ -76,7 +76,7 @@
                                 ->whereYear('start_date', $year)
                                 ->sum('days_taken');
                         @endphp
-                        <td>
+                        <td align="left" style="padding-left: 10px">
                             @if($month)
                                 <span class="fw-bold text-success">Available : 2 </span><br>
                                 <span class="fw-bold text-danger">Spent : {{ $halfDayLeave }}</span><br>
@@ -97,7 +97,7 @@
                                 ->whereYear('start_date', $year)
                                 ->sum('days_taken');
                         @endphp
-                        <td>
+                        <td align="left" style="padding-left: 10px">
                             <span class="fw-bold text-success">Available : 10 </span><br>
                             <span class="fw-bold text-danger">Spent : {{ $sickLeave }}</span><br>
                             <span class="fw-bold text-primary">Left : {{ 10 - $sickLeave }}</span>
@@ -111,7 +111,7 @@
                             ->whereYear('start_date', $year)
                             ->sum('days_taken');
                         @endphp
-                        <td>
+                        <td align="left" style="padding-left: 10px">
                             <span class="fw-bold text-success">Available : 10 </span><br>
                             <span class="fw-bold text-danger">Spent : {{ $casualLeave }}</span><br>
                             <span class="fw-bold text-primary">Left : {{ 10 - $casualLeave }}</span>

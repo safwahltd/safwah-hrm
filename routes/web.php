@@ -51,6 +51,9 @@ Route::middleware(['employee.auth'])->prefix('employee/')->group(function () {
             Route::get('/attendance-list', [AttendanceController::class,'adminAttendanceList'])->name('admin.attendance.list');
             Route::get('/attendance-report', [AttendanceController::class,'adminAttendanceReport'])->name('admin.attendance.report');
             Route::get('/export-attendance', [AttendanceController::class, 'exportAttendance'])->name('admin.attendance.report.export');
+            Route::get('/employee-attendance-details', [AttendanceController::class,'details'])->name('admin.attendance.details');
+            Route::get('/employee-attendance', [AttendanceController::class,'attendanceMonthly'])->name('admin.attendance.month.details');
+            Route::get('/employee-attendance-details-download', [AttendanceController::class,'attendanceMonthlyDownload'])->name('admin.attendance.details.download');
             Route::controller(LeaveController::class)->group(function (){
                 Route::get('/leave-requests', 'adminIndex')->name('admin.leave.requests');
                 Route::post('/leave-request-status-update/{id}', 'AdminRequestUpdate')->name('admin.leave.update');

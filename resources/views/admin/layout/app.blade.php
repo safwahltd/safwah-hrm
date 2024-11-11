@@ -60,13 +60,7 @@
         </div>
     </div>
 </div>
-    @if(auth()->user()->role =='admin')
-        @include('admin.layout.script')
-    @endif
-    @if(auth()->user()->role =='employee')
-        @include('employee.layout.script')
-    @endif
-
+@include('admin.layout.script')
 </body>
 
 </html>

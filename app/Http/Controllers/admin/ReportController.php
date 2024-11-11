@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\admin;
 
+use App\Exports\AttendanceExport;
 use App\Http\Controllers\Controller;
 use App\Models\Asset;
 use App\Models\Attendance;
@@ -17,6 +18,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Maatwebsite\Excel\Facades\Excel;
 use function PHPUnit\Framework\dataSetAsStringWithData;
 
 class ReportController extends Controller
@@ -86,13 +88,13 @@ class ReportController extends Controller
                 })->count();
                 $salaryReport = SalaryPayment::where(function($query) use ($year, $month, $day) {
                     $query->when($year, function($q) use ($year) {
-                        $q->whereYear('created_at', $year);
+                        $q->whereYear('payment_date', $year);
                     })
                         ->when($month, function($q) use ($month) {
-                            $q->whereMonth('created_at', $month);
+                            $q->whereMonth('payment_date', $month);
                         })
                         ->when($day, function($q) use ($day) {
-                            $q->whereDay('created_at', $day);
+                            $q->whereDay('payment_date', $day);
                         });
                 })->count();
                 $noticeReport = Notice::where(function($query) use ($year, $month, $day) {
@@ -165,13 +167,13 @@ class ReportController extends Controller
                     })->count();
                     $salaryReport = SalaryPayment::where(function($query) use ($year, $month, $day) {
                         $query->when($year, function($q) use ($year) {
-                            $q->whereYear('created_at', $year);
+                            $q->whereYear('payment_date', $year);
                         })
                             ->when($month, function($q) use ($month) {
-                                $q->whereMonth('created_at', $month);
+                                $q->whereMonth('payment_date', $month);
                             })
                             ->when($day, function($q) use ($day) {
-                                $q->whereDay('created_at', $day);
+                                $q->whereDay('payment_date', $day);
                             });
                     })->count();
                     $noticeReport = Notice::where(function($query) use ($year, $month, $day) {
@@ -561,7 +563,7 @@ class ReportController extends Controller
     }
     public function salary(){
         if(auth()->user()->hasPermission('admin salary report')){
-            return view('admin.report.salary');
+            return view('admin.report.salary.salary');
         }
         else{
             toastr()->error('Permission Denied');
@@ -609,7 +611,7 @@ class ReportController extends Controller
                 'total_salary' => $salary->basic_salary + $salary->house_rent + $salary->medical_allowance + $salary->conveyance_allowance + $salary->others + $salary->mobile_allowance + $salary->bonus,
             ];
         }
-        return view('admin.report.salary-report',compact('monthlyReport','mon','yr'));
+        return view('admin.report.salary.salary-report',compact('monthlyReport','mon','yr'));
     }
     public function salaryReportDownload(Request $request){
         $month = $request->input('month');
@@ -650,7 +652,7 @@ class ReportController extends Controller
                 'total_salary' => $salary->basic_salary + $salary->house_rent + $salary->medical_allowance + $salary->conveyance_allowance + $salary->others + $salary->mobile_allowance + $salary->bonus,
             ];
         }
-        $pdf = Pdf::loadView('admin.report.salary-report-download', compact('monthlyReport'));
+        $pdf = Pdf::loadView('admin.report.salary.salary-report-download', compact('monthlyReport'));
         return $pdf->download('salary_report.pdf');
     }
     public function asset(){
@@ -751,6 +753,9 @@ class ReportController extends Controller
 
                 // Count presents and absents for this user
                 $totalPresents = $attendanceRecords->count();
+                $total_late = $attendanceRecords->filter(function ($attendance) {
+                    return \Carbon\Carbon::parse($attendance->clock_in)->format('H:i:s') > '09:15:00';
+                })->count();
                 $totalAbsents = $totalWorkingDays - $totalPresents;
 
                 $monthData[] = [
@@ -759,6 +764,7 @@ class ReportController extends Controller
                     'designation' => $user->userInfo->designations->name,
                     'total_presents' => $totalPresents,
                     'total_absents' => $totalAbsents,
+                    'total_late' => $total_late,
                     'total_working_days' => $totalWorkingDays,
                 ];
             }
@@ -809,5 +815,19 @@ class ReportController extends Controller
         }
         $pdf = Pdf::loadView('admin.report.attendance.attendance-report-download', compact('reportData','mon','year'));
         return $pdf->download('attendance_report.pdf');
+    }
+    public function excelExportAttendanceReport(Request $request)
+    {
+        if(auth()->user()->hasPermission('admin attendance report export')){
+            $day = $request->input('day',null);
+            $year = $request->input('year');
+            $month = $request->input('month');
+            $fileName = "attendance_report_{$year}_{$month}.xlsx";
+            return Excel::download(new AttendanceExport($year, $month,$day), $fileName);
+        }
+        else{
+            toastr()->error('Permission Denied');
+            return back();
+        }
     }
 }

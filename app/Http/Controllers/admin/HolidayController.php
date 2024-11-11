@@ -29,6 +29,8 @@ class HolidayController extends Controller
             try {
                 $validate = Validator::make($request->all(),[
                     "name" => 'required',
+                    "date_from" => 'required',
+                    "date_to" => 'required',
                 ]);
                 if($validate->fails())
                 {
@@ -36,16 +38,27 @@ class HolidayController extends Controller
                     return redirect()->back();
                 }
                 /* Total days count */
-                $startDate = new DateTime($request->date_from);
-                $endDate = new DateTime($request->date_to);
+//                $startDate = new DateTime($request->date_from);
+                $startDate = Carbon::parse($request->date_from);
+                $endDate = Carbon::parse($request->date_to);
+//                $endDate = new DateTime($request->date_to);
                 $total = $startDate->diff($endDate);
-//            dd($startDate,$endDate,$total->days);
+                $dates = collect();
+
+                $currentDate = $startDate->copy();
+
+                while ($currentDate->lte($endDate)) {
+                    $dates->push($currentDate->toDateString());  // Add the date to the collection
+                    $currentDate->addDay();  // Move to the next day
+                }
+
                 /* Total days count end */
 
                 $holiday = new Holiday();
                 $holiday->name = $request->name;
                 $holiday->date_from = $request->date_from;
                 $holiday->date_to = $request->date_to;
+                $holiday->dates = json_encode($dates);
                 if ($startDate == $endDate){
                     $holiday->total_day = 1;
                 }
@@ -73,19 +86,28 @@ class HolidayController extends Controller
             try {
                 $validate = Validator::make($request->all(),[
                     "name" => 'required',
+                    "date_from" => 'required',
+                    "date_to" => 'required',
                 ]);
                 if($validate->fails())
                 {
                     toastr()->error($validate->messages());
                     return redirect()->back();
                 }
-                $startDate = new DateTime($request->date_from);
-                $endDate = new DateTime($request->date_to);
+                /* Total days count */
+                $startDate = Carbon::parse($request->date_from);
+                $endDate = Carbon::parse($request->date_to);
                 $total = $startDate->diff($endDate);
-
+                $dates = collect();
+                $currentDate = $startDate->copy();
+                while ($currentDate->lte($endDate)) {
+                    $dates->push($currentDate->toDateString());
+                    $currentDate->addDay();
+                }
                 $holiday->name      = $request->name;
                 $holiday->date_from = $request->date_from;
                 $holiday->date_to   = $request->date_to;
+                $holiday->dates = json_encode($dates);
                 if ($startDate == $endDate){
                     $holiday->total_day = 1;
                 }

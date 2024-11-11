@@ -50,13 +50,14 @@
                 </div>
                 <table style="width:100% ; text-align: center;">
                     <thead>
-                    <tr style="background-color: aliceblue; font-size: 11px; text-transform: uppercase">
+                    <tr style="background-color: #5c636a; color: white; font-size: 11px; text-transform: uppercase">
                         <th>SL</th>
                         <th>Name</th>
                         <th>Id</th>
                         <th>Designation</th>
                         <th>Working Day</th>
                         <th>Attendance</th>
+                        <th>Late Attendance</th>
                         <th>Absent</th>
                     </tr>
                     </thead>
@@ -69,6 +70,7 @@
                             <td>{{ $data['designation'] }}</td>
                             <td>{{ $data['total_working_days'] }}</td>
                             <td>{{ $data['total_presents'] }}</td>
+                            <td>{{ $data['total_late'] }}</td>
                             <td>{{ $data['total_absents'] }}</td>
                         </tr>
                     @empty

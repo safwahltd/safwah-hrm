@@ -42,11 +42,11 @@
 <body>
 <div class="">
     <div class="row" style="margin-top: 4px;">
-        <div style="border-top: 1px solid black; border-left: 1px solid #000000; border-right: 1px solid black; margin:0">
-            <h4 style="padding:15px; margin: 0" align="center">Asset Report</h4>
+        <div style="border-top: 1px solid black; border-left: 1px solid #000000; border-right: 1px solid black; margin:0;">
+            <h4 style="padding:10px; margin: 0" align="center">Asset Report</h4>
         </div>
         <table style="width:100% ; text-align: center ;margin-bottom: 4px">
-            <tr style="background-color: aliceblue; font-size: 10px; text-transform: uppercase">
+            <tr style="background-color: #5c636a; color: white; font-size: 10px; text-transform: uppercase">
                 <th>SL</th>
                 <th>Name</th>
                 <th>Id</th>

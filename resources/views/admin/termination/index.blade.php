@@ -112,7 +112,16 @@
                                                             <label for="detailsEdit" class="form-label">Details</label>
                                                             <textarea  class="form-control" name="details" id="detailsEdit" cols="30" rows="10"  placeholder="Enter Details For Termination">{{$termination->details}}</textarea>
                                                         </div>
+                                                        <div class="col-sm-6">
+                                                            <label for="statusEdit" class="form-label">Status</label>
+                                                            <select class="form-control" name="status" id="statusEdit">
+                                                                <option {{$termination->status == 1 ? 'selected':''}} value="1">Active</option>
+                                                                <option {{$termination->status == 0 ? 'selected':''}} value="0">Inactive</option>
+                                                            </select>
+                                                        </div>
                                                     </div>
+
+
                                                     <div class="modal-footer">
                                                         <button type="submit" class="btn btn-primary">Update</button>
                                                     </div>

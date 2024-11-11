@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Leave Report</title>
+    <title>Daily Report</title>
     <style>
         body { font-family: Arial, sans-serif; line-height: 1.5;font-size: 15px; }
         h1 { text-align: center; }
