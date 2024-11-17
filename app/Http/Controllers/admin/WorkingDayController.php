@@ -11,7 +11,7 @@ use Exception;
 class WorkingDayController extends Controller
 {
     public function index(){
-        $workingDays = WorkingDay::latest()->whereNotIn('soft_delete',[0])->paginate(1000);
+        $workingDays = WorkingDay::orderBy('year','desc')->orderBy('month','asc')->whereNotIn('soft_delete',[0])->paginate(1000);
         return view('admin.working-day.index',compact('workingDays'));
     }
     public function store(Request $request){

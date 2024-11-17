@@ -1,5 +1,5 @@
 @extends('admin.layout.app')
-@section('title','Employee Management')
+@section('title','Leave Request Management')
 @section('body')
     <style>
         label {
@@ -10,7 +10,7 @@
     <div class="row align-items-center">
         <div class="border-0 mb-4">
             <div class="card-header py-3 no-bg bg-transparent d-flex align-items-center px-0 justify-content-between border-bottom flex-wrap">
-                <h3 class="fw-bold text-white mb-0">Leave</h3>
+                <h3 class="fw-bold text-white mb-0">Leave Request</h3>
             </div>
         </div>
     </div>
@@ -19,13 +19,14 @@
     <div class="row clearfix g-3">
         <div class="col-sm-12">
             <div class="card mb-3">
-                <div class="card-body export-table bg-dark-subtle">
-                    <table id="example3" class="table table-bordered text-nowrap table-secondary key-buttons border-bottom w-100">
+                <div class="card-body table-responsive bg-dark-subtle">
+                    <table id="basic-datatable" class="table table-bordered text-nowrap table-secondary key-buttons border-bottom w-100">
                         <thead>
                         <tr>
                             <th>No</th>
                             <th>Date</th>
-                            <th>Name <sub>(Id)</sub></th>
+                            <th>Name</th>
+                            <th>ID</th>
                             <th>Type</th>
                             <th class="text-center">Date</th>
                             <th>Days</th>
@@ -42,7 +43,8 @@
                                 <td>
                                     {{ \Illuminate\Support\Carbon::parse($leave->created_at)->format('d M,Y') }}
                                 </td>
-                                <td><span class="fw-bold">{{$leave->user->name}}  <sub>({{$leave->user->userInfo->employee_id}})</sub></span></td>
+                                <td><span class="fw-bold">{{$leave->user->name}}</span></td>
+                                <td><span class="fw-bold">{{$leave->user->userInfo->employee_id}}</span></td>
 
                                 <td>
                                     {{ ucwords(str_replace('_',' ',$leave->leave_type))}}
@@ -98,9 +100,19 @@
                                                                     <h4 class="fw-bold">Leave Balance</h4>
                                                                     <p> <span class="fw-bold">Employee Name : </span><span>{{ucwords($leave->user->name)}}</span></p>
                                                                     <p> <span class="fw-bold">Employee Id : </span><span>{{ucwords($leave->user->userInfo->employee_id)}}</span></p>
-                                                                    <p> <span class="fw-bold">Sick Leave Balance : </span><span>{{$leave->user->userInfo->sick_leave}}</span></p>
-                                                                    <p> <span class="fw-bold">Casual Leave Balance : </span><span>{{$leave->user->userInfo->casual_leave}}</span></p>
-                                                                    <p> <span class="fw-bold">Half Day Leave Balance : </span><span>{{$leave->user->userInfo->half_day_leave}}</span></p>
+                                                                    @php
+                                                                        if($leave->leave_type == 'sick' || $leave->leave_type == 'casual'){$leaveBalance = \App\Models\LeaveBalance::where('user_id',$leave->user_id)->where('year',\Illuminate\Support\Carbon::parse($leave->start_date)->format('Y'))->first();}
+                                                                        elseif ($leave->leave_type == 'half_day'){$leaveBalance = \App\Models\HalfDayLeaveBalance::where('user_id',$leave->user_id)->where('year',\Illuminate\Support\Carbon::parse($leave->start_date)->format('Y'))->where('month',\Illuminate\Support\Carbon::parse($leave->start_date)->format('m'))->first();}
+                                                                    @endphp
+                                                                    @if($leave->leave_type == 'sick')
+                                                                        <p> <span class="fw-bold">Sick Leave Balance : </span><span>{{$leaveBalance->sick_left}}</span></p>
+                                                                    @endif
+                                                                    @if($leave->leave_type == 'casual')
+                                                                        <p> <span class="fw-bold">Casual Leave Balance : </span><span>{{$leaveBalance->casual_left}}</span></p>
+                                                                    @endif
+                                                                    @if($leave->leave_type == 'half_day')
+                                                                        <p> <span class="fw-bold">Half Day Leave Balance : </span><span>{{$leaveBalance->left ?? 'N/A'}}</span></p>
+                                                                    @endif
                                                                     <div class="my-2">
                                                                         <form action="{{route('admin.leave.update',$leave->id)}}" method="post">
                                                                             @csrf

@@ -1,4 +1,4 @@
-<table class="table table-striped custom-table mb-0 datatable">
+<table id="basic-datatable" class="table table-striped table-bordered mb-0">
     <thead>
     <tr>
         <th>Asset User</th>

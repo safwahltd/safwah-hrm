@@ -101,25 +101,25 @@
                                             <td class="col-3" style="text-align: left"><small class="fw-bold py-0 my-0" style="font-weight: bold"><small>CASUAL LEAVE</small></small></td>
                                             <td><small>{{$data->leave_type == 'casual' ? \Illuminate\Support\Carbon::parse($data->start_date)->format('d-m-Y')." -> ".\Illuminate\Support\Carbon::parse($data->end_date)->format('d-m-Y'):''}}</small></td>
                                             <td>{{$data->leave_type == 'casual' ? $data->days_taken:''}}</td>
-                                            <td>{{$data->leave_type == 'casual' ? 10:''}}</td>
-                                            <td>{{$data->leave_type == 'casual' ? 10 - $data->user->userInfo->casual_leave:''}}</td>
-                                            <td>{{$data->leave_type == 'casual' ? $data->user->userInfo->casual_leave:''}}</td>
+                                            <td>{{$data->leave_type == 'casual' ? $leaveBalance->casual:''}}</td>
+                                            <td>{{$data->leave_type == 'casual' ? $leaveBalance->casual_spent:''}}</td>
+                                            <td>{{$data->leave_type == 'casual' ? $leaveBalance->casual_left:''}}</td>
                                         </tr>
                                         <tr>
                                             <td class="col-3" style="text-align: left"><small class="fw-bold py-0 my-0" style="font-weight: bold"><small>SICK LEAVE</small></small></td>
                                             <td><small>{{$data->leave_type == 'sick' ? \Illuminate\Support\Carbon::parse($data->start_date)->format('d-m-Y')." -> ".\Illuminate\Support\Carbon::parse($data->end_date)->format('d-m-Y'):''}}</small></td>
                                             <td>{{$data->leave_type == 'sick' ? $data->days_taken:''}}</td>
-                                            <td>{{ $data->leave_type == 'sick' ? 10:''}}</td>
-                                            <td>{{ $data->leave_type == 'sick' ? 10 - $data->user->userInfo->sick_leave :''}}</td>
-                                            <td>{{ $data->leave_type == 'sick' ? $data->user->userInfo->sick_leave :''}}</td>
+                                            <td>{{ $data->leave_type == 'sick' ? $leaveBalance->sick:''}}</td>
+                                            <td>{{ $data->leave_type == 'sick' ? $leaveBalance->sick_spent :''}}</td>
+                                            <td>{{ $data->leave_type == 'sick' ? $leaveBalance->sick_left :''}}</td>
                                         </tr>
                                         <tr>
                                             <td style="text-align: left"><small class="fw-bold py-0 my-0" style="font-weight: bold"><small>HALF DAY LEAVE</small></small></td>
                                             <td><small>{{$data->leave_type == 'half_day' ? \Illuminate\Support\Carbon::parse($data->start_date)->format('d-m-Y')." -> ".\Illuminate\Support\Carbon::parse($data->end_date)->format('d-m-Y'):''}}</small></td>
-                                            <td>{{$data->leave_type == 'half_day' ? 1 :''}}</td>
-                                            <td>{{$data->leave_type == 'half_day' ? 2 :''}}</td>
-                                            <td>{{ $data->leave_type == 'half_day' ? 2 - $data->user->userInfo->half_day_leave :''}}</td>
-                                            <td>{{ $data->leave_type == 'half_day' ? $data->user->userInfo->half_day_leave :''}}</td>
+                                            <td>{{$data->leave_type == 'half_day' ? $data->days_taken :''}}</td>
+                                            <td>{{$data->leave_type == 'half_day' ? $leaveBalance->half_day :''}}</td>
+                                            <td>{{ $data->leave_type == 'half_day' ? $leaveBalance->spent :''}}</td>
+                                            <td>{{ $data->leave_type == 'half_day' ? $leaveBalance->left :''}}</td>
                                         </tr>
                                         <tr>
                                             <td style="text-align: left"><small class="fw-bold py-0 my-0"><small style="font-weight: bold">LEAVE WITHOUT PAY</small></small></td>

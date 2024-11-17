@@ -13,6 +13,11 @@
             border: 1px solid black;
             border-collapse: collapse;
         }
+        @media only screen and (max-width: 600px) {
+            * {
+                font-size: 10px;
+            }
+        }
     </style>
     <style>
         .floating-button {
@@ -78,11 +83,8 @@
                 @endphp
             @endforeach
             <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td style="font-weight: bold">Total : {{$salaryTotal}}</td>
+                <td colspan="4" align="center" style="font-weight: bold;">Total</td>
+                <td style="font-weight: bold"> {{$salaryTotal}}</td>
             </tr>
         </table>
         @endforeach

@@ -14,34 +14,6 @@
         <div class="col-sm-12 p-2" style="background-color: #ffffff">
             <div class="mb-3">
                 <div id='calendar' class="text-black"></div>
-                {{--<div class="table-responsive">
-                    <table id="myProjectTable" class="table table-hover table-striped align-middle mb-0" style="width:100%">
-                        @foreach($datess as $date)
-                            <tr>
-                                    <th>{{ $date }}</th>
-                                    @php
-                                        $attendances = \App\Models\Attendance::where('clock_in_date',\Illuminate\Support\Carbon::parse($date)->format('Y-m-d'))->where('user_id', auth()->user()->id)->get();
-                                    @endphp
-                                    <td>
-                                        @if($attendances)
-                                            @foreach($attendances as $attendance)
-                                                <span class="text-success"><i class="fa mx-2 {{ $attendance->clock_in ? 'fa-check': 'fa-xmark' }} "></i> Clock In : {{ $attendance->clock_in ? \Illuminate\Support\Carbon::parse($attendance->clock_in)->format('H:i:s A'): 'fa-xmark' }}</span>
-                                                <br>
-                                                <span class="text-danger"><i class="fa mx-2 {{ $attendance->clock_out ? 'fa-check': 'fa-xmark' }} "></i> Clock Out : {{ $attendance->clock_out ? \Illuminate\Support\Carbon::parse($attendance->clock_out)->format('H:i:s A'): '' }}</span>
-                                                <br>
-                                            @endforeach
-                                        @else
-                                            <span class="text-success mx-2"><i class="fa fa-xmark"></i></span>
-                                            <span class="text-danger"><i class="fa fa-xmark"></i></span>
-                                        @endif
-                                    </td>
-                                </tr>
-                        @endforeach
-                    </table>
-                    <div class="text-white my-3 d-grid justify-content-center">
---}}{{--                        {{$attendances->links()}}--}}{{--
-                    </div>
-                </div>--}}
             </div>
         </div>
     </div>
@@ -74,10 +46,11 @@
                 },
                 eventDisplay: 'auto',
                 eventColor: '#378006',
-                eventTextColor: 'white',
+                eventTextColor: 'black',
             });
 
             calendar.render();
         });
     </script>
+
 @endpush

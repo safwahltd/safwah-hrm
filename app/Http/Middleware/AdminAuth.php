@@ -20,7 +20,7 @@ class AdminAuth
             return $next($request);
         }
         else{
-            return redirect()->back();
+            return redirect()->route('login');
         }
     }
 }

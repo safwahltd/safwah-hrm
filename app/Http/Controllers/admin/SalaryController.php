@@ -7,6 +7,7 @@ use App\Models\Attendance;
 use App\Models\Salary;
 use App\Models\SalaryPayment;
 use App\Models\User;
+use App\Models\WorkingDay;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -258,9 +259,9 @@ class SalaryController extends Controller
             ->count();
         $net = ($salary->basic_salary + $salary->house_rent + $salary->medical_allowance + $salary->conveyance_allowance + $salary->others + $salary->mobile_allowance + $salary->bonus) - ($salary->meal_deduction + $salary->income_tax + $salary->other_deduction + $salary->attendance_deduction);
         $netWords = $this->numberToWords($net);
-
-//        return view('admin.salary.pdf',compact('salary','totalAttendance','net','netWords'));
-        $pdf = Pdf::loadView('admin.salary.pdf', compact('salary','totalAttendance','net','netWords'));
+        $workingDay = WorkingDay::where('month',$salary->month)->where('year',$salary->year)->first()->working_day;
+//        return view('admin.salary.pdf',compact('salary','totalAttendance','net','netWords','workingDay'));
+        $pdf = Pdf::loadView('admin.salary.pdf', compact('salary','totalAttendance','net','netWords','workingDay'));
         return $pdf->download($salary->user->userInfo->employee_id.'_salary_slip.pdf');
     }
     public function employeeIndex(Request $request){

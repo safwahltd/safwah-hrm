@@ -13,6 +13,17 @@
             border: 1px solid black;
             border-collapse: collapse;
         }
+        @media only screen and (max-width: 600px) {
+            * {
+                font-size: 10px;
+            }
+            table, th {
+                font-size: 8px;
+            }
+            table, td {
+                font-size: 8px;
+            }
+        }
     </style>
     <style>
         .floating-button {

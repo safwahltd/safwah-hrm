@@ -13,8 +13,8 @@
     <div class="row clearfix g-3">
         <div class="col-sm-8">
             <div class="card mb-3">
-                <div class="card-body export-table bg-dark-subtle">
-                    <table id="file-datatable" class="table table-bordered text-nowrap table-secondary key-buttons border-bottom w-100">
+                <div class="card-body table-responsive export-table bg-dark-subtle">
+                    <table id="basic-datatable" class="table table-bordered text-nowrap table-secondary key-buttons border-bottom w-100">
                         <thead>
                         <tr>
                             <th>No</th>
@@ -77,8 +77,9 @@
                                                             <div class="col-sm-6">
                                                                 <label for="department_headEdit" class="form-label">Department Head</label>
                                                                 <select class="form-control" name="department_head" id="department_headEdit">
+                                                                    <option value=""></option>
                                                                     @foreach($users as $user)
-                                                                    <option {{$department->department_head == $user->id ? 'selected':''}} value="{{$user->id}}">{{$user->name}}</option>
+                                                                    <option {{$department->department_head == $user->id ? 'selected':''}} value="{{$user->id}}">{{$user->name}} <sub>({{$user->userInfo->employee_id}})</sub></option>
                                                                     @endforeach
                                                                 </select>
                                                             </div>
@@ -118,8 +119,8 @@
                 <form action="{{route('departments.store')}}" method="post">
                     @csrf
                     <div class="mb-3">
-                        <label for="exampleFormControlInput1111" class="form-label">Department Name</label>
-                        <input type="text" name="department_name" class="form-control" id="exampleFormControlInput1111">
+                        <label for="exampleFormControlInput1111" class="form-label">Department Name <span class="text-danger">*</span></label>
+                        <input type="text" name="department_name" class="form-control" id="exampleFormControlInput1111" required>
                     </div>
                     <div class="deadline-form">
                         <div class="row g-3 mb-3">
@@ -128,7 +129,7 @@
                                 <select class="form-control select2-example"  name="department_head" id="department_head">
                                     <label for="">Select One</label>
                                     @foreach($users as $user)
-                                        <option value="{{$user->id}}">{{$user->name}} ({{$user->userInfo->employee_id}})</option>
+                                        <option {{old('department_head') == $user->id ? 'selected' : ''}} value="{{$user->id}}">{{$user->name}} ({{$user->userInfo->employee_id}})</option>
                                     @endforeach
                                 </select>
                             </div>

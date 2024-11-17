@@ -20,6 +20,7 @@ return new class extends Migration
             $table->date('clock_out_date')->nullable();
             $table->string('working_time')->nullable();
             $table->tinyInteger('status')->nullable();
+            $table->tinyInteger('soft_delete')->default(0);
             $table->timestamps();
         });
     }

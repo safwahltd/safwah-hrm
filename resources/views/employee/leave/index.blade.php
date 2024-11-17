@@ -20,8 +20,8 @@
     <div class="row clearfix g-3">
         <div class="col-sm-12">
             <div class="card mb-3">
-                <div class="card-body export-table">
-                    <table id="file-datatable" class="table table-hover align-middle mb-0" style="width:100%">
+                <div class="card-body table-responsive">
+                    <table id="basic-datatable" class="table table-hover table-striped align-middle mb-0" style="width:100%">
                         <thead>
                         <tr>
                             <th>No</th>
@@ -42,7 +42,7 @@
                                 <td>
                                     {{ \Illuminate\Support\Carbon::parse($leave->created_at)->format('d M,Y') }}
                                 </td>
-                                <td>
+                                <td class="fw-bold {{$leave->leave_type == 'sick' ? 'text-primary':''}}{{$leave->leave_type == 'casual' ? 'text-success':''}}{{$leave->leave_type == 'half_day' ? 'text-danger':''}} text-uppercase">
                                     {{ ucwords(str_replace('_',' ',$leave->leave_type))}}
                                 </td>
                                 <td class="text-center fw-bold">
@@ -185,11 +185,21 @@
                                                             </div>
                                                             <div class="col-md-5">
                                                                 <h4 class="fw-bold">Leave Balance</h4>
+                                                                @php
+                                                                    if($leave->leave_type == 'sick' || $leave->leave_type == 'casual'){$leaveBalance = \App\Models\LeaveBalance::where('user_id',$leave->user_id)->where('year',\Illuminate\Support\Carbon::parse($leave->start_date)->format('Y'))->first();}
+                                                                    elseif ($leave->leave_type == 'half_day'){$leaveBalance = \App\Models\HalfDayLeaveBalance::where('user_id',$leave->user_id)->where('year',\Illuminate\Support\Carbon::parse($leave->start_date)->format('Y'))->where('month',\Illuminate\Support\Carbon::parse($leave->start_date)->format('m'))->first();}
+                                                                @endphp
                                                                 <p> <span class="fw-bold">Employee Name : </span><span>{{ucwords($leave->user->name)}}</span></p>
                                                                 <p> <span class="fw-bold">Employee Id : </span><span>{{ucwords($leave->user->userInfo->employee_id)}}</span></p>
-                                                                <p> <span class="fw-bold">Sick Leave Balance : </span><span>{{$leave->user->userInfo->sick_leave}}</span></p>
-                                                                <p> <span class="fw-bold">Casual Leave Balance : </span><span>{{$leave->user->userInfo->casual_leave}}</span></p>
-                                                                <p> <span class="fw-bold">Half Day Leave Balance : </span><span>{{$leave->user->userInfo->half_day_leave}}</span></p>
+                                                                @if($leave->leave_type == 'sick')
+                                                                <p> <span class="fw-bold">Sick Leave Balance : </span><span>{{$leaveBalance->sick_left}}</span></p>
+                                                                @endif
+                                                                @if($leave->leave_type == 'casual')
+                                                                <p> <span class="fw-bold">Casual Leave Balance : </span><span>{{$leaveBalance->casual_left}}</span></p>
+                                                                @endif
+                                                                @if($leave->leave_type == 'half_day')
+                                                                <p> <span class="fw-bold">Half Day Leave Balance : </span><span>{{$leaveBalance->left ?? 'N/A'}}</span></p>
+                                                                @endif
                                                             </div>
 
                                                         </div>

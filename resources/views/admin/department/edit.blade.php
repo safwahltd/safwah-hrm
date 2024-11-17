@@ -5,6 +5,9 @@
         <div class="border-0 mb-4">
             <div class="card-header py-3 no-bg bg-transparent d-flex align-items-center px-0 justify-content-between border-bottom flex-wrap">
                 <h3 class="fw-bold mb-0 text-white"><a class="text-white" href="{{route('departments.index')}}">Departments</a></h3>
+                <div class="col-auto d-flex w-sm-100">
+                    <a href="{{route('departments.index')}}" class="btn btn-dark btn-set-task w-sm-100"><i class="icofont-list me-2 fs-6"></i>All Departments</a>
+                </div>
             </div>
         </div>
     </div>
@@ -78,8 +81,9 @@
                                 <div class="col-sm-12">
                                     <label for="department_headEdit" class="form-label">Department Head</label>
                                     <select class="form-control select2-example" name="department_head" id="department_headEdit">
+                                        <option value="">Select One</option>
                                         @foreach($users as $user)
-                                            <option {{$dept->department_head == $user->id ? 'selected':''}} value="{{$user->id}}">{{$user->name}}</option>
+                                            <option {{$dept->department_head == $user->id ? 'selected':''}} value="{{$user->id}}">{{$user->name}} <sub>({{$user->userInfo->employee_id}})</sub></option>
                                         @endforeach
                                     </select>
                                 </div>

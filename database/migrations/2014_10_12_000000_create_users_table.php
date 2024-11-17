@@ -21,6 +21,7 @@ return new class extends Migration
             $table->dateTime('email_verified_at')->nullable();
             $table->boolean('profile_verified')->default(0);
             $table->string('role');
+            $table->tinyInteger('soft_delete')->default(0);
             $table->tinyInteger('status')->default(1);
             $table->rememberToken();
             $table->timestamps();

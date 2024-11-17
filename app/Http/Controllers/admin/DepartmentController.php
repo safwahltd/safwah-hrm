@@ -5,6 +5,7 @@ namespace App\Http\Controllers\admin;
 use App\Http\Controllers\Controller;
 use App\Models\Department;
 use App\Models\User;
+use http\Exception\BadConversionException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use Exception;
@@ -26,10 +27,17 @@ class DepartmentController extends Controller
         }
     }
     public function edit($id){
-        $dept = Department::find($id);
-        $departments = Department::latest()->whereNotIn('id',[$dept->id])->simplePaginate(100);
-        $users = User::whereNotIn('id',[1])->orderBy('name','asc')->get();
-        return view('admin.department.edit',compact('dept','departments','users'));
+        try {
+            $dept = Department::find($id);
+            $departments = Department::latest()->whereNotIn('id',[$dept->id])->simplePaginate(100);
+            $users = User::whereNotIn('id',[1])->orderBy('name','asc')->get();
+            return view('admin.department.edit',compact('dept','departments','users'));
+        }
+        catch (Exception $e){
+            toastr()->error($e->getMessage());
+            return back();
+        }
+
     }
     public function store(Request $request)
     {
@@ -95,7 +103,11 @@ class DepartmentController extends Controller
     {
         if(auth()->user()->hasPermission('admin department destroy')){
             try {
-                $department->delete();
+                $department->department_name = $department->department_name;
+                $department->department_head = $department->department_head;
+                $department->status = $department->status;
+                $department->soft_delete = 1;
+                $department->saveOrFail();
                 toastr()->success('Delete Department Success');
                 return back();
             }

@@ -19,6 +19,7 @@ return new class extends Migration
             $table->text('dates')->nullable();
             $table->bigInteger('total_day')->nullable();
             $table->tinyInteger('status')->nullable();
+            $table->tinyInteger('soft_delete')->default(0);
             $table->timestamps();
         });
     }

@@ -49,7 +49,7 @@
                                 <select class="form-control-lg select2-example"  name="user_id" id="user_id">
                                     <option value="">All Employee</option>
                                     @foreach($users as $user)
-                                        <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                        <option value="{{ $user->id }}">{{ $user->name }} <sub>({{ $user->userInfo->employee_id }})</sub></option>
                                     @endforeach
                                 </select>
                             </div>

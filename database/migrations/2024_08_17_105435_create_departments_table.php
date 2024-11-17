@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('department_name');
             $table->string('department_head')->nullable();
             $table->tinyInteger('status')->default(1);
+            $table->tinyInteger('soft_delete')->default(0);
             $table->timestamps();
         });
     }

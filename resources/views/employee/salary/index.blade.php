@@ -21,7 +21,7 @@
     <div class="row clearfix g-3">
         <div class="col-sm-12">
             <div class="row filter-row justify-content-end">
-                <div class="col-sm-6 col-4 text-end my-2">
+                <div class=" text-end my-2">
                     <form method="get" action="{{route('employee.salary.index')}}">
                         <select class="form-control-sm" name="month" id="month" required>
                             <option {{ $month == 0 ? 'selected' : '' }} value="0">All</option>
@@ -29,7 +29,6 @@
                                 <option {{ $i == $month ? 'selected' : '' }} value="{{ $i }}">{{ date('F', mktime(0, 0, 0, $i, 1)) }}</option>
                             @endfor
                         </select>
-
                         <select class="form-control-sm" name="year" id="year" required>
                             <option {{ $year == 0 ? 'selected' : '' }} value="0">All</option>
                             @for ($i = date('Y'); $i >= 2022; $i--)
@@ -47,7 +46,7 @@
                 </div>
             </div>
             <div class="card mb-3">
-                <div class="card-body bg-dark-subtle">
+                <div class="card-body bg-dark-subtle table-responsive">
                     <table id="" class="table table-bordered text-nowrap table-secondary key-buttons border-bottom w-100">
                         <thead>
                         <tr>

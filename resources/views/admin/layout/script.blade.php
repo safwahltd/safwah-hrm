@@ -64,9 +64,14 @@
 <script>
     $(document).ready(function() {
         $('.select2-example').select2({
-            dropdownParent: $('body'), // Make sure dropdown appears outside modal
+            dropdownParent: $('body'),
             placeholder: "Search and select an option",
             allowClear: true
         });
+        $('.select2-exam').select2({
+            allowClear: true
+        });
+
     });
+
 </script>

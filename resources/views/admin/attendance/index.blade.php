@@ -12,24 +12,24 @@
     <div class="row clearfix g-3">
         <div class="col-sm-12">
             <div class="card mb-3">
-                <div class="card-body export-table bg-dark-subtle">
-                    <table id="file-datatable" class="table table-bordered text-nowrap table-secondary key-buttons border-bottom w-100">
+                <div class="card-body table-responsive bg-dark-subtle">
+                    <table id="basic-datatable" class="table table-bordered text-nowrap table-secondary key-buttons border-bottom w-100">
                         <thead class="bg-primary">
                         <tr class="">
                             <th>No</th>
                             <th>Name <sub>(ID)</sub> </th>
-                            <th>
-                                <p class="my-0">Clock In</p>
-                                <p class="text-muted my-0"><small>(D-M-Y H:M:S)</small></p>
+                            <th align="center">
+                                <p class="my-0"align="center">Clock In</p>
+                                <p class="text-muted my-0"align="center"><small>(D-M-Y H:M:S)</small></p>
 
                             </th>
-                            <th>
-                                <p class="my-0">Clock Out</p>
-                                <p class="text-muted my-0"><small>(D-M-Y H:M:S)</small></p>
+                            <th align="center">
+                                <p class="my-0"align="center">Clock Out</p>
+                                <p class="text-muted my-0"align="center"><small>(D-M-Y H:M:S)</small></p>
                             </th>
-                            <th>
-                                <p class="my-0">Working Hour</p>
-                                <p class="text-muted my-0"><small>(H:M:S)</small></p>
+                            <th align="center">
+                                <p class="my-0"align="center">Working Hour</p>
+                                <p class="text-muted my-0"align="center"><small>(H:M:S)</small></p>
 
                             </th>
                         </tr>
@@ -38,10 +38,16 @@
                         @forelse($attendances as $key => $attendance)
                             <tr>
                                 <td><span class="fw-bold">{{$loop->iteration}}</span></td>
-                                <td>{{$attendance->user->name}}<sub>({{$attendance->user->userInfo->employee_id}})</sub> </td>
-                                <td>{{\Illuminate\Support\Carbon::parse($attendance->clock_in)->format('d M , 2024 h:m a')}}</td>
-                                <td>{{$attendance->clock_out}}</td>
-                                <td>{{$attendance->working_time }}</td>
+                                <td>{{ $attendance->user->name }}<sub>({{ $attendance->user->userInfo->employee_id }})</sub> </td>
+                                <td align="center">{{ \Illuminate\Support\Carbon::parse($attendance->clock_in)->format('d M , 2024 h:m a') }}</td>
+                                <td class="text-center">
+                                    @if($attendance->clock_out)
+                                        {{ \Illuminate\Support\Carbon::parse($attendance->clock_out)->format('d M , 2024 h:m a') }}
+                                    @else
+                                        -
+                                    @endif
+                                </td>
+                                <td align="center">{{ $attendance->working_time ?? '00:00:00' }} hour</td>
                             </tr>
                         @empty
                             <tr>
