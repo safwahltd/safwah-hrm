@@ -26,6 +26,7 @@ return new class extends Migration
             $table->text('address_contact')->nullable();
             $table->string('concern_person')->nullable();
             $table->tinyInteger('status')->default(0);
+            $table->tinyInteger('soft_delete')->default(0);
             $table->timestamps();
         });
     }

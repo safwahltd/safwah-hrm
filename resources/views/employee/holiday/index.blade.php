@@ -23,7 +23,7 @@
             <div class="card mb-3">
                 <div class="card-body">
                     <div class="table-responsive export-table">
-                        <table id="file-datatable" class="table table-hover table-striped align-middle mb-0" style="width:100%">
+                        <table id="basic-datatable" class="table table-hover table-striped align-middle mb-0" style="width:100%">
                             <thead class="bg-primary">
                             <tr class="bg-secondary">
                                 <th class="bg-primary-subtle">SL</th>

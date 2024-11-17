@@ -24,7 +24,7 @@
         <div class="col-sm-12">
             @foreach ($notices as $key => $notice)
                 <a href="#" class="" data-bs-toggle="modal" id="notice{{$key}}" data-bs-target="#noticeShow{{$key}}">
-                    <div class="alert {{ \Illuminate\Support\Facades\Request::route()->getName('employee.notice.list') ? 'alert-primary':'alert-info'}}"   role="alert">
+                    <div class="alert alert-primary" role="alert">
                          <span class="fw-bold">{{ $notice->title }}</span>  <small>{{ $notice->created_at->diffForHumans() }}</small>
                         <p>{{ \Illuminate\Support\Str::limit($notice->content, 70) }}</p>
                     </div>
@@ -40,7 +40,7 @@
                                 <div class="deadline-form">
                                     <div class="modal-body">
                                         <div class="">
-                                            <p>{{ $notice->content }}</p><br>
+                                            <p align="justify">{{ $notice->content }}</p><br>
                                             <address>
                                                 Regards & Thanks <br>
                                                 {{ $notice->user->userInfo->designations->name ?? 'Managing Director' }}<br>

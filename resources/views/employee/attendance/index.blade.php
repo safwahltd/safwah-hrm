@@ -14,8 +14,8 @@
         <div class="col-sm-12">
             <div class="card mb-3">
                 <div class="card-body">
-                    <div class="table-responsive export-table">
-                        <table id="file-datatable" class="table table-bordered w-100" style="width:100%">
+                    <div class="table-responsive">
+                        <table id="basic-datatable" class="table table-bordered w-100" style="width:100%">
                             <thead>
                             <tr>
                                 <th class="border-bottom-0">No</th>

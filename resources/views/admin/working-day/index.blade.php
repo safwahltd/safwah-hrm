@@ -16,15 +16,15 @@
     <div class="row clearfix g-3">
         <div class="col-sm-12">
             <div class="card mb-3">
-                <div class="card-body export-table bg-dark-subtle">
-                    <table id="file-datatable" class="table table-bordered text-nowrap table-secondary key-buttons border-bottom w-100">
+                <div class="card-body table-responsive export-table bg-dark-subtle">
+                    <table id="basic-datatable" class="table table-bordered text-nowrap table-secondary key-buttons border-bottom w-100">
                         <thead>
                         <tr>
                             <th>No</th>
                             <th>Month</th>
-                            <th>Year</th>
-                            <th>Total Day In Month</th>
-                            <th>Total Working Day</th>
+                            <th class="text-center">Year</th>
+                            <th class="text-center">Total Day In Month</th>
+                            <th class="text-center">Total Working Day</th>
                             <th>Status</th>
                             <th>Actions</th>
                         </tr>
@@ -35,10 +35,10 @@
                                 <td>
                                     <span class="fw-bold">{{$loop->iteration}}</span>
                                 </td>
-                                <td>{{ date('F', mktime(0, 0, 0, $workingDay->month, 1)) }}</td>
-                                <td>{{$workingDay->year}}</td>
-                                <td>{{$workingDay->days_in_month}}</td>
-                                <td>{{$workingDay->working_day}}</td>
+                                <td class="text-uppercase">{{ date('F', mktime(0, 0, 0, $workingDay->month, 1)) }}</td>
+                                <td align="center">{{$workingDay->year}}</td>
+                                <td align="center">{{$workingDay->days_in_month}}</td>
+                                <td align="center">{{$workingDay->working_day}}</td>
                                 <td><span class="rounded-3 p-1 text-white {{$workingDay->status == 1 ? 'bg-success':'bg-danger'}}">{{$workingDay->status == 1 ? 'Active':'Inactive'}}</span></td>
                                 <td>
                                     <div class="btn-group" role="group" aria-label="Basic outlined example">

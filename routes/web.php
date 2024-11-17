@@ -22,6 +22,7 @@ use App\Http\Controllers\admin\SalaryPaymentController;
 use App\Http\Controllers\BillingController;
 use App\Http\Controllers\admin\ReportController;
 use App\Http\Controllers\admin\WorkingDayController;
+use App\Http\Controllers\ResignationController;
 
 
 Route::get('/', [AdminAuthController::class, 'login'])->name('login');
@@ -39,8 +40,10 @@ Route::middleware(['employee.auth'])->prefix('employee/')->group(function () {
             Route::resource('employees', EmployeeController::class);
             Route::post('/employee-ban-unban/{id}', [EmployeeController::class, 'banUnbanUSer'])->name('admin.user.ban.unban');
             Route::resource('departments', DepartmentController::class);
+            Route::put('/department-soft-delete/{id}', [DepartmentController::class, 'destroy'])->name('admin.department.soft.delete');
             Route::post('/department-status-update/{id}', [DepartmentController::class, 'StatusUpdate'])->name('admin.department.StatusUpdate');
             Route::resource('designations', DesignationController::class);
+            Route::put('/designation-soft-delete/{id}', [DesignationController::class,'destroy'])->name('designations.soft.destroy');
             Route::post('/designation-status-update/{id}', [DesignationController::class, 'StatusUpdate'])->name('admin.designation.StatusUpdate');
             Route::resource('holidays', HolidayController::class);
             Route::resource('holidays', HolidayController::class);
@@ -59,6 +62,13 @@ Route::middleware(['employee.auth'])->prefix('employee/')->group(function () {
                 Route::post('/leave-request-status-update/{id}', 'AdminRequestUpdate')->name('admin.leave.update');
                 Route::get('/leave-request-print/{id}', 'employeeLeaveRequestPrint')->name('admin.leave.request.print');
                 Route::get('/leave-type', 'leaveTypeIndex')->name('admin.leave.type');
+                Route::get('/leave-management', 'management')->name('admin.leave.management');
+                Route::post('/leave-full-day-store', 'fullDay')->name('admin.full.leave.store');
+                Route::put('/leave-full-day-update/{id}', 'fullDayUpdate')->name('admin.full.leave.update');
+                Route::put('/leave-full-day-delete/{id}', 'fullDaySoftDelete')->name('admin.full.leave.delete');
+                Route::post('/leave-half-day-store', 'halfDay')->name('admin.half.leave.store');
+                Route::put('/leave-half-day-update/{id}', 'halfDayUpdate')->name('admin.half.leave.update');
+                Route::put('/leave-half-day-delete/{id}', 'halfDaySoftDelete')->name('admin.half.leave.delete');
             });
             Route::controller(TerminationController::class)->group(function (){
                 Route::get('/termination', 'index')->name('admin.termination.index');
@@ -124,7 +134,6 @@ Route::middleware(['employee.auth'])->prefix('employee/')->group(function () {
                 Route::get('/daily-report-show','dailyReport')->name('admin.daily.report.show');
                 Route::get('/daily-report-download','dailyReportDownload')->name('admin.download.daily.report');
                 Route::get('/payment','payment')->name('admin.payment.report');
-//                Route::get('/attendance', 'attendance')->name('admin.attendance.report');
                 Route::get('/leave', 'leave')->name('admin.leave.report');
                 Route::get('/leave-report-show', 'leaveReportShow')->name('admin.leave.report.show');
                 Route::get('/download-leave-report', 'leaveReportDownload')->name('admin.download.leave.report');

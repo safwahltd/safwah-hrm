@@ -16,8 +16,8 @@
     <div class="row clearfix g-3">
         <div class="col-sm-12">
             <div class="card mb-3">
-                <div class="card-body export-table bg-dark-subtle">
-                    <table id="file-datatable" class="table table-bordered text-nowrap table-secondary key-buttons border-bottom w-100">
+                <div class="card-body table-responsive export-table bg-dark-subtle">
+                    <table id="basic-datatable" class="table table-bordered text-nowrap table-secondary key-buttons border-bottom w-100">
                         <thead>
                         <tr>
                             <th>No</th>
@@ -51,9 +51,9 @@
                             <td>
                                 <div class="btn-group" role="group" aria-label="Basic outlined example">
                                     <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#degedit{{$key}}"><i class="icofont-edit text-success"></i></button>
-                                    <form action="{{route('designations.destroy',$designation->id)}}" method="post">
+                                    <form action="{{ route('designations.soft.destroy',$designation->id) }}" method="post">
                                         @csrf
-                                        @method('DELETE')
+                                        @method('PUT')
                                         <button type="submit" onclick="return confirm('are you sure to delete ? ')" class="btn btn-outline-secondary deleterow"><i class="icofont-ui-delete text-danger"></i></button>
                                     </form>
                                 </div>
@@ -74,14 +74,14 @@
                                                 @method('PUT')
                                                 <div class="modal-body">
                                                     <div class="mb-3">
-                                                        <label for="desiNameEdit" class="form-label">Designation Name</label>
-                                                        <input type="text" value="{{$designation->name}}" name="name" class="form-control" id="desiNameEdit">
+                                                        <label for="desiNameEdit" class="form-label">Designation Name <span class="text-danger">*</span></label>
+                                                        <input type="text" value="{{$designation->name}}" name="name" class="form-control" id="desiNameEdit" required>
                                                     </div>
                                                     <div class="deadline-form">
                                                         <div class="row g-3 mb-3">
                                                             <div class="col-sm-6">
-                                                                <label for="department_id_edit" class="form-label">Department</label>
-                                                                <select class="form-control" name="department_id" id="department_id_edit">
+                                                                <label for="department_id_edit" class="form-label">Department <span class="text-danger">*</span></label>
+                                                                <select class="form-control" name="department_id" id="department_id_edit" required>
                                                                     <option disabled value="">select one</option>
                                                                     @foreach($departments as $department)
                                                                     <option {{$department->id == $designation->department_id ? 'selected':''}} value="{{$department->id}}">{{$department->department_name}}</option>
@@ -131,14 +131,14 @@
                     @csrf
                     <div class="modal-body">
                         <div class="mb-3">
-                            <label for="name" class="form-label">Designation Name</label>
-                            <input type="text" name="name" class="form-control" id="name">
+                            <label for="name" class="form-label">Designation Name <span class="text-danger">*</span></label>
+                            <input type="text" name="name" class="form-control" id="name" required>
                         </div>
                         <div class="deadline-form">
                             <div class="row g-3 mb-3">
                                 <div class="col-sm-6">
-                                    <label for="department_id" class="form-label">Department</label>
-                                    <select class="form-control" name="department_id" id="department_id">
+                                    <label for="department_id" class="form-label">Department <span class="text-danger">*</span></label>
+                                    <select class="form-control" name="department_id" id="department_id" required>
                                         <option disabled selected value="">select one</option>
                                         @foreach($departments as $department)
                                             <option value="{{$department->id}}">{{$department->department_name}}</option>

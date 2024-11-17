@@ -16,8 +16,8 @@
     <div class="row clearfix g-3">
         <div class="col-sm-12">
             <div class="card mb-3">
-                <div class="card-body export-table bg-dark-subtle">
-                    <table id="file-datatable" class="table table-bordered text-nowrap table-secondary key-buttons border-bottom w-100">
+                <div class="card-body table-responsive bg-dark-subtle">
+                    <table id="basic-datatable" class="table table-bordered text-nowrap table-secondary key-buttons border-bottom w-100">
                         <thead>
                         <tr>
                             <th>No</th>

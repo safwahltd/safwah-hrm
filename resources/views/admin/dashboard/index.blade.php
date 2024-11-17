@@ -279,11 +279,11 @@
                         <div class="card info-card my-1">
                             <div class="card-body">
                                 <h5 class="fw-bold">Upcoming Holidays</h5>
-                                <div class="holiday-details">
-                                    <div class="holiday-calendar">
-                                        <div class="holiday-calendar-content">
-                                            <div class="row">
-                                                <table id="myProjectTable" class="table table-hover table-striped align-middle mb-0" style="width:100%">
+                                <div class="">
+                                    <div class="">
+                                        <div class="">
+                                            <div class="row table-responsive">
+                                                <table class="table table-hover table-striped align-middle mb-0" style="width:100%">
                                                     <thead class="bg-primary">
                                                     <tr class="bg-secondary">
                                                         <th  class="bg-primary-subtle">Name</th>
@@ -301,7 +301,7 @@
                                                                 <small>{{ \Illuminate\Support\Carbon::parse($holiday->date_to)->format('d M, Y') }}</small>
                                                             </td>
                                                             <td><small>{{ $holiday->total_day }} {{$holiday->total_day <= 1 ? 'day':'days'}}</small></td>
-                                                            <td><span style="font-size: 10px" class="p-1 px-3 rounded-2 text-white {{ $holiday->date_to > \Illuminate\Support\Carbon::now() ? 'bg-success' : 'bg-danger' }}">{{ $holiday->date_to > \Illuminate\Support\Carbon::now() ? 'In Coming' : 'Passed' }}</span></td>
+                                                            <td><span style="font-size: 10px" class="p-1 px-3 rounded-2 text-dark">{{ $holiday->date_to > \Illuminate\Support\Carbon::now() ? 'In Coming' : 'Passed' }}</span></td>
                                                         </tr>
                                                     @empty
                                                         <tr>
@@ -331,56 +331,63 @@
                                 </div>
                                 <div class="attendance-list">
                                     <div class="row p-3">
-                                        <div class="col-md-4">
-                                            <div class="attendance-details">
-                                                <h5 class="fw-bold text-primary">{{$totalWorkingDay}}</h5>
-                                                <p class="fw-bold text-uppercase">Working Days</p>
+                                        <div class="col-md-4 my-1" align="center">
+                                            <div class="attendance-details bg-success p-2 rounded-2">
+                                                <h5 class="fw-bold text-white">{{$totalWorkingDay}}</h5>
+                                                <p class="fw-bold text-uppercase text-white" style="font-size: 13px">Working Days</p>
                                             </div>
                                         </div>
-                                        <div class="col-md-4">
-                                            <div class="attendance-details">
-                                                <h5 class="fw-bold text-primary">{{$totalAttend}}</h5>
-                                                <p class="fw-bold text-uppercase">Total Attend</p>
+                                        <div class="col-md-4 my-1" align="center">
+                                            <div class="attendance-details bg-primary-gradient p-2 rounded-2">
+                                                <h5 class="fw-bold text-white">{{$totalAttend}}</h5>
+                                                <p class="fw-bold text-uppercase" style="font-size: 13px">Total Attend</p>
                                             </div>
                                         </div>
-                                        <div class="col-md-4">
-                                            <div class="attendance-details">
-                                                <h5 class="fw-bold text-primary">{{ $totalWorkingDay - $totalAttend }}</h5>
-                                                <p class="fw-bold text-uppercase">Total Absent</p>
+                                        <div class="col-md-4 my-1" align="center">
+                                            <div class="attendance-details bg-primary p-2 rounded-2">
+                                                <h5 class="fw-bold text-white">{{ $totalWorkingDay - $totalAttend }}</h5>
+                                                <p class="fw-bold text-uppercase text-white" style="font-size: 13px">Total Absent</p>
                                             </div>
                                         </div>
-                                        <div class="col-md-4">
-                                            <div class="attendance-details">
-                                                <h5 class="fw-bold text-primary">{{ $totalHolidays }}</h5>
-                                                <p class="fw-bold text-uppercase">Holidays</p>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-md-4">
-                                            <div class="attendance-details">
-                                                <h5 class="fw-bold text-primary">{{ 20 }}</h5>
-                                                <p class="fw-bold text-uppercase">Total Leave</p>
+                                        <div class="col-md-4 my-1" align="center">
+                                            <div class="attendance-details bg-dark-defualt p-2 rounded-2">
+                                                <h5 class="fw-bold text-white">{{ $totalHolidays }}</h5>
+                                                <p class="fw-bold text-uppercase text-white" style="font-size: 13px">Holidays</p>
                                             </div>
                                         </div>
 
-                                        <div class="col-md-4">
-                                            <div class="attendance-details">
-                                                <h5 class="fw-bold text-pink">{{ ( 10 - auth()->user()->userInfo->sick_leave ) + ( 10 - auth()->user()->userInfo->casual_leave ) }}</h5>
-                                                <p class="fw-bold text-uppercase">Leaves Taken</p>
+                                        <div class="col-md-4 my-1" align="center">
+                                            <div class="attendance-details p-2 rounded-2" style="background-color: blue">
+                                                <h5 class="fw-bold text-white">{{ $leave->sick + $leave->casual }}</h5>
+                                                <p class="fw-bold text-uppercase text-white" style="font-size: 13px">Total Leave</p>
                                             </div>
                                         </div>
-                                        <div class="col-md-4">
-                                            <div class="attendance-details">
-                                                <h5 class="fw-bold text-success">{{ 20 - ( 10 - auth()->user()->userInfo->sick_leave ) + ( 10 - auth()->user()->userInfo->casual_leave ) }}</h5>
-                                                <p class="fw-bold text-uppercase">Leaves Left</p>
+
+                                        <div class="col-md-4 my-1" align="center">
+                                            <div class="attendance-details p-2 rounded-2" style="background-color: orangered">
+                                                <h5 class="fw-bold text-white">{{ $leave->sick_spent + $leave->casual_spent }}</h5>
+                                                <p class="fw-bold text-uppercase text-white" style="font-size: 13px">Leaves Taken</p>
                                             </div>
                                         </div>
-                                        <div class="col-md-4">
-                                            <div class="attendance-details">
-                                                <h5 class="fw-bold text-purple">{{$leavesPending}}</h5>
-                                                <p class="fw-bold text-uppercase">Pending Approval</p>
+                                        <div class="col-md-4 my-1" align="center">
+                                            <div class="attendance-details p-2 rounded-2" style="background-color: #006b60">
+                                                <h5 class="fw-bold text-white">{{ $leave->sick_left + $leave->casual_left }}</h5>
+                                                <p class="fw-bold text-uppercase text-white" style="font-size: 13px">Leaves Left</p>
                                             </div>
                                         </div>
+                                        <div class="col-md-4 my-1" align="center">
+                                            <div class="attendance-details p-2 rounded-2" style="background-color: #990055">
+                                                <h5 class="fw-bold text-white">{{$leaveBalance->half_day_total}}</h5>
+                                                <p class="fw-bold text-uppercase text-white" style="font-size: 13px">Half Day</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 my-1" align="center">
+                                            <div class="attendance-details p-2 rounded-2" style="background-color: olivedrab">
+                                                <h5 class="fw-bold text-white">{{$leaveBalance->left_total}}</h5>
+                                                <p class="fw-bold text-uppercase text-white" style="font-size: 13px">Left</p>
+                                            </div>
+                                        </div>
+
 
                                     </div>
                                 </div>

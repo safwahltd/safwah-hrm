@@ -107,7 +107,7 @@ $jscomp.polyfill("Array.prototype.find", function(a) {
 })(function(a, b, c, e) {
 	var d = a.fn.dataTable;
 	a.extend(!0, d.defaults, {
-		dom: "<'row'<'col-sm-12 col-md-6'l><'col-sm-12 col-md-6'f>><'row'<'col-sm-12'tr>><'row'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7'p>>",
+		dom: "<'row my-2'<'col-6 col-md-6'l><'col-6 col-md-6 text-end'f>><'row'<'col-sm-12'tr>><'row text-start'<'col-sm-12 col-md-5'i><'col-sm-12 col-md-7 d-grid justify-content-end'p>>",
 		renderer: "bootstrap"
 	});
 	a.extend(d.ext.classes, {

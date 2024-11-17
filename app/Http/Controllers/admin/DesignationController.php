@@ -15,7 +15,7 @@ class DesignationController extends Controller
     {
         if(auth()->user()->hasPermission('designations index')){
             return view('admin.designation.index', [
-                'designations' => Designation::latest()->simplePaginate(10),
+                'designations' => Designation::latest()->where('soft_delete',0)->simplePaginate(100),
                 'departments' => Department::where('status',1)->orderBy('department_name')->get(),
             ]);
         }
@@ -23,10 +23,7 @@ class DesignationController extends Controller
             toastr()->error('Permission Denied');
             return back();
         }
-
-
     }
-
     public function store(Request $request)
     {
         if(auth()->user()->hasPermission('designations store')){
@@ -89,12 +86,16 @@ class DesignationController extends Controller
             return back();
         }
     }
-
-    public function destroy(Designation $designation)
+    public function destroy($id)
     {
-        if(auth()->user()->hasPermission('designations destroy')){
+        if(auth()->user()->hasPermission('designations soft destroy')){
             try {
-                $designation->delete();
+                $designation = Designation::find($id);
+                $designation->name = $designation->name;
+                $designation->department_id = $designation->department_id;
+                $designation->status = $designation->status;
+                $designation->soft_delete = 1;
+                $designation->saveOrFail();
                 toastr()->success('Delete Designation Success');
                 return back();
             }

@@ -5,7 +5,7 @@
 <script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.0/main.min.js'></script>
 <style>
     #calendar {
-        max-width: 1100px;
+        max-width: 1200px;
         margin: 0 auto;
         padding: 0 10px;
     }

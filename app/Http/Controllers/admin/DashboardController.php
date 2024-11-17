@@ -7,8 +7,10 @@ use App\Models\Asset;
 use App\Models\Attendance;
 use App\Models\Department;
 use App\Models\Designation;
+use App\Models\HalfDayLeaveBalance;
 use App\Models\Holiday;
 use App\Models\Leave;
+use App\Models\LeaveBalance;
 use App\Models\Termination;
 use App\Models\UserInfos;
 use App\Models\WorkingDay;
@@ -49,7 +51,14 @@ class DashboardController extends Controller
             $totalHolidays = Holiday::whereYear('date_from',Carbon::now()->year)->sum('total_day');
             $holidays = Holiday::where('date_from', '>', \Illuminate\Support\Carbon::now())->latest()->simplePaginate(5);
             $leavesPending = Leave::where('user_id',auth()->user()->id)->whereYear('created_at',Carbon::now()->year)->where('status',0)->count();
-            return view('admin.dashboard.index',compact('attendance','holidays','attendances','totalAttend','leavesPending','totalWorkingDay','totalHolidays'));
+            $leave = LeaveBalance::where('user_id',auth()->user()->id)->where('year',Carbon::now()->year)->first();
+            $leaveBalance = HalfDayLeaveBalance::where('user_id',auth()->user()->id)->where('year',Carbon::now()->year)->select([
+                                        \Illuminate\Support\Facades\DB::raw('SUM(half_day) as half_day_total'),
+                                        \Illuminate\Support\Facades\DB::raw('SUM(spent) as spent_total'),
+                                        \Illuminate\Support\Facades\DB::raw('SUM(`left`) as left_total'),
+                                    ])->first();
+
+            return view('admin.dashboard.index',compact('attendance','leaveBalance','holidays','leave','attendances','totalAttend','leavesPending','totalWorkingDay','totalHolidays'));
         }
     }
 }

@@ -68,4 +68,3 @@
 <script src="{{asset('/')}}datatable/dataTables.responsive.min.js"></script>
 <script src="{{asset('/')}}datatable/responsive.bootstrap5.min.js"></script>
 <script src="{{asset('/')}}datatable/table-data.js"></script>
-

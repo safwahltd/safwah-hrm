@@ -11,9 +11,14 @@ return new class extends Migration
         Schema::create('leave_balances', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('user_id');
-            $table->bigInteger('leave_type');
-            $table->bigInteger('balance');
-            $table->bigInteger('status')->default(1);
+            $table->bigInteger('sick')->default(0);
+            $table->bigInteger('casual')->default(0);
+            $table->bigInteger('sick_spent')->default(0);
+            $table->bigInteger('casual_spent')->default(0);
+            $table->bigInteger('sick_left')->default(0);
+            $table->bigInteger('casual_left')->default(0);
+            $table->integer('year')->nullable();
+            $table->tinyInteger('status')->default(1);
             $table->timestamps();
         });
     }

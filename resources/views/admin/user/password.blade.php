@@ -22,7 +22,7 @@
                             <label for="user_id" class="form-label">User <span class="text-danger">*</span></label>
                             <select class="form-control select2-example"  name="user_id" id="user_id" required>
                                 @foreach($users as $user)
-                                    <option value="{{ $user->id }}">{{ $user->name }}</option>
+                                    <option value="{{ $user->id }}">{{ $user->name }} <sub>({{ $user->userInfo->employee_id }})</sub></option>
                                 @endforeach
                             </select>
                         </div>

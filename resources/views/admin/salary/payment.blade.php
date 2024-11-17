@@ -21,37 +21,37 @@
     <div class="row clearfix g-3">
         <div class="col-sm-12">
             <div class="row filter-row justify-content-end">
-                <div class="col-sm-6 col-4 text-end my-2">
-                    <form method="get" action="{{route('admin.salary.payment.index')}}">
-                        <select class="form-control-sm" name="month" id="month" required>
+                <div class="col-sm-6 col-12 d-grid justify-content-end text-end my-2">
+                    <form method="get" class="d-flex" action="{{route('admin.salary.payment.index')}}">
+                        <select class="form-control-sm me-1" name="month" id="month" required>
                             <option {{ $month == 0 ? 'selected' : '' }} value="0">All</option>
                             @for ($i = 1; $i <= 12; $i++)
                                 <option {{ $i == $month ? 'selected' : '' }} value="{{ $i }}">{{ date('F', mktime(0, 0, 0, $i, 1)) }}</option>
                             @endfor
                         </select>
-
-                        <select class="form-control-sm" name="year" id="year" required>
+                        <select class="form-control-sm me-1" name="year" id="year" required>
                             <option {{ $year == 0 ? 'selected' : '' }} value="0">All</option>
                             @for ($i = date('Y'); $i >= 2022; $i--)
                                 <option {{ $i == $year ? 'selected' : '' }} value="{{ $i }}">{{ $i }}</option>
                             @endfor
                         </select>
-                        <select class="form-control-sm"  name="day" id="day">
+                        <select class="form-control-sm me-1"  name="day" id="day">
                             <option value="">All Days</option>
                             @for($d = 1; $d <= 31; $d++)
                                 <option value="{{ $d }}" {{ $d == $day ? 'selected' : '' }}>{{ $d }}</option>
                             @endfor
                         </select>
-                        <button class="form-control-sm text-white bg-success px-3"  type="submit">Filter</button>
+                        <button class="form-control-sm  m-1 text-white bg-success px-3"  type="submit">Filter</button>
                     </form>
                 </div>
             </div>
             <div class="card mb-3">
-                <div class="card-body bg-dark-subtle">
-                    <table id="" class="table table-bordered text-nowrap table-secondary key-buttons border-bottom w-100">
+                <div class="card-body table-responsive bg-dark-subtle">
+                    <table id="basic-datatable" class="table table-bordered text-nowrap table-secondary key-buttons border-bottom w-100">
                         <thead>
                         <tr>
                             <th>Employee</th>
+                            <th>ID</th>
                             <th>Paid Amount</th>
                             <th>Payment Date</th>
                             <th>Payment Method</th>
@@ -63,6 +63,7 @@
                         @foreach($payments as $key => $payment)
                             <tr>
                                 <td>{{ $payment->user->name }}</td>
+                                <td>{{ $payment->user->userInfo->employee_id }}</td>
                                 <td>{{ $payment->paid_amount }}</td>
                                 <td>{{ \Illuminate\Support\Carbon::parse($payment->payment_date)->format('d M Y') }}</td>
                                 <td>{{ $payment->payment_method }}</td>

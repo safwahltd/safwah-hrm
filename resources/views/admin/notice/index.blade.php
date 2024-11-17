@@ -26,8 +26,8 @@
     <div class="row clearfix g-3">
         <div class="col-sm-12">
             <div class="card mb-3">
-                <div class="card-body export-table bg-dark-subtle">
-                    <table id="example3" class="table table-bordered text-nowrap table-secondary key-buttons border-bottom w-100">
+                <div class="card-body table-responsive bg-dark-subtle">
+                    <table id="basic-datatable" class="table table-bordered text-nowrap table-secondary key-buttons border-bottom w-100">
                         <thead>
                         <tr>
                             <th>No</th>
@@ -142,7 +142,7 @@
                                             <div class="deadline-form">
                                                     <div class="modal-body">
                                                         <div class="">
-                                                            <p>{{ $notice->content }}</p><br>
+                                                            <p align="justify">{{ $notice->content }}</p><br>
                                                             <address>
                                                                 Regards & Thanks <br>
                                                                 {{ $notice->user->userInfo->designations->name ?? 'Managing Director' }}<br>
@@ -179,7 +179,7 @@
         <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title  fw-bold" id="depaddLabel">notice Create</h5>
+                    <h5 class="modal-title  fw-bold" id="depaddLabel">Notice Create</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 
@@ -187,18 +187,18 @@
                     <form action="{{ route('admin.notice.store') }}" method="POST">
                         @csrf
                         <div class="form-group my-2">
-                            <label for="title">Notice Title</label>
+                            <label for="title">Notice Title <span class="text-danger">*</span></label>
                             <input type="text" name="title" class="form-control" required>
                         </div>
 
                         <div class="form-group my-2">
-                            <label for="content">Notice Content</label>
+                            <label for="content">Notice Content <span class="text-danger">*</span></label>
                             <textarea name="details" class="form-control" required id="details" cols="30" rows="6"></textarea>
                         </div>
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group my-2">
-                                    <label for="start_date">Start Date</label>
+                                    <label for="start_date">Start Date <span class="text-danger">*</span></label>
                                     <input type="date" name="start_date" class="form-control" required>
                                 </div>
                             </div>

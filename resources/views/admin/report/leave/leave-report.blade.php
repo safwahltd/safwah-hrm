@@ -13,6 +13,17 @@
             border: 1px solid black;
             border-collapse: collapse;
         }
+        @media only screen and (max-width: 600px) {
+            * {
+                font-size: 10px;
+            }
+            table, th {
+                font-size: 8px;
+            }
+            table, td {
+                font-size: 8px;
+            }
+        }
     </style>
     <style>
         .floating-button {
@@ -78,13 +89,23 @@
                             @endphp
                         <td align="left" style="padding-left: 10px">
                             @if($month)
-                            <span class="fw-bold text-success">Available : 2 </span><br>
-                                <span class="fw-bold text-danger">Spent : {{ $halfDayLeave }}</span><br>
-                                <span class="fw-bold text-primary">Left : {{ 2 - $halfDayLeave }}</span>
+                                @php
+                                    $leaveBalance = $leaveBalance = \App\Models\HalfDayLeaveBalance::where('user_id',$user->id)->where('year',$year)->where('month',$month)->first();
+                                @endphp
+                            <span class="fw-bold text-success">Available : {{ $leaveBalance->half_day ?? 0 }} </span><br>
+                                <span class="fw-bold text-danger">Spent : {{ $leaveBalance->spent ?? 0 }}</span><br>
+                                <span class="fw-bold text-primary">Left : {{ $leaveBalance->left ?? 0 }}</span>
                             @else
-                                <span class="fw-bold text-success">Available : 24 </span><br>
-                                <span class="fw-bold text-success">Spent : {{ $halfDayLeave }} </span><br>
-                                <span class="fw-bold text-success">Left : {{ 24 - $halfDayLeave }} </span><br>
+                                @php
+                                    $leaveBalance = \App\Models\HalfDayLeaveBalance::where('user_id',$user->id)->where('year',$year)->select([
+    \Illuminate\Support\Facades\DB::raw('SUM(half_day) as half_day_total'),
+    \Illuminate\Support\Facades\DB::raw('SUM(spent) as spent_total'),
+    \Illuminate\Support\Facades\DB::raw('SUM(`left`) as left_total'),
+])->first();
+                                @endphp
+                                <span class="fw-bold text-success">Available : {{$leaveBalance->half_day_total ?? 0}} </span><br>
+                                <span class="fw-bold text-success">Spent : {{ $leaveBalance->spent_total ?? 0 }} </span><br>
+                                <span class="fw-bold text-success">Left : {{ $leaveBalance->left_total ?? 0 }} </span><br>
                             @endif
 
                         </td>
@@ -96,11 +117,12 @@
                                     ->where('status',1)
                                     ->whereYear('start_date', $year)
                                     ->sum('days_taken');
+                            $leaveBalance = \App\Models\LeaveBalance::where('user_id',$user->id)->where('year',$year)->first();
                             @endphp
                         <td align="left" style="padding-left: 10px">
-                            <span class="fw-bold text-success">Available : 10 </span><br>
-                            <span class="fw-bold text-danger">Spent : {{ $sickLeave }}</span><br>
-                            <span class="fw-bold text-primary">Left : {{ 10 - $sickLeave }}</span>
+                            <span class="fw-bold text-success">Available : {{ $leaveBalance->sick ?? 0 }} </span><br>
+                            <span class="fw-bold text-danger">Spent : {{ $leaveBalance->sick_spent ?? 0 }}</span><br>
+                            <span class="fw-bold text-primary">Left : {{ $leaveBalance->sick_left ?? 0 }}</span>
                         </td>
                         @endif
                         @if($type == 'casual' || $type == 'all')
@@ -110,11 +132,12 @@
                             ->where('status',1)
                             ->whereYear('start_date', $year)
                             ->sum('days_taken');
+                            $casualLeaveBalance = \App\Models\LeaveBalance::where('user_id',$user->id)->where('year',$year)->first();
                         @endphp
                             <td align="left" style="padding-left: 10px">
-                                <span class="fw-bold text-success">Available : 10 </span><br>
-                                <span class="fw-bold text-danger">Spent : {{ $casualLeave }}</span><br>
-                                <span class="fw-bold text-primary">Left : {{ 10 - $casualLeave }}</span>
+                                <span class="fw-bold text-success">Available : {{$casualLeaveBalance->casual ?? 0}} </span><br>
+                                <span class="fw-bold text-danger">Spent : {{ $casualLeaveBalance->casual_spent ?? 0 }}</span><br>
+                                <span class="fw-bold text-primary">Left : {{ $casualLeaveBalance->casual_left ?? 0 }}</span>
                             </td>
                         @endif
                     </tr>

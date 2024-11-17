@@ -15,7 +15,7 @@
 <div class="content">
     <div class="">
         <p style="font-weight: bold">Subject : {{ $notice->title }}</p>
-        <p>{{ $notice->content }}</p><br>
+        <p align="justify">{{ $notice->content }}</p><br>
         <address style="font-family: 'Arial Black', sans-serif; line-height: 1.5;">
             Regards & Thanks <br>
             {{ $notice->user->userInfo->designations->name ?? 'Managing Director' }}<br>

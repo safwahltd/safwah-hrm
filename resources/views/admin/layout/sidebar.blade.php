@@ -11,33 +11,33 @@
         <ul class="menu-list flex-grow-1 mt-3">
             <li class="collapsed">
                 <a class="m-link {{ Request::route()->getName() == 'admin.dashboard' ? 'active':''}}" id="dashboard" href="{{route('admin.dashboard')}}">
-                    <i class="icofont-home fs-5"></i> <span> Dashboard </span>
+                    <i class="icofont-home"></i> <span> Dashboard </span>
                 </a>
             </li>
             @if(auth()->user()->role =='employee')
                     <li class="collapsed">
                         <a class="m-link {{ Request::route()->getName() == 'employee.attendance.list' ? 'active':''}}" href="{{route('employee.attendance.list')}}">
-                            <i class="icofont-clip-board fs-5 "></i> <span> Attendance </span>
+                            <i class="icofont-clip-board "></i> <span> Attendance </span>
                         </a>
                     </li>
                     <li class="collapsed">
                         <a class="m-link {{ Request::route()->getName() == 'employee.attendance.report' ? 'active':''}}" href="{{route('employee.attendance.report')}}">
-                            <i class="icofont-clip-board fs-5 "></i> <span> Attendance Report</span>
+                            <i class="icofont-clip-board "></i> <span> Attendance Report</span>
                         </a>
                     </li>
                     <li class="collapsed">
                         <a class="m-link {{ Request::route()->getName() == 'employee.salary.index' ? 'active':''}}" href="{{route('employee.salary.index')}}">
-                            <i class="icofont-money fs-5 "></i> <span> Salary </span>
+                            <i class="icofont-money "></i> <span> Salary </span>
                         </a>
                     </li>
                     <li class="collapsed">
                         <a class="m-link {{ Request::route()->getName() == 'employee.holiday.index' ? 'active':''}}" href="{{route('employee.holiday.index')}}">
-                            <i class="icofont-calendar fs-5 "></i> <span> Holidays </span>
+                            <i class="icofont-calendar "></i> <span> Holidays </span>
                         </a>
                     </li>
                     <li class="collapsed">
                         <a class="m-link {{ Request::route()->getName() == 'employee.leave' ? 'active':''}}" href="{{route('employee.leave')}}">
-                            <i class="icofont-ui-calendar fs-5 "></i> <span> Leave </span>
+                            <i class="icofont-ui-calendar "></i> <span> Leave </span>
                         </a>
                     </li>
                     <li class="collapsed">
@@ -118,6 +118,8 @@
                         {{--<li><a class="ms-link" href="#"><span> Sales Invoice </span></a></li>
 
                         <li><a class="ms-link" href="#"><span> Billings </span></a></li>--}}
+                            <li><a class="ms-link" href="#"><span> Expense </span></a></li>
+
                     </ul>
                 </li>
             @endif
@@ -141,6 +143,8 @@
                     {{ Request::route()->getName() == 'admin.attendance.report' ? 'show':'' }}
                     {{ Request::route()->getName() == 'admin.asset.report' ? 'show':'' }}
                     {{ Request::route()->getName() == 'admin.salary.report' ? 'show':'' }}
+                    {{ Request::route()->getName() == 'admin.leave.management' ? 'show':'' }}
+                    {{ Request::route()->getName() == 'admin.workingDay.index' ? 'show':'' }}
                         " id="tikit-Components">
                         <li class="collapsed">
                             <a class="ms-link" data-bs-toggle="collapse" data-bs-target="#reports" href="#">
@@ -184,6 +188,9 @@
                         @endif
                         @if(auth()->user()->hasPermission('admin workingDay index'))
                         <li><a class="ms-link {{ Request::route()->getName() == 'admin.workingDay.index' ? 'active':'' }}" href="{{route('admin.workingDay.index')}}"> <i class="icofont-address-book"></i> <span>Working Day</span></a></li>
+                        @endif
+                        @if(auth()->user()->hasPermission('admin leave management'))
+                        <li><a class="ms-link {{ Request::route()->getName() == 'admin.leave.management' ? 'active':'' }}" href="{{route('admin.leave.management')}}"> <i class="icofont-leaf"></i> <span>Leave Management</span></a></li>
                         @endif
 
                     </ul>
