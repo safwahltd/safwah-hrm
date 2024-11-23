@@ -11,6 +11,7 @@ use App\Models\Leave;
 use App\Models\Notice;
 use App\Models\Salary;
 use App\Models\SalaryPayment;
+use App\Models\SalarySetting;
 use App\Models\Termination;
 use App\Models\User;
 use App\Models\WorkingDay;
@@ -582,11 +583,27 @@ class ReportController extends Controller
            ->when($years, function ($q) use ($years) {
             return $q->where('year', $years);
         })->get();
+
+        $salaryPaymentInputs = SalarySetting::where('status',1)->where('type','payment')->get();
+        $salaryDeductInputs = SalarySetting::where('status',1)->where('type','deduct')->get();
         $monthlyReport = [];
         foreach ($salaries as $salary) {
             $effectiveMonth = date('F', mktime(0, 0, 0, $salary->month, 1));
             $effectiveYear = $salary->year;
-
+            $pay = 0;
+            if($salary->payment != ''){
+                $payment = json_decode($salary->payment);
+                foreach($salaryPaymentInputs as $paymentInput){
+                    $pay = $pay + ($payment->{$paymentInput->name} ?? 0);
+                }
+            }
+            $deduct = 0 ;
+            if($salary->deduct != ''){
+                $deducts = json_decode($salary->deduct);
+                foreach($salaryDeductInputs as $deductsInput){
+                    $deduct = $deduct + ($deducts->{$deductsInput->name} ?? 0);
+                }
+            }
             if (!isset($monthlyReport[$effectiveYear][$effectiveMonth])) {
                 $monthlyReport[$effectiveYear][$effectiveMonth] = [];
             }
@@ -608,7 +625,9 @@ class ReportController extends Controller
                 'attendance_deduction' => $salary->attendance_deduction,
                 'month' => $salary->month,
                 'year' => $salary->year,
-                'total_salary' => $salary->basic_salary + $salary->house_rent + $salary->medical_allowance + $salary->conveyance_allowance + $salary->others + $salary->mobile_allowance + $salary->bonus,
+                'pay' => $pay,
+                'deduct' => $deduct,
+                'total_salary' => $salary->basic_salary + $salary->house_rent + $salary->medical_allowance + $salary->conveyance_allowance + $salary->others + $salary->mobile_allowance + $salary->bonus ,
             ];
         }
         return view('admin.report.salary.salary-report',compact('monthlyReport','mon','yr'));
@@ -740,22 +759,23 @@ class ReportController extends Controller
                 ->where('month', $month)
                 ->first();
             $totalWorkingDays = $workingDaysRecord ? $workingDaysRecord->working_day : 0;
-            // Build the base attendance query for the given year and month
+            /* Attendance Count Query */
             $attendanceQuery = Attendance::when($user_id, function($q) use ($user_id) {
                 return $q->where('user_id', $user_id);
             })->whereYear('clock_in_date', $year)
                 ->whereMonth('clock_in_date', $month);
             $attendanceData = $attendanceQuery->get()->groupBy('user_id');
+
             // Prepare the data for each user
             $monthData = [];
             foreach ($attendanceData as $userId => $attendanceRecords) {
                 $user = User::find($userId);
 
                 // Count presents and absents for this user
-                $totalPresents = $attendanceRecords->count();
+                $totalPresents = $attendanceRecords->unique('clock_in_date')->count();
                 $total_late = $attendanceRecords->filter(function ($attendance) {
                     return \Carbon\Carbon::parse($attendance->clock_in)->format('H:i:s') > '09:15:00';
-                })->count();
+                })->unique('clock_in_date')->count();
                 $totalAbsents = $totalWorkingDays - $totalPresents;
 
                 $monthData[] = [
@@ -768,8 +788,6 @@ class ReportController extends Controller
                     'total_working_days' => $totalWorkingDays,
                 ];
             }
-
-            // Store the monthly data in the report data array
             $reportData[$month] = $monthData;
         }
         return view('admin.report.attendance.attendance-report',compact('reportData','mon','year','user_id'));
@@ -797,7 +815,10 @@ class ReportController extends Controller
                 $user = User::find($userId);
 
                 // Count presents and absents for this user
-                $totalPresents = $attendanceRecords->count();
+                $totalPresents = $attendanceRecords->unique('clock_in_date')->count();
+                $total_late = $attendanceRecords->filter(function ($attendance) {
+                    return \Carbon\Carbon::parse($attendance->clock_in)->format('H:i:s') > '09:15:00';
+                })->unique('clock_in_date')->count();
                 $totalAbsents = $totalWorkingDays - $totalPresents;
 
                 $monthData[] = [
@@ -806,6 +827,7 @@ class ReportController extends Controller
                     'designation' => $user->userInfo->designations->name,
                     'total_presents' => $totalPresents,
                     'total_absents' => $totalAbsents,
+                    'total_late' => $total_late,
                     'total_working_days' => $totalWorkingDays,
                 ];
             }
@@ -813,6 +835,7 @@ class ReportController extends Controller
             // Store the monthly data in the report data array
             $reportData[$month] = $monthData;
         }
+//        return view('admin.report.attendance.attendance-report-download', compact('reportData','mon','year'));
         $pdf = Pdf::loadView('admin.report.attendance.attendance-report-download', compact('reportData','mon','year'));
         return $pdf->download('attendance_report.pdf');
     }

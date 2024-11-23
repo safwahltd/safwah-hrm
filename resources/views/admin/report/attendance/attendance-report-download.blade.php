@@ -55,31 +55,33 @@
     <div class="row" style="margin-top: 4px;">
 
         @foreach($reportData as $month => $monthData)
-            <div class="row" style="margin-top: 20px">
+            <div class="row" style="margin-top: 20px;">
                 <div style="border-top: 1px solid black; border-left: 1px solid #000000; border-right: 1px solid black; margin:0">
-                    <h4 style="padding:15px; margin: 0" align="center">Attendance Report For {{$month == '' ? 'All': date('F', mktime(0, 0, 0, $month, 1)) }}  {{$year}} </h4>
+                    <h5 style="padding:15px; margin: 0; text-transform: uppercase;" align="center">Attendance Report For {{$month == '' ? 'All': date('F', mktime(0, 0, 0, $month, 1)) }}  {{$year}} </h5>
                 </div>
-                <table style="width:100% ; text-align: center ;margin-bottom: 4px">
+                <table style="width:100% ; text-align: center;">
                     <thead>
-                    <tr style="background-color: #5c636a; text-transform: uppercase; color: white; font-size: 12px">
+                    <tr style="background-color: #5c636a; color: white; font-size: 10px; text-transform: uppercase">
                         <th>SL</th>
                         <th>Name</th>
                         <th>Id</th>
                         <th>Designation</th>
                         <th>Working Day</th>
                         <th>Attendance</th>
+                        <th>Late Attendance</th>
                         <th>Absent</th>
                     </tr>
                     </thead>
                     <tbody>
                     @forelse($monthData as $data)
-                        <tr>
+                        <tr style="font-size: 10px">
                             <td>{{ $loop->iteration }}</td>
                             <td>{{ $data['user_name'] }}</td>
                             <td>{{ $data['user_id'] }}</td>
                             <td>{{ $data['designation'] }}</td>
                             <td>{{ $data['total_working_days'] }}</td>
                             <td>{{ $data['total_presents'] }}</td>
+                            <td>{{ $data['total_late'] }}</td>
                             <td>{{ $data['total_absents'] }}</td>
                         </tr>
                     @empty
@@ -90,8 +92,6 @@
                     </tbody>
                 </table>
             </div>
-
-
         @endforeach
     </div>
 </div>

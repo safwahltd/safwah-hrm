@@ -79,12 +79,33 @@
                                 </td>
                             </tr>
                             @php
-                                $totalAttendance = \App\Models\Attendance::where('user_id', $payment->salary->user_id)
-                                ->whereMonth('clock_in', $payment->salary->month)
-                                ->whereYear('clock_in', $payment->salary->year)
-                                ->count();
-            $net = ($payment->salary->basic_salary + $payment->salary->house_rent + $payment->salary->medical_allowance + $payment->salary->conveyance_allowance + $payment->salary->others + $payment->salary->mobile_allowance + $payment->salary->bonus) - ($payment->salary->meal_deduction + $payment->salary->income_tax + $payment->salary->other_deduction + $payment->salary->attendance_deduction);
-            /*$netWords = $this->numberToWords($net);*/
+                                $user_id = $payment->salary->user_id;
+                                $yearr = $payment->salary->year;
+                                $monthh = $payment->salary->month;
+                                $daysInaMonth = \Illuminate\Support\Carbon::create($yearr, $monthh, 1)->daysInMonth;
+                                $startDate = \Illuminate\Support\Carbon::create($yearr, $monthh, 1);
+                                $endDate = $startDate->copy()->endOfMonth();
+                                $allDates = [];
+                                for ($date = $startDate; $date <= $endDate; $date->addDay()) {
+                                    $allDates[] = $date->toDateString(); // Store the dates in an array
+                                }
+                                for ($day = 1; $day <= $daysInaMonth; $day++) {
+                                    $attendancesForDay = \App\Models\Attendance::with('user')->where(function($query) use ($user_id, $yearr, $monthh, $day) {
+                                        $query->when($user_id, function($q) use ($user_id) {
+                                            $q->where('user_id', $user_id);
+                                        })->when($yearr, function($q) use ($yearr) {
+                                            $q->whereYear('clock_in', $yearr);
+                                        })->when($monthh, function($q) use ($monthh) {
+                                            $q->whereMonth('clock_in', $monthh);
+                                        });
+                                    })->get()->groupBy(function ($item) {
+                                        return \Carbon\Carbon::parse($item->clock_in)->toDateString();
+                                    });
+
+                                    $attendanceData = collect($allDates)->mapWithKeys(function ($date) use ($attendancesForDay) {
+                                        return [$date => $attendancesForDay->get($date, collect())];
+                                    });
+                                }
 
                             @endphp
                             <div class="modal fade" id="salaryShow{{$key}}" tabindex="-1"  aria-hidden="true">
@@ -107,8 +128,11 @@
                                                                 </div>
                                                                 <div class="col-md-6">
                                                                     <p><small class="fw-bold" style="font-weight: bold">ID </small> : <small> {{$payment->salary->user->userInfo->employee_id}}</small></p>
-                                                                    <p><small class="fw-bold" style="font-weight: bold">TOTAL ATTENDENCE </small> : <small> {{$totalAttendance}}</small></p>
-                                                                    <p><small class="fw-bold" style="font-weight: bold">TOTAL WORKING DAY </small> : <small> 26 </small></p>
+                                                                    <p><small class="fw-bold" style="font-weight: bold">TOTAL ATTENDENCE </small> : <small> {{count($attendancesForDay)}}</small></p>
+                                                                    @php
+                                                                        $workingDaysRecord = \App\Models\WorkingDay::where('year', $payment->salary->year)->where('month', $payment->salary->month)->first();
+                                                                    @endphp
+                                                                    <p><small class="fw-bold" style="font-weight: bold">TOTAL WORKING DAY </small> : <small> {{$workingDaysRecord->working_day ?? 0}} </small></p>
                                                                 </div>
 
                                                             </div>
@@ -122,9 +146,26 @@
                                                                     <p><small class="fw-bold" style="font-weight: bold">CONVEYANCE ALLOWANCE </small> : <small> {{$payment->salary->conveyance_allowance}}</small></p>
                                                                     <p><small class="fw-bold" style="font-weight: bold">OTHERS </small> : <small> {{$payment->salary->others}}</small></p>
                                                                     <p><small class="fw-bold" style="font-weight: bold">MOBILE ALLOWANCE </small> : <small> {{$payment->salary->mobile_allowance}} </small></p>
-                                                                    <p><small class="fw-bold" style="font-weight: bold">BONUS </small> : <small> {{$payment->salary->bonus}} </small></p>
+                                                                    @php
+                                                                        $pay = 0 ;
+                                                                            if($payment->salary->payment != ''){
+                                                                                $paymentSalary = json_decode($payment->salary->payment);
+                                                                            foreach($salaryPaymentInputs as $paymentInput){
+                                                                                $pay = $pay + ($paymentSalary->{$paymentInput->name} ?? 0);
+                                                                            }
+                                                                            }
+
+                                                                    @endphp
+                                                                    @if($payment->salary->payment != '')
+                                                                        @php
+                                                                            $paymentSalary = json_decode($payment->salary->payment);
+                                                                        @endphp
+                                                                        @foreach($salaryPaymentInputs as $paymentInput)
+                                                                            <p><small class="fw-bold text-uppercase" style="font-weight: bold">{{ ucwords(str_replace('_',' ',$paymentInput->name)) }} </small> : <small> {{ $paymentSalary->{$paymentInput->name} ?? 0 }} </small></p>
+                                                                        @endforeach
+                                                                    @endif
                                                                     <hr>
-                                                                    <p><small class="fw-bold" style="font-weight: bold">TOTAL PAY </small> : <small> {{ $allowance = ($payment->salary->basic_salary + $payment->salary->house_rent + $payment->salary->medical_allowance + $payment->salary->conveyance_allowance + $payment->salary->others + $payment->salary->mobile_allowance + $payment->salary->bonus) }} </small></p>
+                                                                    <p><small class="fw-bold" style="font-weight: bold">TOTAL PAY </small> : <small> {{ $allowance = ($pay + $payment->salary->basic_salary + $payment->salary->house_rent + $payment->salary->medical_allowance + $payment->salary->conveyance_allowance + $payment->salary->others + $payment->salary->mobile_allowance + $payment->salary->bonus) }} </small></p>
                                                                 </div>
                                                                 <div class="col-md-6 border p-2">
                                                                     <h6 class="text-center fw-bold">DEDUCTION DETAILS</h6>
@@ -133,12 +174,31 @@
                                                                     <p><small class="fw-bold" style="font-weight: bold">INCOME TAX </small> : <small> {{$payment->salary->income_tax}}</small></p>
                                                                     <p><small class="fw-bold" style="font-weight: bold">OTHER DEDUCTON </small> : <small> {{$payment->salary->other_deduction}}</small></p>
                                                                     <p><small class="fw-bold" style="font-weight: bold">ATTENDENCE DEDUCTION </small> : <small> {{$payment->salary->attendance_deduction}}</small></p>
+                                                                    @php
+                                                                        $deduct = 0 ;
+                                                                            if($payment->salary->deduct != ''){
+                                                                                $deducts = json_decode($payment->salary->deduct);
+                                                                                /*dd(gettype($deduct->expense));*/
+                                                                                foreach($salaryDeductInputs as $deductsInput){
+                                                                                    $deduct = $deduct + ($deducts->{$deductsInput->name} ?? 0);
+                                                                                }
+                                                                            }
+
+                                                                    @endphp
+                                                                    @if($payment->salary->deduct != '')
+                                                                        @php
+                                                                            $deducts = json_decode($payment->salary->deduct);
+                                                                        @endphp
+                                                                        @foreach($salaryDeductInputs as $deductInput)
+                                                                            <p><small class="fw-bold text-uppercase" style="font-weight: bold">{{ ucwords(str_replace('_',' ',$deductInput->name)) }} </small> : <small> {{ $deducts->{$deductInput->name} ?? 0 }}</small></p>
+                                                                        @endforeach
+                                                                    @endif
                                                                     <br>
                                                                     <br>
                                                                     <br>
                                                                     <br class="mb-2">
                                                                     <hr>
-                                                                    <p><small class="fw-bold" style="font-weight: bold">TOTAL DEDUCTION </small> : <small> {{ $deductions = ($payment->salary->meal_deduction + $payment->salary->income_tax + $payment->salary->other_deduction + $payment->salary->attendance_deduction)}} </small></p>
+                                                                    <p><small class="fw-bold" style="font-weight: bold">TOTAL DEDUCTION </small> : <small> {{ $deductions = ($deduct + $payment->salary->meal_deduction + $payment->salary->income_tax + $payment->salary->other_deduction + $payment->salary->attendance_deduction)}} </small></p>
                                                                 </div>
                                                             </div>
                                                             <hr>

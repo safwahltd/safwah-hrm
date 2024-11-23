@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Attendance;
 use App\Models\Salary;
 use App\Models\SalaryPayment;
+use App\Models\SalarySetting;
 use App\Models\User;
 use App\Models\WorkingDay;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -29,15 +30,19 @@ class SalaryController extends Controller
                         ->when($month, function($q) use ($month) {
                             $q->where('month', $month);
                         });
-                })->latest()->paginate(50);
-                return view('admin.salary.index', compact('users', 'year', 'month', 'salaries'));
+                })->latest()->paginate(100);
+                $salaryPaymentInputs = SalarySetting::where('status',1)->where('type','payment')->get();
+                $salaryDeductInputs = SalarySetting::where('status',1)->where('type','deduct')->get();
+                return view('admin.salary.index', compact('users', 'year', 'month', 'salaries','salaryPaymentInputs','salaryDeductInputs'));
             }
             else{
                 $year = 0;
                 $month = 0;
                 $users = User::where('status',1)->whereNotIn('id',[1])->get();
-                $salaries = Salary::with('user')->latest()->paginate(20);
-                return view('admin.salary.index', compact('users', 'year', 'month', 'salaries'));
+                $salaries = Salary::with('user')->latest()->paginate(100);
+                $salaryPaymentInputs = SalarySetting::where('status',1)->where('type','payment')->get();
+                $salaryDeductInputs = SalarySetting::where('status',1)->where('type','deduct')->get();
+                return view('admin.salary.index', compact('users', 'year', 'month', 'salaries','salaryPaymentInputs','salaryDeductInputs'));
             }
         }
         else{
@@ -47,6 +52,7 @@ class SalaryController extends Controller
     }
     public function store(Request $request)
     {
+//        return $request->all();
         if(auth()->user()->hasPermission('admin salary store')){
             try {
                 $validate = Validator::make($request->all(), [
@@ -74,6 +80,25 @@ class SalaryController extends Controller
                     toastr()->error('Already Have This Salary.');
                     return back();
                 }
+                $salaryPaymentInputs = SalarySetting::where('status',1)->where('type','payment')->get();
+                $dataPaymentInputs = [];
+                foreach ($salaryPaymentInputs as $paymentInput){
+                    foreach ($request->all() as $key => $item){
+                        if ($paymentInput->name == $key){
+                            $dataPaymentInputs[$key] =  $item;
+                        }
+                    }
+                }
+                $salaryDeductInputs = SalarySetting::where('status',1)->where('type','deduct')->get();
+                $dataDeductInputs = [];
+                foreach ($salaryDeductInputs as $deductInput){
+                    foreach ($request->all() as $key => $item){
+                        if ($deductInput->name == $key){
+                            $dataDeductInputs[$key] =  $item;
+                        }
+                    }
+                }
+
                 $salary = new Salary();
                 $salary->user_id = $request->user_id;
                 $salary->month = $request->month;
@@ -85,10 +110,13 @@ class SalaryController extends Controller
                 $salary->others = $request->others ? $request->others:0;
                 $salary->mobile_allowance = $request->mobile_allowance ? $request->mobile_allowance:0;
                 $salary->bonus = $request->bonus ? $request->bonus:0;
+                $salary->bonus_note = $request->bonus_note;
+                $salary->payment = json_encode($dataPaymentInputs);
                 $salary->meal_deduction = $request->meal_deduction ? $request->meal_deduction:0;
                 $salary->income_tax = $request->income_tax ? $request->income_tax:0;
                 $salary->other_deduction = $request->other_deduction ? $request->other_deduction:0;
                 $salary->attendance_deduction = $request->attendance_deduction ? $request->attendance_deduction:0;
+                $salary->deduct = json_encode($dataDeductInputs);
                 $salary->status = $request->status;
                 $salary->log_id = auth()->user()->id;
                 $salary->saveOrFail();
@@ -136,6 +164,24 @@ class SalaryController extends Controller
                     toastr()->error('Already Have This Salary.');
                     return back();
                 }
+                $salaryPaymentInputs = SalarySetting::where('status',1)->where('type','payment')->get();
+                $dataPaymentInputs = [];
+                foreach ($salaryPaymentInputs as $paymentInput){
+                    foreach ($request->all() as $key => $item){
+                        if ($paymentInput->name == $key){
+                            $dataPaymentInputs[$key] =  $item;
+                        }
+                    }
+                }
+                $salaryDeductInputs = SalarySetting::where('status',1)->where('type','deduct')->get();
+                $dataDeductInputs = [];
+                foreach ($salaryDeductInputs as $deductInput){
+                    foreach ($request->all() as $key => $item){
+                        if ($deductInput->name == $key){
+                            $dataDeductInputs[$key] =  $item;
+                        }
+                    }
+                }
                 $salary->user_id = $request->user_id;
                 $salary->month = $request->month;
                 $salary->year = $request->year;
@@ -146,10 +192,13 @@ class SalaryController extends Controller
                 $salary->others = $request->others ? $request->others:0;
                 $salary->mobile_allowance = $request->mobile_allowance ? $request->mobile_allowance:0;
                 $salary->bonus = $request->bonus ? $request->bonus:0;
+                $salary->bonus_note = $request->bonus_note;
+                $salary->payment = json_encode($dataPaymentInputs);
                 $salary->meal_deduction = $request->meal_deduction ? $request->meal_deduction:0;
                 $salary->income_tax = $request->income_tax ? $request->income_tax:0;
                 $salary->other_deduction = $request->other_deduction ? $request->other_deduction:0;
                 $salary->attendance_deduction = $request->attendance_deduction ? $request->attendance_deduction:0;
+                $salary->deduct = json_encode($dataDeductInputs);
                 $salary->status = $request->status;
                 $salary->log_id = auth()->user()->id;
                 $salary->saveOrFail();
@@ -183,7 +232,24 @@ class SalaryController extends Controller
     public function getSalaryDetails($id)
     {
         $salary = Salary::with('user')->find($id);
-        return response()->json($salary);
+        $salaryPaymentInputs = SalarySetting::where('status',1)->where('type','payment')->get();
+        $salaryDeductInputs = SalarySetting::where('status',1)->where('type','deduct')->get();
+        $pay = 0;
+        if($salary->payment != ''){
+            $payment = json_decode($salary->payment);
+            foreach($salaryPaymentInputs as $paymentInput){
+                $pay = $pay + ($payment->{$paymentInput->name} ?? 0);
+            }
+        }
+        $deduct = 0 ;
+        if($salary->deduct != ''){
+            $deducts = json_decode($salary->deduct);
+            foreach($salaryDeductInputs as $deductsInput){
+                $deduct = $deduct + ($deducts->{$deductsInput->name} ?? 0);
+            }
+        }
+        $sal = [$salary,$pay,$deduct];
+        return response()->json($sal);
     }
     public function getEmployees(Request $request)
     {
@@ -253,15 +319,38 @@ class SalaryController extends Controller
         $previous = Carbon::parse($payment->payment_date);
         $previousMonth = $previous->subMonth()->month;
         $currentYear = $previous->year;*/
-        $totalAttendance = Attendance::where('user_id', $salary->user_id)
+        $totalAttendance = collect(Attendance::where('user_id', $salary->user_id)
             ->whereMonth('clock_in', $salary->month)
             ->whereYear('clock_in', $salary->year)
-            ->count();
-        $net = ($salary->basic_salary + $salary->house_rent + $salary->medical_allowance + $salary->conveyance_allowance + $salary->others + $salary->mobile_allowance + $salary->bonus) - ($salary->meal_deduction + $salary->income_tax + $salary->other_deduction + $salary->attendance_deduction);
+            ->get());
+
+        $totalAttendance = $totalAttendance->unique('clock_in_date')->count();
+        /* payment dynamic column */
+        $salaryPaymentInputs = SalarySetting::where('status',1)->where('type','payment')->get();
+        $pay = 0 ;
+        if($salary->payment != ''){
+            $payment = json_decode($salary->payment);
+            foreach($salaryPaymentInputs as $paymentInput){
+                $pay = $pay + ($payment->{$paymentInput->name} ?? 0);
+            }
+        }
+        /* deduct Dynamic Column */
+        $salaryDeductInputs = SalarySetting::where('status',1)->where('type','deduct')->get();
+        $deduct = 0 ;
+        if($salary->deduct != ''){
+            $deducts = json_decode($salary->deduct);
+            /*dd(gettype($deduct->expense));*/
+            foreach($salaryDeductInputs as $deductsInput){
+                $deduct = $deduct + ($deducts->{$deductsInput->name} ?? 0);
+            }
+        }
+
+        $net = ($salary->basic_salary + $salary->house_rent + $salary->medical_allowance + $salary->conveyance_allowance + $salary->others + $salary->mobile_allowance + $salary->bonus + $pay) - ($salary->meal_deduction + $salary->income_tax + $salary->other_deduction + $salary->attendance_deduction + $deduct);
         $netWords = $this->numberToWords($net);
-        $workingDay = WorkingDay::where('month',$salary->month)->where('year',$salary->year)->first()->working_day;
-//        return view('admin.salary.pdf',compact('salary','totalAttendance','net','netWords','workingDay'));
-        $pdf = Pdf::loadView('admin.salary.pdf', compact('salary','totalAttendance','net','netWords','workingDay'));
+        $workingDay = WorkingDay::where('month',$salary->month)->where('year',$salary->year)->first()->working_day ?? 0;
+//        return view('admin.salary.pdf',compact('salary','totalAttendance','net','netWords','workingDay','salaryPaymentInputs','salaryDeductInputs'));
+        $pdf = Pdf::loadView('admin.salary.pdf', compact('salary','totalAttendance','net','netWords','workingDay','salaryPaymentInputs','salaryDeductInputs'));
+        $pdf->setPaper('A4', 'portrait');
         return $pdf->download($salary->user->userInfo->employee_id.'_salary_slip.pdf');
     }
     public function employeeIndex(Request $request){
@@ -270,7 +359,6 @@ class SalaryController extends Controller
                 $year = $request->input('year');
                 $month = $request->input('month');
                 $day = $request->input('day', null);
-
                 $payments = SalaryPayment::where('user_id',auth()->user()->id)->with('user', 'salary')->where(function($query) use ($year, $month, $day) {
                     $query->when($year, function($q) use ($year) {
                         $q->whereYear('payment_date', $year);
@@ -283,8 +371,10 @@ class SalaryController extends Controller
                         });
                 })->latest()->paginate(50);
                 $salaries = Salary::where('status', '1')->get();
+                $salaryPaymentInputs = SalarySetting::where('status',1)->where('type','payment')->get();
+                $salaryDeductInputs = SalarySetting::where('status',1)->where('type','deduct')->get();
 
-                return view('employee.salary.index', compact('payments','salaries','year', 'month','day'));
+                return view('employee.salary.index', compact('payments','salaries','year', 'month','day','salaryPaymentInputs','salaryDeductInputs','workingDaysRecord'));
             }
             else{
                 $year = 0;
@@ -292,7 +382,9 @@ class SalaryController extends Controller
                 $day = 0;
                 $payments = SalaryPayment::with('user', 'salary')->where('user_id',auth()->user()->id)->latest()->paginate(20);
                 $salaries = Salary::where('status', '1')->get();
-                return view('employee.salary.index', compact('payments','salaries','year', 'month','day'));
+                $salaryPaymentInputs = SalarySetting::where('status',1)->where('type','payment')->get();
+                $salaryDeductInputs = SalarySetting::where('status',1)->where('type','deduct')->get();
+                return view('employee.salary.index', compact('payments','salaries','year', 'month','day','salaryPaymentInputs','salaryDeductInputs'));
             }
         /*}
         else{

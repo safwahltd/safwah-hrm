@@ -261,8 +261,9 @@ class LeaveController extends Controller
         elseif ($data->leave_type == 'half_day'){
             $leaveBalance = HalfDayLeaveBalance::where('user_id',$data->user_id)->where('year',Carbon::parse($data->start_date)->format('Y'))->where('month',Carbon::parse($data->start_date)->format('m'))->first();
         }
-        $pdf = Pdf::loadView('employee.leave.print', compact('data','leaveBalance'));
-        return $pdf->download($data->user->name.'_'.$data->id.'_leave_request.pdf');
+        return view('employee.leave.print', compact('data','leaveBalance'));
+//        $pdf = Pdf::loadView('employee.leave.print', compact('data','leaveBalance'));
+//        return $pdf->download($data->user->name.'_'.$data->id.'_leave_request.pdf');
     }
     public function adminIndex(){
         if(auth()->user()->hasPermission('admin leave requests')){

@@ -21,10 +21,10 @@ class DashboardController extends Controller
 {
     public function index(){
         if (auth()->user()->role == 'admin'){
-            $totalEmployees = UserInfos::get('user_id');
-            $totalEmployeeMale = UserInfos::where('gender',1)->count();
-            $totalEmployeeFeMale = UserInfos::where('gender',2)->count();
-            $totalEmployeeOther = UserInfos::where('gender',3)->count();
+            $totalEmployees = UserInfos::where('status',1)->whereNotIn('user_id',[1])->get('user_id');
+            $totalEmployeeMale = UserInfos::where('status',1)->whereNotIn('user_id',[1])->where('gender',1)->count();
+            $totalEmployeeFeMale = UserInfos::where('status',1)->whereNotIn('user_id',[1])->where('gender',2)->count();
+            $totalEmployeeOther = UserInfos::where('status',1)->whereNotIn('user_id',[1])->whereNotIn('gender',[1,2])->count();
             $totalPresent = Attendance::whereDate('clock_in', today())->pluck('user_id');
             $absentEmployees = $totalEmployees->whereNotIn('user_id', $totalPresent)->count();
             $totalLateAttend = Attendance::whereDate('clock_in', today())->where('clock_in', '>', today()->setTime(9, 15))->count();

@@ -53,7 +53,7 @@
                         <img class="avatar lg rounded-circle img-thumbnail" src="{{asset('/')}}admin/assets/images/profile_av.png" alt="profile">
                     </a>
                     <div class="dropdown-menu rounded-lg shadow border-0 dropdown-animation dropdown-menu-end p-0 m-0">
-                        <div class="card border-0 text-sm-center">
+                        <div class="card border-0">
                             <div class="card-body pb-0">
                                 <div class="d-flex py-1">
                                     <img class="avatar rounded-circle" src="{{asset('/')}}admin/assets/images/profile_av.png" alt="profile">

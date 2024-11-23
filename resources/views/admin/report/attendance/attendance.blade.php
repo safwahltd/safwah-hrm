@@ -10,7 +10,6 @@
     </div>
     <div class="row g-3 mb-3">
         <form method="get" target="_blank" action="{{route('admin.attendance.report.show')}}">
-            @csrf
             <div class="row">
                 <div class="col my-2">
                     <div class="card ">

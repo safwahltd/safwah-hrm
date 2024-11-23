@@ -57,8 +57,33 @@
                                 <td>{{ $salary->user->name }}</td>
                                 <td>{{ date('F', mktime(0, 0, 0, $salary->month, 1)) }}, {{ $salary->year }}</td>
                                 <td>{{ $salary->basic_salary }} </td>
-                                <td>{{ $allowance = ($salary->house_rent + $salary->medical_allowance + $salary->conveyance_allowance + $salary->others + $salary->mobile_allowance + $salary->bonus) }} </td>
-                                <td>{{ $deductions = ($salary->meal_deduction + $salary->income_tax + $salary->other_deduction + $salary->attendance_deduction)}} </td>
+                                <td>
+                                        @php
+                                        $pay = 0 ;
+                                            if($salary->payment != ''){
+                                                $payment = json_decode($salary->payment);
+                                            foreach($salaryPaymentInputs as $paymentInput){
+                                                $pay = $pay + ($payment->{$paymentInput->name} ?? 0);
+                                            }
+                                            }
+
+                                        @endphp
+                                    {{ $allowance = ($salary->house_rent + $salary->medical_allowance + $salary->conveyance_allowance + $salary->others + $salary->mobile_allowance + $salary->bonus + $pay) }}
+                                </td>
+                                <td>
+                                    @php
+                                        $deduct = 0 ;
+                                            if($salary->deduct != ''){
+                                                $deducts = json_decode($salary->deduct);
+                                                /*dd(gettype($deduct->expense));*/
+                                                foreach($salaryDeductInputs as $deductsInput){
+                                                    $deduct = $deduct + ($deducts->{$deductsInput->name} ?? 0);
+                                                }
+                                            }
+
+                                    @endphp
+                                    {{ $deductions = ($salary->meal_deduction + $salary->income_tax + $salary->other_deduction + $salary->attendance_deduction + $deduct)}}
+                                </td>
                                 <td>{{ ($salary->basic_salary + $allowance) - $deductions }} </td>
                                 <td><span class="p-1 rounded-2  text-white {{ $salary->status == 1 ? 'bg-success':'bg-danger' }}">{{ $salary->status == 1 ? 'Active':'Inactive' }}</span></td>
                                 <td>
@@ -87,6 +112,7 @@
                                                 @method('PUT')
                                                 <div class="deadline-form">
                                                     <div class="row g-3 mb-3">
+                                                        <h6 align="center" style="border: 1px solid black; padding: 5px;">BASIC INFO</h6>
                                                         <div class="col-sm-6">
                                                             <label for="department_head" class="form-label">Employee <span class="text-danger">*</span></label>
                                                             <select class="form-control" name="user_id" id="department_head">
@@ -111,6 +137,7 @@
                                                                 @endfor
                                                             </select>
                                                         </div>
+                                                        <h6 align="center" style="border: 1px solid black; padding: 5px;">PAYMENT DETAILS</h6>
                                                         <div class="col-sm-6">
                                                             <label for="" class="form-label">Basic Salary <span class="text-danger">*</span></label>
                                                             <input type="number" name="basic_salary" value="{{$salary->basic_salary}}" class="form-control" id="" placeholder="example : 10000">
@@ -135,10 +162,25 @@
                                                             <label for="" class="form-label">Mobile Allowance</label>
                                                             <input type="number" name="mobile_allowance" value="{{$salary->mobile_allowance}}" class="form-control" id="" placeholder="example : 10000">
                                                         </div>
-                                                        <div class="col-sm-6">
-                                                            <label for="" class="form-label">Bonus</label>
-                                                            <input type="number" name="bonus" value="{{$salary->bonus}}" class="form-control" id="" placeholder="example : 10000">
+                                                        <div class="col-sm-12">
+                                                            <div class="input-group mb-3">
+                                                                <span class="input-group-text">Bonus</span>
+                                                                <input type="text" name="bonus_note" class="form-control" value="{{ $salary->bonus_note }}"  id="" placeholder="Bonus Note">
+                                                                <input type="number" min="0" value="{{$salary->bonus}}"  name="bonus" class="form-control" id="" placeholder="example : 10000">
+                                                            </div>
                                                         </div>
+                                                        @if($salary->payment != '')
+                                                        @php
+                                                        $payment = json_decode($salary->payment);
+                                                        @endphp
+                                                        @foreach($salaryPaymentInputs as $paymentInput)
+                                                            <div class="col-sm-6">
+                                                                <label for="" class="form-label">{{ ucwords(str_replace('_',' ',$paymentInput->name)) }}</label>
+                                                                <input type="number" min="0" value="{{ $payment->{$paymentInput->name} ?? 0 }}" name="{{$paymentInput->name}}" class="form-control" id="" placeholder="{{$paymentInput->placeholder}}">
+                                                            </div>
+                                                        @endforeach
+                                                        @endif
+                                                        <h6 align="center" style="border: 1px solid black; padding: 5px;">DEDUCTION DETAILS</h6>
                                                         <div class="col-sm-6">
                                                             <label for="" class="form-label">Meal Deduction</label>
                                                             <input type="number" name="meal_deduction" value="{{$salary->meal_deduction}}" class="form-control" id="" placeholder="example : 10000">
@@ -151,6 +193,17 @@
                                                             <label for="" class="form-label">Other Deduction</label>
                                                             <input type="number" name="other_deduction" value="{{$salary->other_deduction}}" class="form-control" id="" placeholder="example : 10000">
                                                         </div>
+                                                        @if($salary->deduct != '')
+                                                            @php
+                                                                $deduct = json_decode($salary->deduct);
+                                                            @endphp
+                                                            @foreach($salaryDeductInputs as $deductInput)
+                                                                <div class="col-sm-6">
+                                                                    <label for="" class="form-label">{{ ucwords(str_replace('_',' ',$deductInput->name)) }}</label>
+                                                                    <input type="number" min="0" value="{{ $deduct->{$deductInput->name} ?? 0 }}" name="{{$deductInput->name}}" class="form-control" id="" placeholder="{{$deductInput->placeholder}}">
+                                                                </div>
+                                                            @endforeach
+                                                        @endif
                                                         <div class="col-sm-6">
                                                             <label for="" class="form-label">Attendance Deduction</label>
                                                             <input type="number" name="attendance_deduction" value="{{$salary->attendance_deduction}}" class="form-control" id="" placeholder="example : 10000">
@@ -200,6 +253,7 @@
                         @csrf
                         <div class="deadline-form">
                             <div class="row g-3 mb-3">
+                                <h6 align="center" style="border: 1px solid black; padding: 5px;">BASIC INFO</h6>
                                 <div class="col-sm-6">
                                     <label for="user_id" class="form-label">Employee <span class="text-danger">*</span></label>
                                     <select class="form-control" required name="user_id" id="user_id">
@@ -224,50 +278,69 @@
                                         @endfor
                                     </select>
                                 </div>
+                                <h6 align="center" style="border: 1px solid black; padding: 5px;">PAYMENT DETAILS</h6>
                                 <div class="col-sm-6">
                                     <label for="" class="form-label">Basic Salary <span class="text-danger">*</span></label>
-                                    <input type="number" required name="basic_salary" class="form-control" id="" placeholder="example : 10000">
+                                    <input type="number" min="0" required name="basic_salary" class="form-control" id="" placeholder="example : 10000">
                                 </div>
                                 <div class="col-sm-6">
                                     <label for="" class="form-label">House Rent</label>
-                                    <input type="number" name="house_rent" class="form-control" id="" placeholder="example : 10000">
+                                    <input type="number" min="0"  name="house_rent" class="form-control" id="" placeholder="example : 10000">
                                 </div>
                                 <div class="col-sm-6">
                                     <label for="" class="form-label">Medical Allowance</label>
-                                    <input type="number" name="medical_allowance" class="form-control" id="" placeholder="example : 10000">
+                                    <input type="number" min="0"  name="medical_allowance" class="form-control" id="" placeholder="example : 10000">
                                 </div>
                                 <div class="col-sm-6">
                                     <label for="" class="form-label">Conveyance Allowance</label>
-                                    <input type="number" name="conveyance_allowance" class="form-control" id="" placeholder="example : 10000">
+                                    <input type="number" min="0"  name="conveyance_allowance" class="form-control" id="" placeholder="example : 10000">
                                 </div>
                                 <div class="col-sm-6">
                                     <label for="" class="form-label">Others</label>
-                                    <input type="number" name="others" class="form-control" id="" placeholder="example : 10000">
+                                    <input type="number" min="0"  name="others" class="form-control" id="" placeholder="example : 10000">
                                 </div>
                                 <div class="col-sm-6">
                                     <label for="" class="form-label">Mobile Allowance</label>
-                                    <input type="number" name="mobile_allowance" class="form-control" id="" placeholder="example : 10000">
+                                    <input type="number" min="0"  name="mobile_allowance" class="form-control" id="" placeholder="example : 10000">
                                 </div>
-                                <div class="col-sm-6">
-                                    <label for="" class="form-label">Bonus</label>
-                                    <input type="number" name="bonus" class="form-control" id="" placeholder="example : 10000">
+                                <div class="col-sm-12">
+                                    <div class="input-group mb-3">
+                                        <span class="input-group-text" >Bonus</span>
+                                        <input type="text" name="bonus_note"  class="form-control" placeholder="Bonus Note">
+                                        <input type="number" min="0"  name="bonus" class="form-control" placeholder="Bonus Amount">
+                                    </div>
                                 </div>
+
+                                @foreach($salaryPaymentInputs as $paymentInput)
+                                    <div class="col-sm-6">
+                                        <label for="" class="form-label">{{ ucwords(str_replace('_',' ',$paymentInput->name)) }}</label>
+                                        <input type="number" min="0"  name="{{$paymentInput->name}}" class="form-control" id="" placeholder="{{$paymentInput->placeholder}}">
+                                    </div>
+                                @endforeach
+
+                                <h6 align="center" style="border: 1px solid black; padding: 5px;">DEDUCTION DETAILS</h6>
                                 <div class="col-sm-6">
                                     <label for="" class="form-label">Meal Deduction</label>
-                                    <input type="number" name="meal_deduction" class="form-control" id="" placeholder="example : 10000">
+                                    <input type="number" min="0"  name="meal_deduction" class="form-control" id="" placeholder="example : 10000">
                                 </div>
                                 <div class="col-sm-6">
                                     <label for="" class="form-label">Income Tax</label>
-                                    <input type="number" name="income_tax" class="form-control" id="" placeholder="example : 10000">
+                                    <input type="number" min="0"  name="income_tax" class="form-control" id="" placeholder="example : 10000">
                                 </div>
                                 <div class="col-sm-6">
                                     <label for="" class="form-label">Other Deduction</label>
-                                    <input type="number" name="other_deduction" class="form-control" id="" placeholder="example : 10000">
+                                    <input type="number" min="0"  name="other_deduction" class="form-control" id="" placeholder="example : 10000">
                                 </div>
                                 <div class="col-sm-6">
                                     <label for="" class="form-label">Attendance Deduction</label>
-                                    <input type="number" name="attendance_deduction" class="form-control" id="" placeholder="example : 10000">
+                                    <input type="number" min="0"  name="attendance_deduction" class="form-control" id="" placeholder="example : 10000">
                                 </div>
+                                @foreach($salaryDeductInputs as $deductInput)
+                                    <div class="col-sm-6">
+                                        <label for="" class="form-label">{{ ucwords(str_replace('_',' ',$deductInput->name)) }}</label>
+                                        <input type="number" min="0"  name="{{$deductInput->name}}" class="form-control" id="" placeholder="{{$deductInput->placeholder}}">
+                                    </div>
+                                @endforeach
                                 <div class="col-sm-6">
                                     <label for="status" class="form-label">Status</label>
                                     <select class="form-control" name="status" id="status">
