@@ -22,7 +22,7 @@ use App\Http\Controllers\admin\SalaryPaymentController;
 use App\Http\Controllers\BillingController;
 use App\Http\Controllers\admin\ReportController;
 use App\Http\Controllers\admin\WorkingDayController;
-use App\Http\Controllers\ResignationController;
+use App\Http\Controllers\admin\SalarySettingController;
 
 
 Route::get('/', [AdminAuthController::class, 'login'])->name('login');
@@ -107,6 +107,12 @@ Route::middleware(['employee.auth'])->prefix('employee/')->group(function () {
                 Route::delete('/notices-destroy/{id}','destroy')->name('admin.notice.destroy');
                 Route::post('/notices-download/{id}', 'download')->name('admin.notice.download');
             });
+            Route::controller(SalarySettingController::class)->group(function (){
+                Route::get('/salary-setting','index')->name('admin.salary.setting.index');
+                Route::post('/salary-setting-store','store')->name('admin.salary.setting.store');
+                Route::put('/salary-setting-update/{id}','update')->name('admin.salary.setting.update');
+                Route::delete('/salary-setting-destroy/{id}','destroy')->name('admin.salary.setting.destroy');
+            });
             Route::controller(SalaryController::class)->prefix('account')->group(function (){
                 Route::get('/salaries','index')->name('admin.salary.index');
                 Route::post('/salaries-store','store')->name('admin.salary.store');
@@ -114,7 +120,7 @@ Route::middleware(['employee.auth'])->prefix('employee/')->group(function () {
                 Route::delete('/salaries-destroy/{id}','destroy')->name('admin.salary.destroy');
                 Route::get('/salaries-download/{id}', 'download')->name('admin.salary.download');
                 Route::get('/get-salary-details/{id}', [SalaryController::class, 'getSalaryDetails'])->name('salary.getDetails');
-        Route::get('/salaries-payment-download/{id}', 'download')->name('admin.salary.payment.download');
+                Route::get('/salaries-payment-download/{id}', 'download')->name('admin.salary.payment.download');
                 Route::get('/salaries/get-employees', [SalaryController::class, 'getEmployees'])->name('salaries.getEmployees');
             });
             Route::controller(SalaryPaymentController::class)->prefix('account')->group(function (){

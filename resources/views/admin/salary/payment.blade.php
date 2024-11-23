@@ -76,7 +76,7 @@
                                             @method('DELETE')
                                             <button type="submit" onclick="return confirm('are you sure to delete ? ')" class="btn btn-outline-secondary mx-1 deleterow"><i class="icofont-ui-delete text-danger"></i></button>
                                         </form>
-                                        <a href="{{--{{route('admin.salary.payment.download',$payment->id)}}--}}"  class="btn btn-outline-secondary"><i class="icofont-download text-success"></i></a>
+                                        <a href="{{route('admin.salary.payment.download',$payment->salary->id)}}"  class="btn btn-outline-secondary"><i class="icofont-download text-success"></i></a>
                                     </div>
                                 </td>
                             </tr>
@@ -105,8 +105,28 @@
                                                         <div class="col-sm-6" id="">
                                                             <h5>Salary Details</h5>
                                                             <hr>
-                                                            <p><strong>Total Pay:</strong> <span id="">{{ $allowance = ($payment->salary->basic_salary + $payment->salary->house_rent + $payment->salary->medical_allowance + $payment->salary->conveyance_allowance + $payment->salary->others + $payment->salary->mobile_allowance + $payment->salary->bonus) }}</span></p>
-                                                            <p><strong>Total Deduction:</strong> <span id="">{{ $deductions = ($payment->salary->meal_deduction + $payment->salary->income_tax + $payment->salary->other_deduction + $payment->salary->attendance_deduction)}}</span></p>
+                                                            @php
+                                                                $pay = 0 ;
+                                                                    if($payment->salary->payment != ''){
+                                                                        $paymentss = json_decode($payment->salary->payment);
+                                                                    foreach($salaryPaymentInputs as $paymentInput){
+                                                                        $pay = $pay + ($paymentss->{$paymentInput->name} ?? 0);
+                                                                    }
+                                                                    }
+
+                                                            @endphp
+                                                            @php
+                                                                $deduct = 0 ;
+                                                                    if($payment->salary->deduct != ''){
+                                                                        $deducts = json_decode($payment->salary->deduct);
+                                                                        /*dd(gettype($deduct->expense));*/
+                                                                        foreach($salaryDeductInputs as $deductsInput){
+                                                                            $deduct = $deduct + ($deducts->{$deductsInput->name} ?? 0);
+                                                                        }
+                                                                    }
+                                                            @endphp
+                                                            <p><strong>Total Pay:</strong> <span id="">{{ $allowance = ($pay + $payment->salary->basic_salary + $payment->salary->house_rent + $payment->salary->medical_allowance + $payment->salary->conveyance_allowance + $payment->salary->others + $payment->salary->mobile_allowance + $payment->salary->bonus) }}</span></p>
+                                                            <p><strong>Total Deduction:</strong> <span id="">{{ $deductions = ($deduct + $payment->salary->meal_deduction + $payment->salary->income_tax + $payment->salary->other_deduction + $payment->salary->attendance_deduction)}}</span></p>
                                                             <p><strong>Net Pay:</strong> <span id="">{{ $allowance - $deductions }}</span></p>
                                                         </div>
                                                         <div class="col-sm-6">
@@ -239,9 +259,10 @@
                         dataType: 'json',
                         success: function(data) {
                             $('#salary-details').show();
+                            console.log(data[0].basic_salary);
                             // Populate the salary details
-                            var allowance = parseFloat(data.basic_salary) + parseFloat(data.house_rent) + parseFloat(data.medical_allowance) + parseFloat(data.conveyance_allowance) + parseFloat(data.others) + parseFloat(data.mobile_allowance) + parseFloat(data.bonus);
-                            var deduction = parseFloat(data.meal_deduction) + parseFloat(data.income_tax) + parseFloat(data.other_deduction) + parseFloat(data.attendance_deduction);
+                            var allowance = parseFloat(data[0].basic_salary) + parseFloat(data[0].house_rent) + parseFloat(data[0].medical_allowance) + parseFloat(data[0].conveyance_allowance) + parseFloat(data[0].others) + parseFloat(data[0].mobile_allowance) + parseFloat(data[0].bonus) + parseFloat(data[1]);
+                            var deduction = parseFloat(data[0].meal_deduction) + parseFloat(data[0].income_tax) + parseFloat(data[0].other_deduction) + parseFloat(data[0].attendance_deduction) + parseFloat(data[2]);
                             $('#total_pay').text(allowance ? allowance : 0.00);
                             $('#deductions').text(deduction ? deduction : 0.00);
                             var totalPayable = (parseFloat(allowance) - parseFloat(deduction)).toFixed(2);

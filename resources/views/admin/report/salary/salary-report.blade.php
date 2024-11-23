@@ -73,8 +73,8 @@
                     <td>{{ $salary['employee_id'] }}</td>
                     <td>{{ $salary['employee_designation'] }}</td>
                     @php
-                        $allowance = $salary['house_rent'] + $salary['medical_allowance'] + $salary['conveyance_allowance'] + $salary['others'] + $salary['mobile_allowance'] + $salary['bonus'];
-                        $deduct = $salary['meal_deduction'] + $salary['income_tax'] + $salary['other_deduction'] + $salary['attendance_deduction'];
+                        $allowance = $salary['house_rent'] + $salary['medical_allowance'] + $salary['conveyance_allowance'] + $salary['others'] + $salary['mobile_allowance'] + $salary['bonus'] + $salary['pay'];
+                        $deduct = $salary['meal_deduction'] + $salary['income_tax'] + $salary['other_deduction'] + $salary['attendance_deduction'] + $salary['deduct'];
                     @endphp
                     <td>{{ $s = ($salary['basic_salary'] + $allowance) - $deduct }}</td>
                 </tr>

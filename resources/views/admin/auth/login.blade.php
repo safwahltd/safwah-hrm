@@ -31,7 +31,7 @@
                     <div class="col-lg-6 d-none d-lg-flex justify-content-center align-items-center rounded-lg auth-h100">
                         <div style="max-width: 25rem;">
                             <div class="text-center mb-5">
-                                <img width="200" src="{{asset('/')}}admin/assets/Safwah-Limited-logo.webp" alt="">
+                                <a href="https://safwahltd.com"><img width="200" src="{{asset('/')}}admin/assets/Safwah-Limited-logo.webp" alt=""></a>
                             </div>
                             <div class="mb-5">
                                 <h2 class="color-900 fw-bold text-center">A Path For Prosperity</h2>

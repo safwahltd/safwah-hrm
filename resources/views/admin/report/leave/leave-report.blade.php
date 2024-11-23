@@ -54,7 +54,7 @@
 <div class="content">
     <div class="row" style="margin-top: 4px;">
             <div class="" style="background-color: #00a686; color: white">
-                <h4 align="center" style="padding: 3px;">Leave Report For {{ $month == '' ? 'All Month': date('F', mktime(0, 0, 0, $month, 1)) }}  {{$year}} </h4>
+                <h4 align="center" style="padding: 3px; text-transform: uppercase;">Leave Report For {{ $month == '' ? 'All Month': date('F', mktime(0, 0, 0, $month, 1)) }}  {{$year}} </h4>
             </div>
             <table style="width:100% ; text-align: center ;margin-bottom: 4px">
                 <tr style="background-color: #5c636a; font-size: 12px; color: white; text-transform: uppercase">

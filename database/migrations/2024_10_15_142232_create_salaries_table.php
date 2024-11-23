@@ -21,10 +21,13 @@ return new class extends Migration
             $table->decimal('others', 10, 0)->nullable();
             $table->decimal('mobile_allowance', 10, 0)->nullable();
             $table->decimal('bonus', 10, 0)->nullable();
+            $table->string('bonus_note')->nullable();
             $table->decimal('meal_deduction', 10, 0)->nullable();
             $table->decimal('income_tax', 10, 0)->nullable();
             $table->decimal('other_deduction', 10, 0)->nullable();
             $table->decimal('attendance_deduction', 10, 0)->nullable();
+            $table->json('payment')->nullable();
+            $table->json('deduct')->nullable();
             $table->unsignedInteger('month');
             $table->unsignedInteger('year');
             $table->binary('status')->default(1);

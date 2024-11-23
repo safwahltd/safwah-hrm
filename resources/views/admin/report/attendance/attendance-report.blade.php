@@ -57,7 +57,7 @@
         @foreach($reportData as $month => $monthData)
             <div class="row" style="margin-top: 20px;">
                 <div style="border-top: 1px solid black; border-left: 1px solid #000000; border-right: 1px solid black; margin:0">
-                    <h5 style="padding:15px; margin: 0" align="center">Attendance Report For {{$month == '' ? 'All': date('F', mktime(0, 0, 0, $month, 1)) }}  {{$year}} </h5>
+                    <h5 style="padding:15px; margin: 0; text-transform: uppercase;" align="center">Attendance Report For {{$month == '' ? 'All': date('F', mktime(0, 0, 0, $month, 1)) }}  {{$year}} </h5>
                 </div>
                 <table style="width:100% ; text-align: center;">
                     <thead>
@@ -96,7 +96,6 @@
         </div>
     <div class="floating-button">
             <form action="{{ route('admin.download.attendance.report') }}" method="get">
-                @csrf
                 <input type="hidden" name="month" value="{{$mon}}">
                 <input type="hidden" name="year" value="{{$year}}">
                 <input type="hidden" name="user_id" value="{{$user_id}}">
