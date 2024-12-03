@@ -32,7 +32,7 @@
                                 <td>{{ $loop->iteration }}</td>
                                 <td>{{ $role->name }}</td>
                                 <td class="col-2">
-                                    <span class="p-1 {{$role->status == 1 ? 'bg-success':'bg-warning text-white'}}">{{$role->status == 1 ? 'Active':'Inactive'}}</span>
+                                    <span class="p-1  text-white {{$role->status == 1 ? 'bg-success':'bg-warning'}}">{{$role->status == 1 ? 'Active':'Inactive'}}</span>
                                 </td>
                                 <td class="d-flex">
                                     <a href="#" class="btn btn-primary mx-2" data-bs-toggle="modal" data-bs-target="#Editrole{{$key}}" ><i class="fa fa-edit"></i></a>

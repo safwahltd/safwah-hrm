@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\employee;
 
 use App\Http\Controllers\Controller;
+use App\Models\Asset;
 use App\Models\User;
 use App\Models\UserInfos;
 use Illuminate\Http\Request;
@@ -14,7 +15,8 @@ class EmployeeAccountController extends Controller
 {
     public function profile(){
         $user = User::find(auth()->user()->id);
-        return view('employee.profile.profile',compact('user'));
+        $assets = Asset::where('user_id',$user->id)->latest()->get();
+        return view('employee.profile.profile',compact('user','assets'));
     }
     public function personalInfoUpdate(Request $request){
         $userInfo = UserInfos::where('user_id',auth()->user()->id)->first();

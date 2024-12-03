@@ -44,6 +44,9 @@
                 page-break-inside: avoid;
             }
         }
+        *{
+            font-size: 12px;
+        }
     </style>
 </head>
 <body class="" style="">
@@ -54,10 +57,10 @@
                 <div class="col-8">
                     <div class="row">
                         <div class="col-md-6">
-                            <div class="">
-                                <img class="img-responsive" width="200" src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('admin/assets/Safwah-Limited-logo.webp'))) }}" alt="">
+                            <div style="margin-bottom: 5px;">
+                                <img class="img-responsive" width="200" src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path($setting->logo))) }}" alt="">
                             </div>
-                            <p>Confidence Center, Building-2, 10B, Shahjadpur, Gulshan-2, Dhaka, Bangladesh</p>
+                            <p style="font-size: 10px;">{{ $setting->address }}</p>
                         </div>
                         <div class="col-md-12">
                             <div class="row">
@@ -65,7 +68,7 @@
                                     <table class="table table-striped table-bordered" style="border: 1px solid black">
                                         <thead class="text-center">
                                             <th colspan="2" class="p-2">
-                                                <small class="p-0 fw-bold mx-0" style="font-size: 15px">LEAVE REQUEST FORM</small>
+                                                <small class="p-0 fw-bold mx-0" style="font-size: 13px">LEAVE REQUEST FORM</small>
                                             </th>
                                         </thead>
                                         <tbody class="">
@@ -85,8 +88,8 @@
                                     </table>
                                     <table class="table table-striped table-bordered" style="border: 1px solid black; text-align: center; margin-top: 15px">
                                         <thead class="text-center">
-                                        <th colspan="3"><small class="p-0 fw-bold my-0" style="font-size: 15px; font-weight: bold">LEAVE APPLICATION</small></th>
-                                        <th colspan="3"><small class="p-0 fw-bold my-0" style="font-size: 15px; font-weight: bold">REMAINING ENTILEMENT</small></th>
+                                        <th colspan="3"><small class="p-0 fw-bold my-0" style="font-size: 13px; font-weight: bold">LEAVE APPLICATION</small></th>
+                                        <th colspan="3"><small class="p-0 fw-bold my-0" style="font-size: 13px; font-weight: bold">REMAINING ENTILEMENT</small></th>
                                         </thead>
                                         <tbody class="" style="border: 1px solid black">
                                         <tr class="bg-secondary-subtle">

@@ -119,7 +119,7 @@
                     <div class="row">
                         <div class="col-6">
                             <div class="">
-                                <img class="img-responsive" width="200" src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('admin/assets/Safwah-Limited-logo.webp'))) }}" alt="">
+                                <img class="img-responsive" width="200" src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path($setting->logo))) }}" alt="">
                             </div>
                         </div>
 
@@ -130,7 +130,7 @@
                                     <table class="table table-striped table-bordered" style="border: 1px solid black;">
                                         <thead class="text-center">
                                             <th colspan="4" class="p-2">
-                                                <small class="p-0 fw-bold mx-0" style="font-size: 12px; font-weight: bold; text-transform: uppercase">Employee Copy</small>
+                                                <small class="p-0 fw-bold mx-0" style="font-size: 12px; font-weight: bold; text-transform: uppercase">Employee Information</small>
                                             </th>
                                         </thead>
                                         <tbody>
@@ -266,77 +266,13 @@
                                             <td style="font-weight: bold;" align="center"><span id="net-total">{{ $net = $allowance - $deductions }}</span> </td>
                                         </tr>
                                     </table>
-                                    <p style="font-weight:bold; font-size: 12px; padding: 5px; border: 1px solid black; margin-top: 10px; text-transform: uppercase;">In Words : {{$netWords}}</p>
+                                    <p style="font-weight:bold; font-size: 12px; padding: 5px; border: 1px solid black; margin-top: 10px; text-transform: uppercase;">In Words : {{ $netWords }}</p>
                                 </div>
                             </div>
                         </div>
                         <div class="">
-                            <p align="right" style="font-size: 8px;">This copy is computer generated. Does not need any operation.</p>
+                            <p align="right" style="font-size: 8px;">This copy is computer generated. Does not need any authorization.</p>
                         </div>
-                        {{--<div class="col-md-12">
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <h5 style="font-size: 14px; padding: 5px; border: 1px solid black; margin-bottom: 25px; text-transform: uppercase;" align="center">SALARY VOUCHER FOR THE MONTH OF {{ date('F', mktime(0, 0, 0, $salary->month, 1)) }}  {{ $salary->year }}</h5>
-                                    <div class="table">
-                                        <div class="table-row">
-                                            <div class="table-cell"><small class="p-0 fw-bold mx-0">PAYMENT DETAILS</small></div>
-                                            <div class="table-cell"><small class="p-0 fw-bold mx-0">AMOUNT (BDT)</small></div>
-                                            <div class="table-cell"><small class="p-0 fw-bold mx-0">DEDUCTION DETAILS</small></div>
-                                            <div class="table-cell"><small class="p-0 fw-bold mx-0">AMOUNT (BDT)</small></div>
-                                            <div class="table-cell"><small class="p-0 fw-bold mx-0">NET PAY (BDT)</small></div>
-                                        </div>
-                                        <div class="table-row">
-                                            <div class="table-cell">BASIC SALARY</div>
-                                            <div class="table-cell">{{$salary->basic_salary}}</div>
-                                            <div class="table-cell">Row 1, Cell 3</div>
-                                            <div class="table-cell">Row 1, Cell 3</div>
-                                            <div class="table-cell">Row 1, Cell 3</div>
-                                        </div>
-                                        <div class="table-row">
-                                            <div class="table-cell">Row 2, Cell 1</div>
-                                            <div class="table-cell">Row 2, Cell 2</div>
-                                            <div class="table-cell">Row 2, Cell 3</div>
-                                            <div class="table-cell">Row 2, Cell 3</div>
-                                            <div class="table-cell">Row 2, Cell 3</div>
-                                        </div>
-                                    </div>
-                                    <div class="row ">
-                                        <div class="column" style="padding: 0">
-                                            <div class="header" style="border-bottom: 1px solid black; padding-left: 0;">PAYMENT DETAILS</div>
-                                            <div class="row">
-                                                <div class="column" style="padding: 0">
-                                                    <div class="header" style="border-bottom: 1px solid black; padding-left: 0;">PAYMENT DETAILS</div>
-                                                </div>
-                                                <div class="column" style="padding: 0">
-                                                    <div class="header" style="border-bottom: 1px solid black; padding-left: 0;">AMOUNT (BDT)</div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="column" style="padding: 0">
-                                            <div class="header">DEDUCTION DETAILS</div>
-                                            <div class="row" style="border: 1px solid black;">
-                                                <div class="column">
-                                                    <div class="header" style="border-bottom: 1px solid black; padding-left: 0;">PAYMENT DETAILS</div>
-                                                    <div class="amount"></div>
-                                                </div>
-                                                <div class="column">
-                                                    <div class="header" style="border-bottom: 1px solid black; padding-left: 0;">PAYMENT DETAILS</div>
-                                                    <div class="amount"></div>
-                                                </div>
-                                            </div>
-                                            <div class="amount">AMOUNT (BDT)</div>
-                                        </div>
-                                        <div class="column" style="padding: 0">
-                                            <div class="header">NET PAY</div>
-                                            <div class="amount"></div>
-                                        </div>
-                                    </div>
-                                    <p style="font-weight:bold; font-size: 13px; padding: 5px; border: 1px solid black; margin-top: 10px; text-transform: uppercase;">In Words : {{$netWords}}</p>
-                                </div>
-                            </div>
-                        </div>--}}
-
-
                     </div>
                 </div>
             </div>

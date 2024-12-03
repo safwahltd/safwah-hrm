@@ -64,7 +64,7 @@
                             <div class="modal-dialog modal-dialog-centered modal-md modal-dialog-scrollable">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h5 class="modal-title  fw-bold" id="depeditLabel"> holiday Edit</h5>
+                                        <h5 class="modal-title  fw-bold" id="depeditLabel"> Holiday Edit</h5>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
@@ -124,14 +124,14 @@
         <div class="modal-dialog modal-dialog-centered modal-md modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title  fw-bold" id="depaddLabel"> holiday Add</h5>
+                    <h5 class="modal-title  fw-bold" id="depaddLabel"> Holiday Add</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <form action="{{route('holidays.store')}}" method="post">
                     @csrf
                     <div class="modal-body">
                         <div class="mb-3">
-                            <label for="name" class="form-label">holiday Name <span class="text-danger">*</span></label>
+                            <label for="name" class="form-label">Holiday Name <span class="text-danger">*</span></label>
                             <input type="text" name="name" class="form-control" id="name" required>
                         </div>
                         <div class="deadline-form">

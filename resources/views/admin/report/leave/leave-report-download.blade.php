@@ -7,7 +7,7 @@
     <style>
         body { font-family: Arial, sans-serif; line-height: 1.5;font-size: 15px; }
         h1 { text-align: center; }
-        .content { margin: 0 auto; width: 90%; }
+        .content { margin: 0 auto; width: 100%; }
         .signature { margin-top: 50px; }
         table, th, td {
             border: 1px solid black;
@@ -54,7 +54,7 @@
 <div class="">
     <div class="row" style="margin-top: 4px;">
         <div class="" style="background-color: #00a686; color: white">
-            <h4 align="center" style="padding: 3px;">Leave Report For {{$month == '' ? 'All Month': date('F', mktime(0, 0, 0, $month, 1)) }}  {{$year}} </h4>
+            <h4 align="center" style="padding: 3px;">Leave Report For {{ $month == '' ? 'All Month': date('F', mktime(0 , 0 , 0 , $month , 1)) }}  {{ $year }} </h4>
         </div>
         <table style="width:100% ;  text-align: center ; padding: 2px ;margin-bottom: 4px">
             <tr style="background-color: #5c636a; font-size: 12px; color: white; text-transform: uppercase">
@@ -73,7 +73,7 @@
                 @endif
             </tr>
             @foreach($users as $key => $user)
-                <tr style="font-size: 13px">
+                <tr style="font-size: 13px;">
                     <td align="center"><span class="fw-bold">{{$loop->iteration}}</span></td>
                     <td align="center"><span class="fw-bold">{{$user->name}}</span></td>
                     <td align="center"><span class="fw-bold">{{$user->userInfo->employee_id}}</span></td>
@@ -87,7 +87,7 @@
                                 ->whereYear('start_date', $year)
                                 ->sum('days_taken');
                         @endphp
-                        <td align="left" style="padding-left: 10px">
+                        <td align="left" style="padding-left: 10px;">
                             @if($month)
                                 @php
                                     $leaveBalance = $leaveBalance = \App\Models\HalfDayLeaveBalance::where('user_id',$user->id)->where('year',$year)->where('month',$month)->first();
@@ -119,7 +119,7 @@
                                 ->sum('days_taken');
                             $leaveBalance = \App\Models\LeaveBalance::where('user_id',$user->id)->where('year',$year)->first();
                         @endphp
-                        <td align="left" style="padding-left: 10px">
+                        <td align="left" style="padding-left: 10px;">
                             <span class="fw-bold text-success">Available : {{ $leaveBalance->sick ?? 0 }} </span><br>
                             <span class="fw-bold text-danger">Spent : {{ $leaveBalance->sick_spent ?? 0 }}</span><br>
                             <span class="fw-bold text-primary">Left : {{ $leaveBalance->sick_left ?? 0 }}</span>
@@ -134,7 +134,7 @@
                             ->sum('days_taken');
                             $casualLeaveBalance = \App\Models\LeaveBalance::where('user_id',$user->id)->where('year',$year)->first();
                         @endphp
-                        <td align="left" style="padding-left: 10px">
+                        <td align="left" style="padding-left: 10px;">
                             <span class="fw-bold text-success">Available : {{$casualLeaveBalance->casual ?? 0}} </span><br>
                             <span class="fw-bold text-danger">Spent : {{ $casualLeaveBalance->casual_spent ?? 0 }}</span><br>
                             <span class="fw-bold text-primary">Left : {{ $casualLeaveBalance->casual_left ?? 0 }}</span>

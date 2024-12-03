@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\UserInfos;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Exception;
 use Illuminate\Validation\Rule;
@@ -34,7 +35,7 @@ class AssetController extends Controller
                     'asset_name' => 'required',
                     'asset_id' => 'required|unique:assets,asset_id',
                     'user_id' => 'required',
-                    'value' => 'required',
+                    'value' => 'required|numeric|min:0',
                 ]);
                 if ($validate->fails()){
                     toastr()->error($validate->messages());
@@ -81,7 +82,7 @@ class AssetController extends Controller
                         Rule::unique('assets')->ignore($asset->id),
                     ],
                     'user_id' => 'required',
-                    'value' => 'required',
+                    'value' => 'required|numeric|min:0',
                 ]);
                 if ($validate->fails()){
                     toastr()->error($validate->messages());
@@ -136,9 +137,43 @@ class AssetController extends Controller
 
     }
 
-    public  function employeeFilter(Request $request){
+    /*public  function employeeFilter(Request $request){
         $users = User::whereNotIn('role',['admin'])->get();
-        if ($request->employeeName){
+//        dd($request->employeeName,$request->employeeId);
+        $userName = $request->employeeName;
+        $employeeId = $request->employeeId;
+        // Start with Asset query
+        if ($userName || $employeeId){
+            $assets = DB::table('assets')->join('user_infos as user_info1', 'user_info1.user_id', '=', 'assets.user_id')
+                ->when($userName, function ($query) use ($userName) {
+                    return $query->where('user_info1.name', 'like', '%' . $userName . '%');
+                })
+                ->when($employeeId, function ($query) use ($employeeId) {
+                    return $query->where('user_info1.employee_id', $employeeId);
+                })
+                ->get();
+        }
+        else{
+            $assets = Asset::latest()->get();
+        }
+
+
+        dd($assets);
+//        if ($userName || $employeeId) {
+            /*$query->when($userName, function($q) use ($userName) {
+                $q->join('user_infos', as 'user_infos' 'user_infos.user_id', '=', 'assets.user_id')
+                    ->where('user_infos.name', 'like', "%{$userName}%");
+            })->when($employeeId, function($q) use ($employeeId) {
+                    $q->join('user_infos', 'user_infos.user_id', '=', 'assets.user_id')
+                        ->where('user_infos.employee_id', $employeeId);
+            })->get();*/
+//        }
+
+        // Execute the query and get the results
+        /*$assets = $query->get();
+        return view('admin.asset.employeeFilter',compact('assets','users'));*/
+
+        /*if ($request->employeeName){
             if ($request->employeeName == 'null'){
                 $assets = Asset::get();
                 return view('admin.asset.employeeFilter',compact('assets','users'));
@@ -159,7 +194,6 @@ class AssetController extends Controller
                 $assets = Asset::whereIn('user_id',$employeeId)->get();
                 return view('admin.asset.employeeFilter',compact('assets','users'));
             }
-
-        }
-    }
+        }*/
+//    }*/
 }

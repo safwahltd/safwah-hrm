@@ -6,7 +6,7 @@
             <div class="h-right d-flex align-items-center mr-5 mr-lg-0 order-1">
                 <div class="dropdown notifications">
                     <a class="nav-link dropdown-toggle pulse" href="#" role="button" data-bs-toggle="dropdown">
-                        <i class="icofont-alarm  text-white fs-5"></i><sup class="text-white m-0 fw-bold bg-success rounded-circle p-1">{{ $noticeCount ?? '0' }}</sup>
+                        <i class="icofont-alarm  text-white fs-5"></i><sup class="text-white m-0 fw-bold bg-success rounded-circle p-1">{{ $notifications->count() ?? '0' }}</sup>
                         <span class="pulse-ring text-white"></span>
                     </a>
                     <div id="NotificationsDiv" class="dropdown-menu rounded-lg shadow border-0 dropdown-animation dropdown-menu-sm-end p-0 m-0">
@@ -34,9 +34,28 @@
                                                     </a>
                                                 </li>
                                             @endforeach
-                                        @else
-                                            <a class="dropdown-item" href="#">No new notices</a>
                                         @endif
+                                       {{-- @if($notifications->count())
+                                            @foreach(auth()->user()->notifications as $notification)
+                                                <li class="py-2 mb-1 border-bottom">
+--}}{{--                                                    <a href="{{route('employee.notice.list')}}#notice{{$key}}" class="d-flex">--}}{{--
+                                                    <a href="{{ $notification->data['url'] }}" class="d-flex">
+                                                        <img class="avatar rounded-circle" src="{{asset('/')}}admin/assets/images/xs/avatar1.jpg" alt="">
+                                                        <div class="flex-fill ms-2">
+                                                            <strong></strong>
+                                                            <p class="d-flex justify-content-between mb-0 ">
+                                                                {{ $notification->data['message'] }}
+--}}{{--                                                                <span class="font-weight-bold">{{ $notification->data['activity_type'] }}--}}{{----}}{{--{{ $notice->title }}--}}{{----}}{{--</span> <small>{{ $notice->created_at->diffForHumans() }}</small>--}}{{--
+--}}{{--                                                                <p>{{ \Illuminate\Support\Str::limit($notification->data['message'] , 70) }}</p>--}}{{--
+                                                            </p>
+                                                        </div>
+                                                    </a>
+                                                    @if(is_null($notification->read_at))
+                                                        <span class="badge">New</span>
+                                                    @endif
+                                                </li>
+                                            @endforeach
+                                        @endif--}}
                                     </ul>
                                 </div>
                             </div>
@@ -62,12 +81,11 @@
                                         <small class="">{{auth()->user()->email}}</small>
                                     </div>
                                 </div>
-
                                 <div><hr class="dropdown-divider border-dark"></div>
                             </div>
                             <div class="list-group m-2 ">
-                                <a href="{{route('employees.index')}}" class="list-group-item list-group-item-action border-0 "><i class="icofont-ui-user-group fs-6 me-3"></i>members</a>
-                                <a href="{{route('employees.index')}}" class="list-group-item list-group-item-action border-0 "><i class="icofont-ui-user-group fs-6 me-3"></i>Settings</a>
+                                <a href="{{route('employees.index')}}" class="list-group-item list-group-item-action border-0 "><i class="icofont-ui-user-group fs-6 me-3"></i>Members</a>
+                                <a href="{{route('admin.settings.index')}}" class="list-group-item list-group-item-action border-0 "><i class="icofont-gear fs-6 me-3"></i>Settings</a>
                                 <a href="#" class="list-group-item list-group-item-action border-0" onclick="return confirm('are you sure to logout ?') ? document.getElementById('logout-form').submit():''">
                                     <i class="icofont-logout fs-6 me-3"></i> Logout
                                 </a>

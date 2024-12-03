@@ -6,6 +6,7 @@ use App\Exports\AttendanceExport;
 use App\Http\Controllers\Controller;
 use App\Models\Asset;
 use App\Models\Attendance;
+use App\Models\Expense;
 use App\Models\Holiday;
 use App\Models\Leave;
 use App\Models\Notice;
@@ -559,8 +560,9 @@ class ReportController extends Controller
             ->when($user_id, function ($q) use ($user_id) {
                 return $q->where('id', $user_id);
             })->get();
-        $pdf = Pdf::loadView('admin.report.leave.leave-report-download', compact('leaves','users','month','year','type'));
-        return $pdf->download('leave_report.pdf');
+        return view('admin.report.leave.leave-report-download', compact('leaves','users','month','year','type'));
+//        $pdf = Pdf::loadView('admin.report.leave.leave-report-download', compact('leaves','users','month','year','type'));
+//        return $pdf->download('leave_report.pdf');
     }
     public function salary(){
         if(auth()->user()->hasPermission('admin salary report')){
@@ -584,8 +586,8 @@ class ReportController extends Controller
             return $q->where('year', $years);
         })->get();
 
-        $salaryPaymentInputs = SalarySetting::where('status',1)->where('type','payment')->get();
-        $salaryDeductInputs = SalarySetting::where('status',1)->where('type','deduct')->get();
+        $salaryPaymentInputs = SalarySetting::where('type','payment')->get();
+        $salaryDeductInputs = SalarySetting::where('type','deduct')->get();
         $monthlyReport = [];
         foreach ($salaries as $salary) {
             $effectiveMonth = date('F', mktime(0, 0, 0, $salary->month, 1));
@@ -597,7 +599,7 @@ class ReportController extends Controller
                     $pay = $pay + ($payment->{$paymentInput->name} ?? 0);
                 }
             }
-            $deduct = 0 ;
+            $deduct = 0;
             if($salary->deduct != ''){
                 $deducts = json_decode($salary->deduct);
                 foreach($salaryDeductInputs as $deductsInput){
@@ -642,11 +644,26 @@ class ReportController extends Controller
             ->when($year, function ($q) use ($year) {
                 return $q->where('year', $year);
             })->get();
+        $salaryPaymentInputs = SalarySetting::where('type','payment')->get();
+        $salaryDeductInputs = SalarySetting::where('type','deduct')->get();
         $monthlyReport = [];
         foreach ($salaries as $salary) {
-            $effectiveMonth = date('F', mktime(0, 0, 0, $salary->month, 1)); // Full month name (e.g., January)
+            $effectiveMonth = date('F', mktime(0, 0, 0, $salary->month, 1));
             $effectiveYear = $salary->year;
-
+            $pay = 0;
+            if($salary->payment != ''){
+                $payment = json_decode($salary->payment);
+                foreach($salaryPaymentInputs as $paymentInput){
+                    $pay = $pay + ($payment->{$paymentInput->name} ?? 0);
+                }
+            }
+            $deduct = 0;
+            if($salary->deduct != ''){
+                $deducts = json_decode($salary->deduct);
+                foreach($salaryDeductInputs as $deductsInput){
+                    $deduct = $deduct + ($deducts->{$deductsInput->name} ?? 0);
+                }
+            }
             if (!isset($monthlyReport[$effectiveYear][$effectiveMonth])) {
                 $monthlyReport[$effectiveYear][$effectiveMonth] = [];
             }
@@ -668,7 +685,9 @@ class ReportController extends Controller
                 'attendance_deduction' => $salary->attendance_deduction,
                 'month' => $salary->month,
                 'year' => $salary->year,
-                'total_salary' => $salary->basic_salary + $salary->house_rent + $salary->medical_allowance + $salary->conveyance_allowance + $salary->others + $salary->mobile_allowance + $salary->bonus,
+                'pay' => $pay,
+                'deduct' => $deduct,
+                'total_salary' => $salary->basic_salary + $salary->house_rent + $salary->medical_allowance + $salary->conveyance_allowance + $salary->others + $salary->mobile_allowance + $salary->bonus ,
             ];
         }
         $pdf = Pdf::loadView('admin.report.salary.salary-report-download', compact('monthlyReport'));
@@ -852,5 +871,54 @@ class ReportController extends Controller
             toastr()->error('Permission Denied');
             return back();
         }
+    }
+    public function expense(){
+        $users = User::orderBy('name','asc')->get();
+        return view('admin.report.expense.expense',compact('users'));
+    }
+    public function expenseReportShow(Request $request){
+        $start_date = $request->input('start_date') ?? Carbon::now()->toDateString();
+        $end_date = $request->input('end_date') ?? Carbon::now()->toDateString();
+        $user_id = $request->user_id;
+        $receipt_type = $request->receipt_type;
+        $expenses = Expense::where('status',1)->when($start_date && $end_date, function ($query) use ($start_date, $end_date) {
+            $query->whereBetween('date', [$start_date, $end_date]);
+        })
+            ->when($user_id, function ($query) use ($user_id) {
+                $query->where('user_id', $user_id);
+            })
+            ->when($receipt_type, function ($query) use ($receipt_type) {
+                $query->where('receipt_type', $receipt_type);
+            })
+            ->get();
+
+        return view('admin.report.expense.expense-report-show',compact('expenses','start_date','end_date','user_id','receipt_type'));
+    }
+    public function expenseReportDownload(Request $request){
+        try {
+            $start_date = $request->input('start_date');
+            $end_date = $request->input('end_date');
+            $user_id = $request->user_id;
+            $receipt_type = $request->receipt_type;
+
+            $expenses = Expense::when($start_date && $end_date, function ($query) use ($start_date, $end_date) {
+                $query->whereBetween('date', [$start_date, $end_date]);
+            })
+                ->when($user_id, function ($query) use ($user_id) {
+                    $query->where('user_id', $user_id);
+                })
+                ->when($receipt_type, function ($query) use ($receipt_type) {
+                    $query->where('receipt_type', $receipt_type);
+                })
+                ->get();
+            $pdf = Pdf::loadView('admin.report.expense.expense-report-download', compact('expenses','start_date','end_date','receipt_type'));
+            $pdf = $pdf->setPaper('A4','portrait');
+            return $pdf->download('expense_report.pdf');
+        }
+        catch (\Exception $e){
+            toastr()->error($e->getMessage());
+            return back();
+        }
+
     }
 }

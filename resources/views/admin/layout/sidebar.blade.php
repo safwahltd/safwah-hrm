@@ -2,8 +2,7 @@
     <div class="d-flex flex-column h-100" >
         <a href="{{route('admin.dashboard')}}" class="mb-0 text-center">
             <span class="logo-icon">
-{{--                <img width="200" src="{{asset('/')}}admin/assets/logo.png" alt="" class="img-responsive">--}}
-                <h5 class="text-white fw-bold">SAFWAH LIMITED</h5>
+                <h5 class="text-white fw-bold">{{$setting->company_name}}</h5>
             </span>
         </a>
         <!-- Menu: main ul -->
@@ -15,39 +14,7 @@
                 </a>
             </li>
             @if(auth()->user()->role =='employee')
-                    <li class="collapsed">
-                        <a class="m-link {{ Request::route()->getName() == 'employee.attendance.list' ? 'active':''}}" href="{{route('employee.attendance.list')}}">
-                            <i class="icofont-clip-board "></i> <span> Attendance </span>
-                        </a>
-                    </li>
-                    <li class="collapsed">
-                        <a class="m-link {{ Request::route()->getName() == 'employee.attendance.report' ? 'active':''}}" href="{{route('employee.attendance.report')}}">
-                            <i class="icofont-clip-board "></i> <span> Attendance Report</span>
-                        </a>
-                    </li>
-                    <li class="collapsed">
-                        <a class="m-link {{ Request::route()->getName() == 'employee.salary.index' ? 'active':''}}" href="{{route('employee.salary.index')}}">
-                            <i class="icofont-money "></i> <span> Salary </span>
-                        </a>
-                    </li>
-                    <li class="collapsed">
-                        <a class="m-link {{ Request::route()->getName() == 'employee.holiday.index' ? 'active':''}}" href="{{route('employee.holiday.index')}}">
-                            <i class="icofont-calendar "></i> <span> Holidays </span>
-                        </a>
-                    </li>
-                    <li class="collapsed">
-                        <a class="m-link {{ Request::route()->getName() == 'employee.leave' ? 'active':''}}" href="{{route('employee.leave')}}">
-                            <i class="icofont-ui-calendar "></i> <span> Leave </span>
-                        </a>
-                    </li>
-                    <li class="collapsed">
-                        <a class="m-link {{--{{ Request::route()->getName() == 'employee.profile.details' ? 'active':''}}--}}" data-bs-toggle="collapse" data-bs-target="#client-Components" href="#"><i class="icofont-address-book fs-5 "></i> <span>Account Details</span> <span class="arrow icofont-dotted-down ms-auto text-end fs-5"></span></a>
-                        <!-- Menu: Sub menu ul -->
-                        <ul class="sub-menu collapse {{ Request::route()->getName() == 'employee.profile.details' ? 'show':''}}" id="client-Components">
-                            <li><a class="ms-link {{ Request::route()->getName() == 'employee.profile.details' ? 'active':''}}" href="{{route('employee.profile.details')}}"> <span>Profile</span></a></li>
-                        </ul>
-                    </li>
-
+                @include('employee.layout.sidebar')
             @endif
             @if(auth()->user()->hasPermission('holidays index')
                 || auth()->user()->hasPermission('departments index')
@@ -108,6 +75,7 @@
                     <ul class="sub-menu collapse
                 {{ Request::route()->getName() == 'admin.salary.index' ? 'show':''}}
                     {{ Request::route()->getName() == 'admin.salary.payment.index' ? 'show':''}}
+                    {{ Request::route()->getName() == 'admin.expense.index' ? 'show':''}}
                         " id="accounts">
                         @if(auth()->user()->hasPermission('admin salary index'))
                         <li><a class="ms-link {{ Request::route()->getName() == 'admin.salary.index' ? 'active':'' }}" href="{{route('admin.salary.index')}}"><span> Employee salary</span></a></li>
@@ -119,7 +87,9 @@
                         {{--<li><a class="ms-link" href="#"><span> Sales Invoice </span></a></li>
 
                         <li><a class="ms-link" href="#"><span> Billings </span></a></li>--}}
-                            <li><a class="ms-link" href="#"><span> Expense </span></a></li>
+                        @if(auth()->user()->hasPermission('admin expense index'))
+                           <li><a class="ms-link {{ Request::route()->getName() == 'admin.expense.index' ? 'active':''}}" href="{{route('admin.expense.index')}}"><span> Expense </span></a></li>
+                        @endif
 
                     </ul>
                 </li>
@@ -130,6 +100,7 @@
                 || auth()->user()->hasPermission('admin leave report')
                 || auth()->user()->hasPermission('admin attendance report')
                 || auth()->user()->hasPermission('admin salary report')
+                || auth()->user()->hasPermission('admin expense report')
                 )
                 <li class="collapsed">
                     <a class="m-link" data-bs-toggle="collapse" data-bs-target="#tikit-Components" href="#"><i
@@ -142,10 +113,14 @@
                     {{ Request::route()->getName() == 'admin.daily.report' ? 'show':'' }}
                     {{ Request::route()->getName() == 'admin.leave.report' ? 'show':'' }}
                     {{ Request::route()->getName() == 'admin.attendance.report' ? 'show':'' }}
-                    {{ Request::route()->getName() == 'admin.asset.report' ? 'show':'' }}
+                    {{ Request::route()->getName() == 'admin.expense.report' ? 'show':'' }}
                     {{ Request::route()->getName() == 'admin.salary.report' ? 'show':'' }}
+                    {{ Request::route()->getName() == 'admin.asset.report' ? 'show':'' }}
                     {{ Request::route()->getName() == 'admin.leave.management' ? 'show':'' }}
                     {{ Request::route()->getName() == 'admin.workingDay.index' ? 'show':'' }}
+                    {{ Request::route()->getName() == 'admin.policy.index' ? 'show':'' }}
+                    {{ Request::route()->getName() == 'admin.form.index' ? 'show':'' }}
+                    {{ Request::route()->getName() == 'admin.salary.setting.index' ? 'show':'' }}
                         " id="tikit-Components">
                         <li class="collapsed">
                             <a class="ms-link" data-bs-toggle="collapse" data-bs-target="#reports" href="#">
@@ -157,10 +132,16 @@
                                 {{ Request::route()->getName() == 'admin.asset.report' ? 'show':'' }}
                                 {{ Request::route()->getName() == 'admin.attendance.report' ? 'show':'' }}
                                 {{ Request::route()->getName() == 'admin.salary.report' ? 'show':'' }}
+                                {{ Request::route()->getName() == 'admin.expense.report' ? 'show':'' }}
                                 " id="reports">
-                                <li><a class="ms-link" href="#"><span> Expenses Report </span></a></li>
+                                {{--@if(auth()->user()->hasPermission('admin expense report'))
+                                <li><a class="ms-link {{ Request::route()->getName() == 'admin.salary.report' ? 'active':'' }}" href="{{route('admin.expense.index')}}"><span> Expenses Report </span></a></li>
+                                @endif--}}
                                 @if(auth()->user()->hasPermission('admin salary report'))
                                 <li><a class="ms-link {{ Request::route()->getName() == 'admin.salary.report' ? 'active':'' }}" href="{{route('admin.salary.report')}}"><span> Salary Report </span></a></li>
+                                @endif
+                                @if(auth()->user()->hasPermission('admin expense report'))
+                                <li><a class="ms-link {{ Request::route()->getName() == 'admin.expense.report' ? 'active':'' }}" href="{{route('admin.expense.report')}}"><span> Expense Report </span></a></li>
                                 @endif
 {{--                                <li><a class="ms-link" href="#"><span> User Report </span></a></li>--}}
                                 @if(auth()->user()->hasPermission('admin asset report'))
@@ -180,12 +161,17 @@
                                 @endif
                             </ul>
                         </li>
-                        <li><a class="ms-link" href="#"><i class="icofont-police"></i> <span>Policies</span></a></li>
+                        @if(auth()->user()->hasPermission('admin form index'))
+                        <li><a class="ms-link {{ Request::route()->getName() == 'admin.form.index' ? 'active':'' }}" href="{{route('admin.form.index')}}"><i class="icofont-hand-power"></i> <span>Forms Management</span></a></li>
+                        @endif
+                        @if(auth()->user()->hasPermission('admin policy index'))
+                        <li><a class="ms-link {{ Request::route()->getName() == 'admin.policy.index' ? 'active':'' }}" href="{{route('admin.policy.index')}}"><i class="icofont-hand-power"></i> <span>Policies</span></a></li>
+                        @endif
                         @if(auth()->user()->hasPermission('admin notice index'))
                         <li><a class="ms-link {{ Request::route()->getName() == 'admin.notice.index' ? 'active':'' }}" href="{{route('admin.notice.index')}}"><i class="icofont-notification"></i> <span>Announce</span></a></li>
                         @endif
                         @if(auth()->user()->hasPermission('asset index'))
-                        <li><a class="ms-link {{ Request::route()->getName() == 'asset.index' ? 'active':'' }}" href="{{route('asset.index')}}"> <i class="icofont-address-book"></i> <span>Assets</span></a></li>
+                        <li><a class="ms-link {{ Request::route()->getName() == 'asset.index' ? 'active':'' }}" href="{{route('asset.index')}}"> <i class="icofont-contrast"></i> <span>Assets</span></a></li>
                         @endif
                         @if(auth()->user()->hasPermission('admin workingDay index'))
                         <li><a class="ms-link {{ Request::route()->getName() == 'admin.workingDay.index' ? 'active':'' }}" href="{{route('admin.workingDay.index')}}"> <i class="icofont-address-book"></i> <span>Working Day</span></a></li>
@@ -229,10 +215,10 @@
 {{--                                <li><a class="ms-link" href="#"><span> Theme Settings </span></a></li>--}}
 {{--                                <li><a class="ms-link" href="#"><span> Email Settings </span></a></li>--}}
                                 @if(auth()->user()->hasPermission('admin password index'))
-                                <li><a class="ms-link {{ Request::route()->getName() == 'admin.password.index' ? 'active':''}}" href="{{route('admin.password.index')}}"><span> Change Password </span></a></li>
+                                <li><a class="ms-link {{ Request::route()->getName() == 'admin.password.index' ? 'active':''}}" href="{{route('admin.password.index')}}"><span> Change Credential </span></a></li>
                                 @endif
                                 @if(auth()->user()->hasPermission('admin user password index'))
-                                    <li><a href="{{route('admin.user.password.index')}}" class="ms-link {{ Request::route()->getName() == 'admin.user.password.index' ? 'active':''}}">Change User Password</a></li>
+                                    <li><a href="{{route('admin.user.password.index')}}" class="ms-link {{ Request::route()->getName() == 'admin.user.password.index' ? 'active':''}}"> Employees Credentials</a></li>
                                 @endif
                                 {{--                            <li><a class="ms-link" href="#"><span> Leave Type </span></a></li>--}}
                             </ul>

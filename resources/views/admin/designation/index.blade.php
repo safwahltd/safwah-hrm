@@ -119,7 +119,7 @@
     </div>
     <!-- Row End -->
 
-    <!-- Add Department-->
+    <!-- Add Designation-->
     <div class="modal fade" id="depadd" tabindex="-1"  aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-md modal-dialog-scrollable">
             <div class="modal-content">

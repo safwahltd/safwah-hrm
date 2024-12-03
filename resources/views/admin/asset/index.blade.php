@@ -11,21 +11,22 @@
             </div>
         </div>
     </div>
-    <div class="row filter-row">
-        <div class="col-sm-6 col-md-3">
-            <div class="input-block mb-3 form-focus">
-                <input type="text" id="employee_name" class="form-control floating">
-                <label class="focus-label  text-white">Employee Name</label>
+    {{--<form action="" id="employee-form">
+        <div class="row filter-row">
+            <div class="col-sm-6 col-md-3">
+                <div class="input-block mb-3 form-focus">
+                    <input type="text" id="employee_name" class="form-control floating">
+                    <label class="focus-label  text-white">Employee Name</label>
+                </div>
+            </div>
+            <div class="col-sm-6 col-md-3">
+                <div class="input-block mb-3 form-focus select-focus">
+                    <input type="text" id="employee_id" class="form-control floating">
+                    <label class="focus-label text-white">Employee Id</label>
+                </div>
             </div>
         </div>
-
-        <div class="col-sm-6 col-md-3">
-            <div class="input-block mb-3 form-focus select-focus">
-                <input type="text" id="employee_id" class="form-control floating">
-                <label class="focus-label text-white">Employee Id</label>
-            </div>
-        </div>
-    </div>
+    </form>--}}
     <div class="row">
         <div class="col-md-12">
             <div class="card p-2">
@@ -35,9 +36,11 @@
                         <tr>
                             <th>SL</th>
                             <th>Asset User</th>
+                            <th>ID</th>
                             <th>Asset Name</th>
                             <th>Asset Id</th>
                             <th>Hand In</th>
+                            <th>Hand Over</th>
                             <th>Amount</th>
                             <th class="text-center">Status</th>
                             <th class="text-end">Action</th>
@@ -45,31 +48,33 @@
                         </thead>
                         <tbody>
                         @foreach($assets as $key => $asset)
-                            <tr>
+                            <tr style="font-size: 12px">
                                 <td>{{$loop->iteration}}</td>
                                 <td>{{$asset->user->name}}</td>
+                                <td>{{$asset->user->userInfo->employee_id}}</td>
                                 <td>
                                     <strong>{{$asset->asset_name}}</strong>
                                 </td>
                                 <td>{{$asset->asset_id}}</td>
-                                <td>{{$asset->hand_in_date ?? 'N/A'}}</td>
-                                <td>{{$asset->value}}.tk</td>
+                                <td align="center">{{$asset->hand_in_date ?? 'N/A'}}</td>
+                                <td align="center">{{$asset->hand_over_date ?? '-'}}</td>
+                                <td align="center">{{$asset->value}}.tk</td>
                                 <td class="text-center">
                             <span class="rounded-2 p-1  text-white {{$asset->status == 1 ? 'bg-success text-white':''}}{{$asset->status == 0 ? 'bg-danger text-dark':''}}">
                                 {{$asset->status == 1 ? 'Active':''}}
-                                {{$asset->status == 0 ? 'Inactive':''}}
+                                {{$asset->status == 0 ? 'Unused':''}}
                             </span>
                                 </td>
                                 <td class="d-sm-flex justify-content-sm-between d-grid align-items-center">
                                     <a class="mx-1 my-1" href="#" data-bs-toggle="modal" data-bs-target="#show_asset{{$key}}"><i class="fa-solid btn btn-primary btn-sm fa-eye m-r-5"></i></a>
                                     <a class="mx-1 my-1" href="#" data-bs-toggle="modal" data-bs-target="#edit_asset{{$key}}"><i class="fa-solid btn btn-primary btn-sm fa-pencil m-r-5"></i></a>
-                                    <a class="my-1" href="#">
-                                        <form action="{{route('asset.destroy',$asset->id)}}" method="post">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button class="border-0 bg-transparent btn-sm" onclick="return confirm('are you sure to delete ?') ? this.form.submit():''"><i onclick="" class="fa-regular btn btn-danger btn-sm text-white fa-trash-can m-r-5" type="submit"></i></button>
-                                        </form>
+                                    <a href="#" class="border-0 bg-transparent btn-sm" onclick="return confirm('are you sure to logout ?') ? document.getElementById('destroy-form').submit():''">
+                                        <i onclick="" class="fa-regular btn btn-danger btn-sm text-white fa-trash-can m-r-5" type="submit"></i>
                                     </a>
+                                    <form class="list-group-item list-group-item-action border-0" id="destroy-form" action="{{route('asset.destroy',$asset->id)}}" method="post">
+                                        @csrf
+                                        @method('DELETE')
+                                    </form>
                                 </td>
                             </tr>
                             <!-- Edit Asset Modal-->
@@ -127,8 +132,8 @@
                                                         <input type="date" name="hand_in_date" value="{{$asset->hand_in_date}}"  class="form-control" id="hand_in_date">
                                                     </div>
                                                     <div class="col-sm-6">
-                                                        <label for="Hand_out_date" class="form-label">Hand_out_date</label>
-                                                        <input type="date" name="Hand_out_date" value="{{$asset->Hand_out_date}}"  class="form-control" id="Hand_out_date">
+                                                        <label for="hand_over_dateEdit" class="form-label">Hand Over Date</label>
+                                                        <input type="date" name="hand_over_date" value="{{$asset->hand_over_date}}"  class="form-control" id="hand_over_dateEdit">
                                                     </div>
 
                                                     <div class="col-sm-6">
@@ -137,7 +142,7 @@
                                                     </div>
                                                     <div class="col-sm-6">
                                                         <label for="value" class="form-label">Value <span class="text-danger">*</span></label>
-                                                        <input type="text" name="value" value="{{$asset->value}}"  class="form-control" id="value" required>
+                                                        <input type="number" min="0" name="value" value="{{$asset->value}}"  class="form-control" id="value" required>
                                                     </div>
                                                 </div>
                                                 <div class="row">
@@ -335,7 +340,7 @@
                             </div>
                             <div class="col-sm-6">
                                 <label for="value" class="form-label">Value <span class="text-danger">*</span></label>
-                                <input type="text" name="value" class="form-control" id="value" required>
+                                <input type="number" min="0" name="value" class="form-control" id="value" required>
                             </div>
                         </div>
                         <div class="row">
@@ -365,8 +370,8 @@
     </div>
 @endsection
 @push('js')
-    <script>
-        $(document).ready(function(){
+    {{--<script>
+        /*$(document).ready(function(){
             $("#employee_name").keyup(function(){
                 var employeeName = $(this).val();
                 var employeeNameLength = employeeName.length;
@@ -376,7 +381,7 @@
                 }
                 console.log(employeeName);
                 $.ajax({
-                        url: '{{route('employee.filter.asset')}}',
+                        url: '--}}{{--{{route('employee.filter.asset')}}--}}{{--',
                         type: 'GET',
                         data: {
                             employeeName: employeeName,
@@ -402,7 +407,7 @@
                 }
                 console.log(employeeId);
                 $.ajax({
-                        url: '{{route('employee.filter.asset')}}',
+                        url: '--}}{{--{{route('employee.filter.asset')}}--}}{{--',
                         type: 'GET',
                         data: {
                             // employeeName: employeeName,
@@ -423,8 +428,39 @@
 
             });
 
+        });*/
+        $(document).ready(function() {
+            $("#employee_name,#employee_id").keyup(function(e){
+            /*$('#employee_name, #employee_id').on('keyup', function(e) {*/
+                e.preventDefault();
+                var employeeId = $ ('#employee_id').val();
+                var employeeName = $ ('#employee_name').val();
+                var employeeNameLength = employeeName.length;
+                if(employeeNameLength === 0){
+                    var employeeName = 'null';
+                }
+                console.log('submit',employeeId,employeeName);
+
+                // Send data via AJAX
+                $.ajax({
+                    url: '{{route('employee.filter.asset')}}',
+                    type: 'GET',
+                    data: {
+                        employeeId : employeeId,
+                        employeeName : employeeName,
+                    },
+                    dataType: 'html',
+                    success: function(response) {
+                        if(response != ''){
+                            $("#assetTable").empty();
+                            $("#assetTable").html(response);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error(error);
+                    }
+                });
+            });
         });
-
-    </script>
-
+    </script>--}}
 @endpush

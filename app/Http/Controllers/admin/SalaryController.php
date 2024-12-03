@@ -346,7 +346,7 @@ class SalaryController extends Controller
         }
 
         $net = ($salary->basic_salary + $salary->house_rent + $salary->medical_allowance + $salary->conveyance_allowance + $salary->others + $salary->mobile_allowance + $salary->bonus + $pay) - ($salary->meal_deduction + $salary->income_tax + $salary->other_deduction + $salary->attendance_deduction + $deduct);
-        $netWords = $this->numberToWords($net);
+        $netWords = $this->numberToWords( $net );
         $workingDay = WorkingDay::where('month',$salary->month)->where('year',$salary->year)->first()->working_day ?? 0;
 //        return view('admin.salary.pdf',compact('salary','totalAttendance','net','netWords','workingDay','salaryPaymentInputs','salaryDeductInputs'));
         $pdf = Pdf::loadView('admin.salary.pdf', compact('salary','totalAttendance','net','netWords','workingDay','salaryPaymentInputs','salaryDeductInputs'));
@@ -374,7 +374,7 @@ class SalaryController extends Controller
                 $salaryPaymentInputs = SalarySetting::where('status',1)->where('type','payment')->get();
                 $salaryDeductInputs = SalarySetting::where('status',1)->where('type','deduct')->get();
 
-                return view('employee.salary.index', compact('payments','salaries','year', 'month','day','salaryPaymentInputs','salaryDeductInputs','workingDaysRecord'));
+                return view('employee.salary.index', compact('payments','salaries','year', 'month','day','salaryPaymentInputs','salaryDeductInputs'));
             }
             else{
                 $year = 0;

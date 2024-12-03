@@ -74,3 +74,20 @@
     });
 
 </script>
+{{--<script>
+    $(document).ready(function() {
+        $(document).on('change', '.image-input', function(event) {
+            // let inputId = $(this).attr('id');
+            let previewId = '#imagePreview-'/* + inputId*/;
+            console.log(inputId,previewId);
+            let file = event.target.files[0];
+            if (file) {
+                let reader = new FileReader();
+                reader.onload = function(e) {
+                    $(previewId).attr('src', e.target.result).show();
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    });
+</script>--}}

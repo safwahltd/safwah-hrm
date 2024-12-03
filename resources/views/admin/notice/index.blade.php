@@ -29,12 +29,12 @@
                 <div class="card-body table-responsive bg-dark-subtle">
                     <table id="basic-datatable" class="table table-bordered text-nowrap table-secondary key-buttons border-bottom w-100">
                         <thead>
-                        <tr>
+                        <tr align="">
                             <th>No</th>
                             <th>Title</th>
-                            <th>Posted on</th>
-                            <th>Ends on</th>
-                            <th>Status</th>
+                            <th align="center">Posted on</th>
+                            <th align="center">Ends on</th>
+                            <th align="center">Status</th>
                             <th>Actions</th>
                         </tr>
                         </thead>
@@ -47,18 +47,11 @@
                                 <td>
                                     <span class="fw-bold ms-1">{{ $notice->title }}</span>
                                 </td>
-                                <td> {{ $notice->start_date }}</td>
-                                <td>{{ $notice->end_date }}</td>
+                                <td align="center"> {{ $notice->start_date ?? '-' }}</td>
+                                <td align="center">{{ $notice->end_date ?? '-' }}</td>
 
-                                <td>
+                                <td align="center">
                                     <span class="p-1 {{$notice->status == 1 ? 'bg-success rounded-2 text-white':'bg-danger rounded-2 text-white'}}">{{$notice->status == 1 ? 'Active':'Inactive'}}</span>
-                                    {{--<form action="--}}{{--{{route('admin.department.StatusUpdate',$notice->id)}}--}}{{--" method="post">
-                                        @csrf
-                                        <select name="status" id="" class="form-control-sm text-white {{$notice->status == 1 ? 'bg-success':'bg-danger'}}" onchange="this.form.submit()">
-                                            <option {{$notice->status == 1 ? 'selected':''}} value="1">Active</option>
-                                            <option {{$notice->status == 0 ? 'selected':''}} value="0">Inactive</option>
-                                        </select>
-                                    </form>--}}
                                 </td>
                                 <td>
                                     <div class="btn-group" role="group" aria-label="Basic outlined example">

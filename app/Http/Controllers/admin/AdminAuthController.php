@@ -4,6 +4,7 @@ namespace App\Http\Controllers\admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Models\UserInfos;
 use Illuminate\Http\Request;
 use Exception;
 use Illuminate\Support\Facades\Auth;
@@ -100,6 +101,43 @@ class AdminAuthController extends Controller
             return back();
         }
     }
+    public function updateEmail(Request $request){
+        try {
+            $validate = Validator::make($request->all(),[
+                'old_email'=> 'email | required',
+                'email' => 'email | required_with:confirm_email|same:confirm_email',
+                'confirm_email' => 'email | required'
+            ]);
+            if ($validate->fails()){
+                toastr()->error($validate->messages());
+                return back();
+            }
+            $user = User::find(auth()->user()->id);
+            if ($user) {
+                if ($request->old_email == $user->email) {
+                    $user->email = $request->email;
+                    $user->save();
+                    $userInfo = UserInfos::where('user_id',$user->id)->first();
+                    $userInfo->email = $request->email;
+                    $userInfo->save();
+                    toastr()->success('Email Change Successfully');
+                    return back();
+                }
+                else {
+                    toastr()->error('Current Email Not Matched.');
+                    return back();
+                }
+            }
+            else {
+                toastr()->error('Data Not Found');
+                return back();
+            }
+        }
+        catch (Exception $e){
+            toastr()->error($e->getMessage());
+            return back();
+        }
+    }
     public function userPassword(){
         $users = User::whereNotIn('id',[1])->orderBy('name','asc')->get();
         return view('admin.user.password',compact('users'));
@@ -119,6 +157,36 @@ class AdminAuthController extends Controller
                 $user->password = bcrypt($request->password);
                 $user->save();
                 toastr()->success('Password Change Successfully');
+                return back();
+            }
+            else {
+                toastr()->error('Data Not Found');
+                return back();
+            }
+        }
+        catch (Exception $e){
+            toastr()->error($e->getMessage());
+            return back();
+        }
+    }
+    public function updateUserEmail(Request $request){
+        try {
+            $validate = Validator::make($request->all(),[
+                'email' => 'email | required_with:confirm_email|same:confirm_email',
+                'confirm_email' => 'email'
+            ]);
+            if ($validate->fails()){
+                toastr()->error($validate->messages());
+                return back();
+            }
+            $user = User::find($request->user_id);
+            if ($user) {
+                $user->email = $request->email;
+                $user->save();
+                $userInfo = UserInfos::where('user_id',$user->id)->first();
+                $userInfo->email = $request->email;
+                $userInfo->save();
+                toastr()->success('Email Change Successfully');
                 return back();
             }
             else {

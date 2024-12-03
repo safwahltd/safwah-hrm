@@ -68,7 +68,7 @@
                                             }
 
                                         @endphp
-                                    {{ $allowance = ($salary->house_rent + $salary->medical_allowance + $salary->conveyance_allowance + $salary->others + $salary->mobile_allowance + $salary->bonus + $pay) }}
+                                    {{ $allowance = ($salary->basic_salary + $salary->house_rent + $salary->medical_allowance + $salary->conveyance_allowance + $salary->others + $salary->mobile_allowance + $salary->bonus + $pay) }}
                                 </td>
                                 <td>
                                     @php
@@ -84,10 +84,11 @@
                                     @endphp
                                     {{ $deductions = ($salary->meal_deduction + $salary->income_tax + $salary->other_deduction + $salary->attendance_deduction + $deduct)}}
                                 </td>
-                                <td>{{ ($salary->basic_salary + $allowance) - $deductions }} </td>
+                                <td>{{ $allowance - $deductions }} </td>
                                 <td><span class="p-1 rounded-2  text-white {{ $salary->status == 1 ? 'bg-success':'bg-danger' }}">{{ $salary->status == 1 ? 'Active':'Inactive' }}</span></td>
                                 <td>
                                     <div class="btn-group" role="group" aria-label="Basic outlined example">
+                                        <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#salaryShow{{$key}}"><i class="icofont-eye text-success"></i></button>
                                         <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#salaryEdit{{$key}}"><i class="icofont-edit text-success"></i></button>
                                         <form action="{{route('admin.salary.destroy',$salary->id)}}" method="post">
                                             @csrf
@@ -222,6 +223,143 @@
                                                     <button type="submit" class="btn btn-primary">Update</button>
                                                 </div>
                                             </form>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            @php
+                                $user_id = $salary->user_id;
+                                $yearr = $salary->year;
+                                $monthh = $salary->month;
+                                $daysInaMonth = \Illuminate\Support\Carbon::create($yearr, $monthh, 1)->daysInMonth;
+                                $startDate = \Illuminate\Support\Carbon::create($yearr, $monthh, 1);
+                                $endDate = $startDate->copy()->endOfMonth();
+                                $allDates = [];
+                                for ($date = $startDate; $date <= $endDate; $date->addDay()) {
+                                    $allDates[] = $date->toDateString(); // Store the dates in an array
+                                }
+                                for ($day = 1; $day <= $daysInaMonth; $day++) {
+                                    $attendancesForDay = \App\Models\Attendance::with('user')->where(function($query) use ($user_id, $yearr, $monthh, $day) {
+                                        $query->when($user_id, function($q) use ($user_id) {
+                                            $q->where('user_id', $user_id);
+                                        })->when($yearr, function($q) use ($yearr) {
+                                            $q->whereYear('clock_in', $yearr);
+                                        })->when($monthh, function($q) use ($monthh) {
+                                            $q->whereMonth('clock_in', $monthh);
+                                        });
+                                    })->get()->groupBy(function ($item) {
+                                        return \Carbon\Carbon::parse($item->clock_in)->toDateString();
+                                    });
+
+                                    $attendanceData = collect($allDates)->mapWithKeys(function ($date) use ($attendancesForDay) {
+                                        return [$date => $attendancesForDay->get($date, collect())];
+                                    });
+                                }
+
+                            @endphp
+                            <div class="modal fade" id="salaryShow{{$key}}" tabindex="-1"  aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title fw-bold text-uppercase" id="depaddLabel"> SALARY VOUCHER FOR THE MONTH OF {{ date('F', mktime(0, 0, 0, $salary->month, 1)) }}  {{ $salary->year }}</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="row">
+                                                <div class="col-md-12">
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <div class="row">
+                                                                <div class="col-md-6">
+                                                                    <p><small class="fw-bold" style="font-weight: bold">NAME </small> : <small> {{$salary->user->name}}</small></p>
+                                                                    <p><small class="fw-bold" style="font-weight: bold">DESIGNATION </small> : <small> {{$salary->user->userInfo->designations->name}}</small></p>
+                                                                    <p><small class="fw-bold" style="font-weight: bold">DEPARTMENT </small> : <small> {{$salary->user->userInfo->designations->department->department_name}}</small></p>
+                                                                </div>
+                                                                <div class="col-md-6">
+                                                                    <p><small class="fw-bold" style="font-weight: bold">ID </small> : <small> {{$salary->user->userInfo->employee_id}}</small></p>
+                                                                    <p><small class="fw-bold" style="font-weight: bold">TOTAL ATTENDENCE </small> : <small> {{count($attendancesForDay)}}</small></p>
+                                                                    @php
+                                                                        $workingDaysRecord = \App\Models\WorkingDay::where('year', $salary->year)->where('month', $salary->month)->first();
+                                                                    @endphp
+                                                                    <p><small class="fw-bold" style="font-weight: bold">TOTAL WORKING DAY </small> : <small> {{$workingDaysRecord->working_day ?? 0}} </small></p>
+                                                                </div>
+
+                                                            </div>
+                                                            <div class="row">
+                                                                <div class="col-md-6 border p-2">
+                                                                    <h6 class="text-center fw-bold">PAYMENT DETAILS</h6>
+                                                                    <hr>
+                                                                    <p><small class="fw-bold" style="font-weight: bold">BASIC SALARY </small> : <small> {{$salary->basic_salary}}</small></p>
+                                                                    <p><small class="fw-bold" style="font-weight: bold">HOUSE RENT </small> : <small> {{$salary->house_rent}}</small></p>
+                                                                    <p><small class="fw-bold" style="font-weight: bold">MEDICAL ALLOWANCE </small> : <small> {{$salary->medical_allowance}}</small></p>
+                                                                    <p><small class="fw-bold" style="font-weight: bold">CONVEYANCE ALLOWANCE </small> : <small> {{$salary->conveyance_allowance}}</small></p>
+                                                                    <p><small class="fw-bold" style="font-weight: bold">OTHERS </small> : <small> {{$salary->others}}</small></p>
+                                                                    <p><small class="fw-bold" style="font-weight: bold">MOBILE ALLOWANCE </small> : <small> {{$salary->mobile_allowance}} </small></p>
+                                                                    @php
+                                                                        $pay = 0 ;
+                                                                            if($salary->payment != ''){
+                                                                                $paymentSalary = json_decode($salary->payment);
+                                                                            foreach($salaryPaymentInputs as $paymentInput){
+                                                                                $pay = $pay + ($paymentSalary->{$paymentInput->name} ?? 0);
+                                                                            }
+                                                                            }
+
+                                                                    @endphp
+                                                                    @if($salary->payment != '')
+                                                                        @php
+                                                                            $paymentSalary = json_decode($salary->payment);
+                                                                        @endphp
+                                                                        @foreach($salaryPaymentInputs as $paymentInput)
+                                                                            <p><small class="fw-bold text-uppercase" style="font-weight: bold">{{ ucwords(str_replace('_',' ',$paymentInput->name)) }} </small> : <small> {{ $paymentSalary->{$paymentInput->name} ?? 0 }} </small></p>
+                                                                        @endforeach
+                                                                    @endif
+                                                                    <hr>
+                                                                    <p><small class="fw-bold" style="font-weight: bold">TOTAL PAY </small> : <small> {{ $allowance = ($pay + $salary->basic_salary + $salary->house_rent + $salary->medical_allowance + $salary->conveyance_allowance + $salary->others + $salary->mobile_allowance + $salary->bonus) }} </small></p>
+                                                                </div>
+                                                                <div class="col-md-6 border p-2">
+                                                                    <h6 class="text-center fw-bold">DEDUCTION DETAILS</h6>
+                                                                    <hr>
+                                                                    <p><small class="fw-bold" style="font-weight: bold">MEAL DEDUCTION </small> : <small> {{$salary->meal_deduction}}</small></p>
+                                                                    <p><small class="fw-bold" style="font-weight: bold">INCOME TAX </small> : <small> {{$salary->income_tax}}</small></p>
+                                                                    <p><small class="fw-bold" style="font-weight: bold">OTHER DEDUCTON </small> : <small> {{$salary->other_deduction}}</small></p>
+                                                                    <p><small class="fw-bold" style="font-weight: bold">ATTENDENCE DEDUCTION </small> : <small> {{$salary->attendance_deduction}}</small></p>
+                                                                    @php
+                                                                        $deduct = 0 ;
+                                                                            if($salary->deduct != ''){
+                                                                                $deducts = json_decode($salary->deduct);
+                                                                                /*dd(gettype($deduct->expense));*/
+                                                                                foreach($salaryDeductInputs as $deductsInput){
+                                                                                    $deduct = $deduct + ($deducts->{$deductsInput->name} ?? 0);
+                                                                                }
+                                                                            }
+
+                                                                    @endphp
+                                                                    @if($salary->deduct != '')
+                                                                        @php
+                                                                            $deducts = json_decode($salary->deduct);
+                                                                        @endphp
+                                                                        @foreach($salaryDeductInputs as $deductInput)
+                                                                            <p><small class="fw-bold text-uppercase" style="font-weight: bold">{{ ucwords(str_replace('_',' ',$deductInput->name)) }} </small> : <small> {{ $deducts->{$deductInput->name} ?? 0 }}</small></p>
+                                                                        @endforeach
+                                                                    @endif
+                                                                    <br>
+                                                                    <br>
+                                                                    <br>
+                                                                    <br class="mb-2">
+                                                                    <hr>
+                                                                    <p><small class="fw-bold" style="font-weight: bold">TOTAL DEDUCTION </small> : <small> {{ $deductions = ($deduct + $salary->meal_deduction + $salary->income_tax + $salary->other_deduction + $salary->attendance_deduction)}} </small></p>
+                                                                </div>
+                                                            </div>
+                                                            <hr>
+                                                            <div class="text-center">
+                                                                <h6 class="fw-bold">NET TOTAL : {{ $net = $allowance - $deductions }}</h6>
+                                                            </div>
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         </div>
 
                                     </div>

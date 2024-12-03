@@ -23,6 +23,9 @@ use App\Http\Controllers\BillingController;
 use App\Http\Controllers\admin\ReportController;
 use App\Http\Controllers\admin\WorkingDayController;
 use App\Http\Controllers\admin\SalarySettingController;
+use App\Http\Controllers\admin\PolicyController;
+use App\Http\Controllers\admin\FormController;
+use App\Http\Controllers\admin\ExpenseController;
 
 
 Route::get('/', [AdminAuthController::class, 'login'])->name('login');
@@ -152,23 +155,52 @@ Route::middleware(['employee.auth'])->prefix('employee/')->group(function () {
                 Route::get('/attendance-report', 'attendance')->name('admin.attendance.report');
                 Route::get('/attendance-report-show', 'attendanceReportShow')->name('admin.attendance.report.show');
                 Route::get('/download-attendance-report', 'attendanceReportDownload')->name('admin.download.attendance.report');
+                Route::get('/expense-report', 'expense')->name('admin.expense.report');
+                Route::get('/expense-report-show', 'expenseReportShow')->name('admin.expense.report.show');
+                Route::get('/download-expense-report', 'expenseReportDownload')->name('admin.download.expense.report');
             });
-            Route::get('/update-password', [AdminAuthController::class, 'password'])->name('admin.password.index');
+            Route::get('/update-email-password', [AdminAuthController::class, 'password'])->name('admin.password.index');
             Route::post('/update-password-confirm', [AdminAuthController::class, 'updatePassword'])->name('admin.password.update');
-            Route::get('/update-user-password', [AdminAuthController::class, 'userPassword'])->name('admin.user.password.index');
+            Route::post('/update-email-confirm', [AdminAuthController::class, 'updateEmail'])->name('admin.email.update');
+            Route::get('/update-user-email-password', [AdminAuthController::class, 'userPassword'])->name('admin.user.password.index');
             Route::post('/update-user-password-confirm', [AdminAuthController::class, 'updateUserPassword'])->name('admin.user.password.update');
+            Route::post('/update-user-email-confirm', [AdminAuthController::class, 'updateUserEmail'])->name('admin.user.email.update');
             Route::controller(WorkingDayController::class)->group(function (){
                 Route::get('/working-day','index')->name('admin.workingDay.index');
                 Route::post('/working-day-store','store')->name('admin.workingDay.store');
                 Route::put('/working-day-update/{id}','update')->name('admin.workingDay.update');
                 Route::put('/working-day-destroy/{id}','destroy')->name('admin.workingDay.destroy');
             });
+            Route::controller(PolicyController::class)->group(function (){
+                Route::get('/policies','index')->name('admin.policy.index');
+                Route::post('/policy-store','store')->name('admin.policy.store');
+                Route::put('/policy-update/{id}','update')->name('admin.policy.update');
+                Route::delete('/policy-destroy/{id}','destroy')->name('admin.policy.destroy');
+                Route::get('policies/{policy}/file', 'showFile')->name('admin.policy.showFile');
+            });
+            Route::controller(FormController::class)->group(function (){
+                Route::get('/form','index')->name('admin.form.index');
+                Route::post('/form-store','store')->name('admin.form.store');
+                Route::put('/form-update/{id}','update')->name('admin.form.update');
+                Route::delete('/form-destroy/{id}','destroy')->name('admin.form.destroy');
+                Route::get('forms/{form}/file', 'showFile')->name('admin.form.showFile');
+            });
+
+        });
+        Route::controller(ExpenseController::class)->group(function (){
+            Route::get('/expense','index')->name('admin.expense.index');
+            Route::get('/expense-create','create')->name('admin.expense.create');
+            Route::post('/expense-store','store')->name('admin.expense.store');
+            Route::get('/expense-edit/{id}','edit')->name('admin.expense.edit');
+            Route::put('/expense-update/{id}','update')->name('admin.expense.update');
+            Route::put('/expense-destroy/{id}','destroy')->name('admin.expense.destroy');
+            Route::get('expense-download/{id}', 'printExpense')->name('admin.expense.download');
         });
 
         ####################################### /* Admin Panel End Here  */###################################################################
         ####################################### /* Employee Panel Start Here  */###################################################################
-        Route::prefix('employee')->group(function (){
-            Route::get('/employee-profile', [EmployeeAccountController::class,'profile'])->name('employee.profile.details');
+//        Route::prefix('employee')->group(function (){
+            Route::get('/profile', [EmployeeAccountController::class,'profile'])->name('employee.profile.details');
             Route::post('/general-info-update', [EmployeeAccountController::class,'generalInfoUpdate'])->name('employee.general.info.update');
             Route::post('/bank-info-update', [EmployeeAccountController::class,'bankInfoUpdate'])->name('employee.bank.info.update');
             Route::post('/profile-picture-update', [EmployeeAccountController::class,'profilePictureUpdate'])->name('employee.profile.picture.update');
@@ -176,10 +208,10 @@ Route::middleware(['employee.auth'])->prefix('employee/')->group(function () {
             Route::get('/employee-clock-status', [AttendanceController::class,'getClockStatus'])->name('employee.clock.status');
             Route::post('/employee-clock-in', [AttendanceController::class,'clockIn'])->name('employee.clock.in');
             Route::post('/employee-clock-out', [AttendanceController::class,'clockOut'])->name('employee.clock.out');
-            Route::get('/employee-attendance-list', [AttendanceController::class,'attendanceList'])->name('employee.attendance.list');
-            Route::get('/employee-attendance-report', [AttendanceController::class,'attendanceReport'])->name('employee.attendance.report');
-            Route::get('/employee-attendance-report-event', [AttendanceController::class,'getEvents'])->name('employee.attendance.report.event');
-            Route::get('/employee-holiday', [HolidayController::class,'employeeIndex'])->name('employee.holiday.index');
+            Route::get('/attendance-list', [AttendanceController::class,'attendanceList'])->name('employee.attendance.list');
+            Route::get('/attendance-calendar', [AttendanceController::class,'attendanceReport'])->name('employee.attendance.report');
+            Route::get('/attendance-report-event', [AttendanceController::class,'getEvents'])->name('employee.attendance.report.event');
+            Route::get('/holiday', [HolidayController::class,'employeeIndex'])->name('employee.holiday.index');
             Route::controller(LeaveController::class)->group(function (){
                 Route::get('/leave', 'employeeLeaveIndex')->name('employee.leave');
                 Route::post('/leave-request', 'employeeLeaveRequest')->name('employee.leave.request');
@@ -191,7 +223,13 @@ Route::middleware(['employee.auth'])->prefix('employee/')->group(function () {
                 Route::get('/notices-show','employeeShowList')->name('employee.notice.list');
             });
             Route::get('/salary', [SalaryController::class, 'employeeIndex'])->name('employee.salary.index');
-        });
+            Route::controller(ExpenseController::class)->group(function (){
+                Route::get('/advance-money','indexAdvance')->name('employee.advance.money.index');
+                Route::post('/advance-money-store','storeAdvance')->name('employee.advance.money.store');
+                Route::put('/advance-money-update/{id}','updateAdvance')->name('employee.advance.money.update');
+                Route::put('/advance-money-destroy/{id}','destroyAdvance')->name('employee.advance.money.destroy');
+            });
+//        });
         ####################################### /* Employee Panel End Here  */###################################################################
     });
 

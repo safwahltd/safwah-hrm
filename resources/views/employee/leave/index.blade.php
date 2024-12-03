@@ -50,6 +50,7 @@
                                         <span class="text-primary">{{ \Illuminate\Support\Carbon::parse($leave->start_date)->format('d M,Y') }} </span>&nbsp;
                                         <span><i class="fa fa-arrow-right"></i></span>&nbsp;
                                         &nbsp;<span class="text-danger"> {{ \Illuminate\Support\Carbon::parse($leave->end_date)->format('d M,Y') }}</span>
+
                                     @else
                                         <span class="text-primary">{{ \Illuminate\Support\Carbon::parse($leave->start_time)->format('H:i a') }} </span>&nbsp;
                                         <span><i class="fa fa-arrow-right"></i></span>&nbsp;
@@ -176,21 +177,25 @@
                                                                 @if($leave->leave_type == 'half_day')
                                                                     <p> <span class="fw-bold">From : </span><span>{{ \Illuminate\Support\Carbon::parse($leave->start_time)->format('H:i a') }}</span></p>
                                                                     <p> <span class="fw-bold">To : </span><span>{{ \Illuminate\Support\Carbon::parse($leave->end_time)->format('H:i a') }}</span></p>
+                                                                    <p><span class="fw-bold"> {{ $leave->days_taken > 1 ? 'Dates':'Date'}} : </span><span>{{$leave->start_date}}</span></p>
                                                                 @else
                                                                     <p> <span class="fw-bold">From : </span><span>{{$leave->start_date}}</span></p>
                                                                     <p> <span class="fw-bold">To : </span><span>{{$leave->end_date}}</span></p>
+                                                                    <p> <span class="fw-bold">Total Day : </span><span>{{$leave->days_taken}}</span></p>
+                                                                    <p><span class="fw-bold"> {{ $leave->days_taken > 1 ? 'Dates':'Date'}} : </span><span>{{$leave->dates}}</span></p>
                                                                 @endif
                                                                 <p> <span class="fw-bold">Concern Person : </span><span>{{$leave->concern_person}}</span></p>
                                                                 <p> <span class="fw-bold">Address & Contact : </span><span>{{$leave->address_contact}}</span></p>
                                                             </div>
-                                                            <div class="col-md-5">
-                                                                <h4 class="fw-bold">Leave Balance</h4>
+                                                            <div class="col-md-5 bg-dark-subtle text-center">
+                                                                <h4 class="fw-bold my-3">Leave Balance</h4>
+                                                                <hr>
                                                                 @php
                                                                     if($leave->leave_type == 'sick' || $leave->leave_type == 'casual'){$leaveBalance = \App\Models\LeaveBalance::where('user_id',$leave->user_id)->where('year',\Illuminate\Support\Carbon::parse($leave->start_date)->format('Y'))->first();}
                                                                     elseif ($leave->leave_type == 'half_day'){$leaveBalance = \App\Models\HalfDayLeaveBalance::where('user_id',$leave->user_id)->where('year',\Illuminate\Support\Carbon::parse($leave->start_date)->format('Y'))->where('month',\Illuminate\Support\Carbon::parse($leave->start_date)->format('m'))->first();}
                                                                 @endphp
-                                                                <p> <span class="fw-bold">Employee Name : </span><span>{{ucwords($leave->user->name)}}</span></p>
-                                                                <p> <span class="fw-bold">Employee Id : </span><span>{{ucwords($leave->user->userInfo->employee_id)}}</span></p>
+                                                                <p> <span class="fw-bold">Name : </span><span>{{ucwords($leave->user->name)}}</span></p>
+                                                                <p> <span class="fw-bold">ID : </span><span>{{ucwords($leave->user->userInfo->employee_id)}}</span></p>
                                                                 @if($leave->leave_type == 'sick')
                                                                 <p> <span class="fw-bold">Sick Leave Balance : </span><span>{{$leaveBalance->sick_left}}</span></p>
                                                                 @endif
@@ -201,7 +206,6 @@
                                                                 <p> <span class="fw-bold">Half Day Leave Balance : </span><span>{{$leaveBalance->left ?? 'N/A'}}</span></p>
                                                                 @endif
                                                             </div>
-
                                                         </div>
                                                         <div class="row g-3 mb-3">
                                                             <div class="col-sm-12">

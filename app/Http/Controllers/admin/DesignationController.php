@@ -4,10 +4,13 @@ namespace App\Http\Controllers\admin;
 
 use App\Models\Department;
 use App\Models\Designation;
+use App\Models\User;
+use App\Notifications\ActivityNotification;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Validator;
 use Exception;
+use Illuminate\Support\Facades\Notification;
 
 class DesignationController extends Controller
 {
@@ -16,7 +19,7 @@ class DesignationController extends Controller
         if(auth()->user()->hasPermission('designations index')){
             return view('admin.designation.index', [
                 'designations' => Designation::latest()->where('soft_delete',0)->simplePaginate(100),
-                'departments' => Department::where('status',1)->orderBy('department_name')->get(),
+                'departments' => Department::where('status',1)->where('soft_delete',0)->orderBy('department_name')->get(),
             ]);
         }
         else{
@@ -24,7 +27,7 @@ class DesignationController extends Controller
             return back();
         }
     }
-    public function store(Request $request)
+    public function store(Request $request, User $user)
     {
         if(auth()->user()->hasPermission('designations store')){
             try {
@@ -43,6 +46,21 @@ class DesignationController extends Controller
                 $designation->status = $request->status;
                 $designation->save();
                 toastr()->success('Designation Added Success.');
+/*
+                $activityData = [
+                    'type' => 'Designation Update',
+                    'message' => 'Your designation has been updated to ' . $request->designation,
+                    'url' => '#',
+                ];
+                $user = User::find(auth()->user()->id);
+                if (!$user) {
+                    throw new Exception("User not found.");
+                }
+
+                if (!$user->id) {
+                    throw new Exception("User ID is null.");
+                }
+                $user->notify(new ActivityNotification($activityData));*/
                 return back();
             }
             catch (Exception $exception){

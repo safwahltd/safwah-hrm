@@ -30,6 +30,9 @@ class SettingController extends Controller
                 $setting->email = $request->email;
                 $setting->address = $request->address;
                 if ($request->file('logo')){
+                    if (isset($setting->logo)){
+                        unlink($setting->logo);
+                    }
                     $logo = $request->file('logo');
                     $logoExtension = $logo->getClientOriginalExtension();
                     $logoName = time().'.'.$logoExtension;
@@ -39,6 +42,9 @@ class SettingController extends Controller
                     $setting->logo = $logoUrl;
                 }
                 if ($request->file('favicon')){
+                    if (isset($setting->favicon)){
+                        unlink($setting->favicon);
+                    }
                     $favicon = $request->file('favicon');
                     $faviconExtension = $favicon->getClientOriginalExtension();
                     $faviconName = time().'.'.$faviconExtension;

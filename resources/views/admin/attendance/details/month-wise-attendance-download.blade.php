@@ -41,7 +41,7 @@
 <div class="content">
     <div class="row" style="margin-top: 4px;">
         <div style="border-top: 1px solid black; border-left: 1px solid #000000; border-right: 1px solid black; margin:0">
-            <h5  style="padding:5px; margin: 0" align="center">Monthly Individual Attendance {{$month == '' ? 'All': date('F', mktime(0, 0, 0, $month, 1)) }}  {{$year}} </h5>
+            <h5  style="padding:5px; margin: 0; text-transform: uppercase;" align="center">Monthly Individual Attendance {{$month == '' ? 'All': date('F', mktime(0, 0, 0, $month, 1)) }}  {{$year}} </h5>
             <div class="row" style="border-top: 1px solid black; border-bottom: 1px solid black; justify-items: center">
                 <div class="col-6">
                     <p style="font-size: 10px; margin: 2px">Employee No : {{$user->userInfo->employee_id}}</p>
@@ -52,7 +52,7 @@
                     <p style="font-size: 10px; margin: 2px">Designation : {{$user->userInfo->designations->name}}</p>
                 </div>
             </div>
-            <h6  style="padding:5px; margin: 0" align="center">Attendance Summary</h6>
+            <h6  style="padding:5px; margin: 0; text-transform: uppercase;" align="center">Attendance Summary</h6>
             <div class="row" style="border-top: 1px solid black">
                 <div class="col-3">
                     <p style="font-size: 10px; margin: 2px;">Working Days : {{ $workingDaysRecord->working_day ?? 0}} Day</p>
