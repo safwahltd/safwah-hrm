@@ -11,6 +11,8 @@ use App\Models\HalfDayLeaveBalance;
 use App\Models\Holiday;
 use App\Models\Leave;
 use App\Models\LeaveBalance;
+use App\Models\Salary;
+use App\Models\SalaryPayment;
 use App\Models\Termination;
 use App\Models\UserInfos;
 use App\Models\WorkingDay;
@@ -33,13 +35,15 @@ class DashboardController extends Controller
             $departments = Department::count();
             $designations = Designation::count();
             $terminations = Termination::count();
-            $assets = Asset::count();
+            $assets = Asset::where('status',1)->get();
+            $totalAssets = $assets->sum('value');
+            $totalSalaryPayment = SalaryPayment::sum('paid_amount');
             return view('admin.dashboard.index',compact(
                     'totalEmployees','totalEmployeeMale',
                     'totalEmployeeFeMale','totalEmployeeOther',
                     'totalPresent','totalLateAttend','absentEmployees',
                     'leaveApply','holidays','departments',
-                    'designations','terminations','assets')
+                    'designations','terminations','assets','totalAssets','totalSalaryPayment')
             );
         }
         else{

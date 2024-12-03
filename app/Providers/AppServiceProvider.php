@@ -15,20 +15,17 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        /*View::composer(['*'],function ($view){
+        View::composer(['*'],function ($view){
             $view->with([
-//                'company' => Setting::first(),
-                'notices' => Notice::whereDate('start_date', '<=', now())->where(function($query) {$query->whereNull('end_date')->orWhere('end_date', '>=', now());
-            })->orderBy('created_at', 'desc')->get(),
+                'setting' => Setting::first(),
             ]);
-        });*/
+        });
         View::composer(['admin.layout.app'],function ($view){
             $view->with([
 //                'company' => Setting::first(),
-                'notices' => Notice::where('status',1)->whereDate('start_date', '<=', now())->where(function($query) {$query->whereNull('end_date')->orWhere('end_date', '>=', now());
-            })->orderBy('created_at', 'desc')->latest()->take(10)->get(),
-                'noticeCount' => Notice::where('status',1)->whereDate('start_date', '<=', now())->where(function($query) {$query->whereNull('end_date')->orWhere('end_date', '>=', now());
-            })->count(),
+                'notices' => Notice::where('status',1)->whereDate('start_date', '<=', now())->where(function($query) {$query->whereNull('end_date')->orWhere('end_date', '>=', now());})->orderBy('created_at', 'desc')->latest()->take(10)->get(),
+                'noticeCount' => Notice::where('status',1)->whereDate('start_date', '<=', now())->where(function($query) {$query->whereNull('end_date')->orWhere('end_date', '>=', now());})->count(),
+                'notifications' => auth()->user()->notifications()->latest()->take(5)->get(),
             ]);
         });
 

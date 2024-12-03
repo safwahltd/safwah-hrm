@@ -37,6 +37,9 @@
             background-color: black; /* Darker shade on hover */
             text-decoration: none;
         }
+        *{
+            font-size: 11px;
+        }
     </style>
 
 </head>
@@ -44,38 +47,36 @@
 <div class="content">
     <div class="row" style="margin-top: 4px;">
         <div style="border-top: 1px solid black; border-left: 1px solid #000000; border-right: 1px solid black; margin:0">
-            <h5  style="padding:5px; margin: 0" align="center">Monthly Individual Attendance {{$month == '' ? 'All': date('F', mktime(0, 0, 0, $month, 1)) }}  {{$year}} </h5>
+            <h5  style="padding:5px; margin: 0; text-transform: uppercase; font-weight: bold" align="center">Monthly Individual Attendance {{$month == '' ? 'All': date('F', mktime(0, 0, 0, $month, 1)) }}  {{$year}} </h5>
             <div class="row p-2" style="border-top: 1px solid black; border-bottom: 1px solid black; ">
-                <div class="col-4">
-                    <h6 style="font-size: 13px">Employee No : {{$user->userInfo->employee_id}}</h6>
-                    <h6 style="font-size: 13px">Department : {{$user->userInfo->designations->department->department_name}}</h6>
+                <div class="col-6 col-md-4">
+                    <h6 style="font-size: 11px"><span style="font-weight: bold">ID : </span>{{$user->userInfo->employee_id}}</h6>
+                    <h6 style="font-size: 11px"><span style="font-weight: bold">DEPARTMENT : </span>{{$user->userInfo->designations->department->department_name}}</h6>
                 </div>
-                <div class="col-4">
-                    <h6 style="font-size: 13px">Employee Name : {{$user->name}}</h6>
-                    <h6 style="font-size: 13px">Designation : {{$user->userInfo->designations->name}}</h6>
+                <div class="col-6 col-md-4">
+                    <h6 style="font-size: 11px"><span style="font-weight: bold">NAME : </span>{{$user->name}}</h6>
+                    <h6 style="font-size: 11px"><span style="font-weight: bold">DESIGNATION : </span>{{$user->userInfo->designations->name}}</h6>
                 </div>
             </div>
-            <h6  style="padding:5px; margin: 0" align="center">Attendance Summary</h6>
+            <h6  style="padding:5px; margin: 0; text-transform: uppercase; font-weight: bold" align="center">Attendance Summary</h6>
             <div class="row justify-content-center p-2" style="border-top: 1px solid black">
-                <div class="col-3">
-                    <h6 style="font-size: 13px">Working Days : {{ $workingDaysRecord->working_day ?? 0}} Day</h6>
-                    <h6 style="font-size: 13px">Holidays : {{ count($holidayDates) }} Day</h6>
+                <div class="col-4">
+                    <h6 style="font-size: 10px"><span style="font-weight: bold">Working Days : </span>{{ $workingDaysRecord->working_day ?? 0}} Day</h6>
+                    <h6 style="font-size: 10px"><span style="font-weight: bold">Holidays : </span>{{ count($holidayDates) }} Day</h6>
+                    <h6 style="font-size: 10px"><span style="font-weight: bold">Leave : </span>{{ count($leaveDates) }} Day</h6>
                 </div>
-                <div class="col-3">
-                    <h6 style="font-size: 13px">Present : {{ $present}} Day</h6>
-                    <h6 style="font-size: 13px">Absent : {{ ($workingDaysRecord->working_day ?? 0) - $present }} Day</h6>
+                <div class="col-4">
+                    <h6 style="font-size: 10px"><span style="font-weight: bold">Present : </span>{{ $present}} Day</h6>
+                    <h6 style="font-size: 10px"><span style="font-weight: bold">Absent : </span>{{ ($workingDaysRecord->working_day ?? 0) - $present }} Day</h6>
+                    <h6 style="font-size: 10px"><span style="font-weight: bold">Late : </span>{{count($lateCount)}} Day</h6>
                 </div>
-                <div class="col-3">
-                    <h6 style="font-size: 13px">Late : {{count($lateCount)}} Day</h6>
-                    <h6 style="font-size: 13px">Present Percentage : {{ number_format(($present * 100) / ($workingDaysRecord->working_day ?? 1),2) }} %</h6>
-                </div>
-                <div class="col-3">
-                    <h6 style="font-size: 13px">Leave : {{ count($leaveDates) }} Day</h6>
+                <div class="col-4">
+                    <h6 style="font-size: 10px"><span style="font-weight: bold">Present Percentage : </span>{{ number_format(($present * 100) / ($workingDaysRecord->working_day ?? 1),2) }} %</h6>
                 </div>
             </div>
         </div>
         <table style="width:100% ; text-align: center ; margin-bottom: 4px">
-            <tr style="background-color: #5c636a; font-size: 12px; color: white">
+            <tr style="background-color: #5c636a; font-size: 10px; color: white">
                 <th>SL</th>
                 <th>Date</th>
                 <th>IN</th>
@@ -85,7 +86,7 @@
                 <th>Remarks</th>
             </tr>
             @foreach($attendanceData as $date => $data)
-                <tr style="font-size: 12px">
+                <tr style="font-size: 10px">
                     <td>{{ $loop->iteration }}</td>
                     <td>{{ \Carbon\Carbon::parse($date)->format('d-M-Y') }}</td>
                     <td>

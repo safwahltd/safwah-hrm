@@ -3,55 +3,205 @@
 @section('body')
     @if(auth()->user()->role == 'admin')
         <div class="row clearfix g-3">
-        <div class="col-xl-8 col-lg-8 col-md-6 flex-column">
-            <div class="row g-3">
-                <div class="col-md-12">
+            <div class="col-md-6">
+                <div class="row g-3">
+                    <div class="col-md-3 col-6">
+                        <a href="{{route('departments.index')}}">
+                            <div class="card bg-primary" style="width: 100%; height: 100%;">
+                                <div class="card-body text-center row">
+                                    <div class="col">
+                                        <h2 class="fw-bold text-white">{{$departments}}</h2>
+                                        <span class="text-white">Departments</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <a href="{{route('designations.index')}}">
+                            <div class="card bg-success" style="width: 100%; height: 100%;">
+                                <div class="card-body text-center  row">
+                                    <div class="col">
+                                        <h2 class="fw-bold text-white ">{{$designations}}</h2>
+                                        <span class="text-white ">Designation</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <a href="{{route('admin.termination.index')}}">
+                            <div class="card bg-secondary" style="width: 100%; height: 100%;">
+                                <div class="card-body text-center  row">
+                                    <div class="col">
+                                        <h2 class="fw-bold text-white">{{$terminations}}</h2>
+                                        <span class="text-white">Termination</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-md-3 col-6">
+                        <a href="{{route('asset.index')}}">
+                            <div class="card bg-warning" style="width: 100%; height: 100%;">
+                                <div class="card-body text-center  row">
+                                    <div class="col">
+                                        <h2 class="fw-bold text-white ">{{ count($assets) }}</h2>
+                                        <span class="text-white">Assets</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-md-6">
+                        <a href="{{route('admin.salary.payment.index')}}">
+                            <div class="card" style="background-color: #ff253a">
+                                <div class="card-body text-center row">
+                                    <div class="col p-1">
+                                        <p class="fw-bold text-white" style="font-size: 150%;">৳ {{ $totalSalaryPayment }}</p>
+                                        <span class="text-white">Total Salary</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-md-6">
+                        <a href="{{route('admin.salary.payment.index')}}">
+                            <div class="card" style="background-color: #2c0b0e">
+                                <div class="card-body text-center row">
+                                    <div class="col p-1">
+                                        <p class="fw-bold text-white" style="font-size: 150%;">৳ {{ $totalSalaryPayment / count($totalEmployees) }}</p>
+                                        <span class="text-white">Average Salary</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-md-6">
+                        <a href="{{route('asset.index')}}">
+                            <div class="card" style="background-color: #990055">
+                                <div class="card-body text-center row">
+                                    <div class="col p-1">
+                                        <p class="fw-bold text-white" style="font-size: 150%;">৳ {{ $totalAssets  }}</p>
+                                        <span class="text-white">Total Assets</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-md-6">
+                        <a href="{{route('asset.index')}}">
+                            <div class="card" style="background-color: #6a1a21">
+                                <div class="card-body text-center row">
+                                    <div class="col p-1">
+                                        <p class="fw-bold text-white" style="font-size: 150%;">৳ {{ $totalAssets / count($totalEmployees)  }}</p>
+                                        <span class="text-white">Average Assets</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-md-12 col-lg-12 col-xl-12">
+                        <div class="card">
+                            <div class="card-header py-3 d-flex justify-content-between bg-transparent border-bottom-0">
+                                <h6 class="mb-0 fw-bold ">Upcoming Holidays</h6>
+                            </div>
+                            <div class="card-body">
+                                <div class="holiday-details">
+                                    <div class="holiday-calendar">
+                                        <div class="holiday-calendar-content">
+                                            <div class="row">
+                                                <table id="myProjectTable" class="table table-hover table-striped align-middle mb-0" style="width:100%">
+                                                    <thead class="bg-primary">
+                                                    <tr class="bg-secondary">
+                                                        <th  class="bg-primary-subtle">Name</th>
+                                                        <th  class="bg-primary-subtle">Date</th>
+                                                        <th  class="bg-primary-subtle">Total</th>
+                                                        <th  class="bg-primary-subtle">Status</th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    @forelse($holidays as $key => $holiday)
+                                                        <tr class="fw-bold">
+                                                            <td><small>{{$holiday->name}}</small></td>
+                                                            <td>
+                                                                <small>{{ \Illuminate\Support\Carbon::parse($holiday->date_from)->format('d M') }} -</small>
+                                                                <small>{{ \Illuminate\Support\Carbon::parse($holiday->date_to)->format('d M, Y') }}</small>
+                                                            </td>
+                                                            <td><small>{{ $holiday->total_day }} {{$holiday->total_day <= 1 ? 'day':'days'}}</small></td>
+                                                            <td><span style="font-size: 7px" class="p-1 rounded-2 text-white {{ $holiday->date_to > \Illuminate\Support\Carbon::now() ? 'bg-success' : 'bg-danger' }}">{{ $holiday->date_to > \Illuminate\Support\Carbon::now() ? 'In Coming' : 'Passed' }}</span></td>
+                                                        </tr>
+                                                    @empty
+                                                        <tr>
+                                                            <td colspan="4" class="text-center"><span class="fw-bold">No Result</span></td>
+                                                        </tr>
+                                                    @endforelse
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="holiday-btn">
+                                        <a href="{{route('holidays.index')}}" class="btn btn-primary p-1 my-2">
+                                            View All <i class="fe fe-arrow-right-circle"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 flex-column">
+                <div class="row g-3">
+                <div class="col-12">
                     <div class="card">
                         <div class="card-header py-3 d-flex justify-content-between bg-transparent border-bottom-0">
                             <h6 class="mb-0 fw-bold ">Employees Availability</h6>
                         </div>
                         <div class="card-body">
-                            <div class="row g-2 row-deck">
-                                <div class="col-6">
+                            <div class="row">
+                                <div class="col-6 my-1 text-center">
                                     <a href="{{route('admin.attendance.list')}}">
-                                        <div class="card">
+                                        <div class="card" style="background-color: #990055; width: 100%;">
                                             <div class="card-body">
-                                                <i class="icofont-checked fs-3"></i>
-                                                <h6 class="mt-3 mb-0 fw-bold small-14">Today Attendance</h6>
-                                                <span class="text-black">{{count($totalPresent)}}</span>
+                                                <i class="icofont-checked fs-3 text-white"></i>
+                                                <h6 class="mt-3 mb-2 text-white fw-bold small-14">Today Attendance</h6>
+                                                <span class="text-white fs-4 fw-bold">{{count($totalPresent)}}</span>
                                             </div>
                                         </div>
                                     </a>
                                 </div>
-                                <div class="col-6">
+                                <div class="col-6 my-1 text-center">
                                     <a href="{{route('admin.attendance.list')}}">
-                                        <div class="card">
+                                        <div class="card" style="background-color: #2c0b0e; width: 100%;">
                                             <div class="card-body ">
-                                                <i class="icofont-stopwatch fs-3"></i>
-                                                <h6 class="mt-3 mb-0 fw-bold small-14">Today Late Coming</h6>
-                                                <span class="text-black">{{$totalLateAttend}}</span>
+                                                <i class="icofont-stopwatch fs-3 text-white"></i>
+                                                <h6 class="mt-3 mb-2 fw-bold small-14 text-white">Today Late Coming</h6>
+                                                <span class="text-white fs-4 fw-bold">{{$totalLateAttend}}</span>
                                             </div>
                                         </div>
                                     </a>
                                 </div>
-                                <div class="col-6">
+                                <div class="col-6 my-1 text-center">
                                     <a href="{{route('admin.attendance.list')}}">
-                                        <div class="card">
+                                        <div class="card" style="background-color: #000000; width: 100%;">
                                             <div class="card-body ">
-                                                <i class="icofont-ban fs-3"></i>
-                                                <h6 class="mt-3 mb-0 fw-bold small-14">Today Absent</h6>
-                                                <span class="text-black">{{$absentEmployees}}</span>
+                                                <i class="icofont-ban fs-3 text-white text-left"></i>
+                                                <h6 class="mt-3 mb-2 fw-bold small-14 text-white">Today Absent</h6>
+                                                <span class="text-white fs-4 fw-bold">{{$absentEmployees}}</span>
                                             </div>
                                         </div>
                                     </a>
                                 </div>
-                                <div class="col-6">
+                                <div class="col-6 my-1 text-center">
                                     <a href="{{route('admin.leave.requests')}}">
-                                        <div class="card">
+                                        <div class="card" style="background-color: #ff253a; width: 100%;">
                                             <div class="card-body ">
-                                                <i class="icofont-beach-bed fs-3"></i>
-                                                <h6 class="mt-3 mb-0 fw-bold small-14">Leave Apply</h6>
-                                                <span class="text-black">{{$leaveApply}}</span>
+                                                <i class="icofont-beach-bed fs-3 text-white"></i>
+                                                <h6 class="mt-3 mb-2 fw-bold small-14 text-white">Leave Apply</h6>
+                                                <span class="text-white fs-4 fw-bold">{{$leaveApply}}</span>
                                             </div>
                                         </div>
                                     </a>
@@ -60,7 +210,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-12">
+                <div class="col-12">
                     <div class="card">
                         <div class="card-header py-3 d-flex justify-content-between bg-transparent border-bottom-0">
                             <h6 class="mb-0 fw-bold ">Total Employees</h6>
@@ -72,122 +222,8 @@
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="col-xl-4 col-lg-4 col-md-6">
-            <div class="row g-3 row-deck">
-                <div class="col-md-6 col-lg-6 col-xl-6 col-6">
-                    <a href="{{route('departments.index')}}">
-                        <div class="card bg-primary">
-                            <div class="card-body row">
-                                <div class="col">
-                                    <h1 class="mt-3 mb-0 fw-bold text-white">{{$departments}}</h1>
-                                    <span class="text-white">Departments</span>
-                                </div>
-                                <div class="col">
-                                    <img class="img-fluid" src="{{asset('/')}}admin/assets/images/interview.svg" alt="interview">
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-                <div class="col-md-6 col-lg-6 col-xl-6 col-6">
-                    <a href="{{route('designations.index')}}">
-                        <div class="card bg-primary">
-                            <div class="card-body row">
-                                <div class="col">
-                                    <h1 class="mt-3 mb-0 fw-bold text-white">{{$designations}}</h1>
-                                    <span class="text-white">Designation</span>
-                                </div>
-                                <div class="col">
-                                    <img class="img-fluid" src="{{asset('/')}}admin/assets/images/interview.svg" alt="interview">
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-                <div class="col-md-6 col-lg-6 col-xl-6 col-6">
-                    <a href="{{route('admin.termination.index')}}">
-                        <div class="card bg-primary">
-                            <div class="card-body row">
-                                <div class="col">
-                                    <h1 class="mt-3 mb-0 fw-bold text-white">{{$terminations}}</h1>
-                                    <span class="text-white">Termination</span>
-                                </div>
-                                <div class="col">
-                                    <img class="img-fluid" src="{{asset('/')}}admin/assets/images/interview.svg" alt="interview">
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-                <div class="col-md-6 col-lg-6 col-xl-6 col-6">
-                    <a href="{{route('asset.index')}}">
-                        <div class="card bg-primary">
-                            <div class="card-body row">
-                                <div class="col">
-                                    <h1 class="mt-3 mb-0 fw-bold text-white">{{$assets}}</h1>
-                                    <span class="text-white">Assets</span>
-                                </div>
-                                <div class="col">
-                                    <img class="img-fluid" src="{{asset('/')}}admin/assets/images/interview.svg" alt="interview">
-                                </div>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-                <div class="col-md-12 col-lg-12 col-xl-12">
-                    <div class="card">
-                        <div class="card-header py-3 d-flex justify-content-between bg-transparent border-bottom-0">
-                            <h6 class="mb-0 fw-bold ">Upcoming Holidays</h6>
-                        </div>
-                        <div class="card-body">
-                            <div class="holiday-details">
-                                <div class="holiday-calendar">
-                                    <div class="holiday-calendar-content">
-                                        <div class="row">
-                                            <table id="myProjectTable" class="table table-hover table-striped align-middle mb-0" style="width:100%">
-                                                <thead class="bg-primary">
-                                                <tr class="bg-secondary">
-                                                    <th  class="bg-primary-subtle">Name</th>
-                                                    <th  class="bg-primary-subtle">Date</th>
-                                                    <th  class="bg-primary-subtle">Total</th>
-                                                    <th  class="bg-primary-subtle">Status</th>
-                                                </tr>
-                                                </thead>
-                                                <tbody>
-                                                @forelse($holidays as $key => $holiday)
-                                                    <tr class="fw-bold">
-                                                        <td><small>{{$holiday->name}}</small></td>
-                                                        <td>
-                                                            <small>{{ \Illuminate\Support\Carbon::parse($holiday->date_from)->format('d M') }} -</small>
-                                                            <small>{{ \Illuminate\Support\Carbon::parse($holiday->date_to)->format('d M, Y') }}</small>
-                                                        </td>
-                                                        <td><small>{{ $holiday->total_day }} {{$holiday->total_day <= 1 ? 'day':'days'}}</small></td>
-                                                        <td><span style="font-size: 7px" class="p-1 rounded-2 text-white {{ $holiday->date_to > \Illuminate\Support\Carbon::now() ? 'bg-success' : 'bg-danger' }}">{{ $holiday->date_to > \Illuminate\Support\Carbon::now() ? 'In Coming' : 'Passed' }}</span></td>
-                                                    </tr>
-                                                @empty
-                                                    <tr>
-                                                        <td colspan="4" class="text-center"><span class="fw-bold">No Result</span></td>
-                                                    </tr>
-                                                @endforelse
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </div>
-
-                                </div>
-                                <div class="holiday-btn">
-                                    <a href="{{route('holidays.index')}}" class="btn btn-primary p-1 my-2">
-                                        View All <i class="fe fe-arrow-right-circle"></i>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
-    </div><!-- Row End -->
     @else
         <div class="row">
             <div class="col-xxl-12 col-lg-12 col-md-12">
@@ -198,6 +234,8 @@
                                 <div class="d-flex">
                                     <div class="">
                                         <h5>Welcome Back, <span class="fw-bold">{{auth()->user()->name ?? 'N/A'}}</span></h5>
+                                        <p><span class="">{{ auth()->user()->userInfo->designations->name ?? 'N/A'}}</span></p>
+                                        <p><span class="">ID : {{ auth()->user()->userInfo->employee_id ?? 'N/A'}}</span></p>
                                     </div>
                                     <div class="">
                                         @if(file_exists(auth()->user()->userInfo->image))
@@ -401,7 +439,7 @@
                         <div class="card flex-fill my-1">
                             <div class="card-body">
                                 <div class="statistic-header">
-                                    <h5>Working hours</h5>
+                                    <h5 class="fw-bold">Working Hours</h5>
                                 </div>
                                 <div class="working-hour-info">
                                     <div id="working_chart" class="table-responsive">
@@ -416,7 +454,7 @@
                                             @foreach($attendances as $attendance)
                                                 <tr>
                                                     <td>{{ \Illuminate\Support\Carbon::parse($attendance->created_at)->format('d M,Y')}}</td>
-                                                    <td>{{$attendance->working_time }} hour</td>
+                                                    <td>{{$attendance->working_time ?? '00:00:00' }} hour</td>
                                                 </tr>
                                             @endforeach
                                             </tbody>
@@ -431,6 +469,7 @@
             </div>
         </div>
     @endif
+
 @endsection
 @push('js')
     @if(auth()->user()->role == 'admin')

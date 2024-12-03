@@ -7,7 +7,7 @@
     <style>
         body { font-family: Arial, sans-serif; line-height: 1.5;font-size: 15px; }
         h1 { text-align: center; }
-        .content { margin: 0 auto; width: 90%; }
+        .content { margin: 0 auto; width: 95%; }
         .signature { margin-top: 50px; }
         table, th, td {
             border: 1px solid black;

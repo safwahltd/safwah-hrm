@@ -36,6 +36,7 @@ class DatabaseSeeder extends Seeder
                 'user_id' => 1,
                 'name' => 'Super Admin',
                 'email' => 'admin@gmail.com',
+                'employee_id' => 000000,
             ]);
         }
         /* Role Permission */

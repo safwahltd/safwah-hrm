@@ -31,8 +31,8 @@
                         @foreach($departments as $key => $department)
                             <tr>
                                 <td><span class="fw-bold">{{ $loop->iteration }}</span></td>
-                                <td>{{ $department->department_name }}</td>
-                                <td>{{ $department->user->name }}</td>
+                                <td>{{ $department->department_name ?? 'N/A'  }}</td>
+                                <td>{{ $department->user->name ?? 'N/A' }}</td>w
                                 <td>
                                     <form action="{{route('admin.department.StatusUpdate',$department->id)}}" method="post">
                                         @csrf

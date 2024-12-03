@@ -12,6 +12,8 @@
     <link rel="icon" href="{{asset('/')}}admin/favicon.ico" type="image/x-icon"> <!-- Favicon-->
     <!-- project css file  -->
     <link rel="stylesheet" href="{{asset('/')}}admin/assets/css/my-task.style.min.css">
+    <!-- Toastr CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/css/toastr.min.css" rel="stylesheet" />
     <link rel="stylesheet" href="http://cdn.bootcss.com/toastr.js/latest/css/toastr.min.css">
 
 </head>
