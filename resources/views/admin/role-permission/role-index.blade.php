@@ -64,16 +64,21 @@
                                                 </div>
                                                 @php($rolePermissions = \App\Models\RolePermission::where('role_id',$role->id)->pluck('permission_id')->toArray())
                                                 <div class="row mb-4">
-                                                    <h3 class="text-center">All Permissions</h3>
+                                                    <h5 class="text-center">All Permissions</h5>
                                                     <hr>
                                                     <h5><input class="selectAll" type="checkbox"> <label for="selectAll">Select All</label></h5>
-                                                    @foreach($permissions as $key => $permission)
-                                                        <div class="col-4">
-                                                                        <span>
-                                                                            <input type="checkbox" name="permission_ids[]" value="{{$permission->id}}"
-                                                                                   {{ in_array($permission->id, $rolePermissions) ? 'checked' : '' }} id="permission{{$key}}" class="itemCheckbox">
-                                                                            <label for="permission{{$key}}">{{$permission->name}}</label>
-                                                                        </span>
+                                                    @foreach($permissionsGroup as $name => $permissions)
+                                                        <div class="row my-2">
+                                                                <h5 class="p-1 text-center" style="border: 1px solid black">{{ $name }}</h5>
+                                                                @foreach($permissions as $key => $permission)
+                                                                    <div class="col-4">
+                                                                <span>
+                                                                    <input type="checkbox" name="permission_ids[]" value="{{$permission->id}}"
+                                                                           {{ in_array($permission->id, $rolePermissions) ? 'checked' : '' }} id="permission{{$key}}" class="itemCheckbox">
+                                                                    <label for="permission{{$key}}">{{$permission->name}}</label>
+                                                                </span>
+                                                                    </div>
+                                                                @endforeach
                                                         </div>
                                                     @endforeach
                                                 </div>
@@ -131,12 +136,17 @@
                             <h3 class="text-center">All Permissions</h3>
                             <hr>
                             <h5><input class="selectAll" type="checkbox" id="selectAll"> <label for="selectAll">Select All</label></h5>
-                            @foreach($permissions as $key => $permission)
-                                <div class="col-4">
+                            @foreach($permissionsGroup as $name => $permissions)
+                                <div class="row my-2">
+                                    <h5 class="p-1 text-center" style="border: 1px solid black">{{ $name }}</h5>
+                                    @foreach($permissions as $key => $permission)
+                                        <div class="col-4">
                                             <span>
                                             <input type="checkbox" name="permission_ids[]" value="{{$permission->id}}" id="permission{{$key}}" class="itemCheckbox">
                                             <label for="permission{{$key}}">{{$permission->name}}</label>
                                         </span>
+                                        </div>
+                                    @endforeach
                                 </div>
                             @endforeach
                         </div>

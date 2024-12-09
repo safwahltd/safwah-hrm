@@ -43,7 +43,7 @@
                                         <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#degedit{{$key}}"><i class="icofont-edit text-success"></i></button>
                                         <form action="{{ route('admin.salary.setting.destroy',$setting->id) }}" method="post">
                                             @csrf
-                                            @method('DELETE')
+                                            @method('PUT')
                                             <button type="submit" onclick="return confirm('are you sure to delete ? ')" class="btn btn-outline-secondary deleterow"><i class="icofont-ui-delete text-danger"></i></button>
                                         </form>
                                     </div>

@@ -5,9 +5,9 @@
         <div class="border-0 mb-4">
             <div class="card-header py-3 no-bg bg-transparent d-flex align-items-center px-0 justify-content-between border-bottom flex-wrap">
                 <h3 class="fw-bold mb-0 text-white">Holiday</h3>
-                <div class="col-auto d-flex w-sm-100">
-                    <form action="{{route('employee.holiday.index')}}" method="get">
-                        <select name="type" id="" class="" onchange="this.form.submit()">
+                <div class="col-md-2 col-3 text-center d-flex">
+                    <form action="{{route('employee.holiday.index')}}" class="w-100" method="get">
+                        <select name="type" id="" class="w-100 text-center" style="width: 100%;" onchange="this.form.submit()">
                             <option {{$type == 'all' ? 'selected' : ''}} value="all">All</option>
                             <option {{$type == 'left' ? 'selected' : ''}} value="left">Left</option>
                         </select>

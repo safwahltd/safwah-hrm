@@ -111,12 +111,14 @@ class TerminationController extends Controller
 
     }
     public function download($id){
-        $termination = Termination::find($id);
-
-        // Generate PDF for the termination letter
-        $pdf = Pdf::loadView('admin.termination.pdf', compact('termination'));
-
-        // Return the PDF download response
-        return $pdf->download('termination_letter_'.$termination->employee->userInfo->employee_id.'.pdf');
+        if (auth()->user()->hasPermission('admin termination download')){
+            $termination = Termination::find($id);
+            $pdf = Pdf::loadView('admin.termination.pdf', compact('termination'));
+            return $pdf->download('termination_letter_'.$termination->employee->userInfo->employee_id.'.pdf');
+        }
+        else{
+            toastr()->error('Permission Denied');
+            return back();
+        }
     }
 }

@@ -30,7 +30,8 @@ return new class extends Migration
             $table->json('deduct')->nullable();
             $table->unsignedInteger('month');
             $table->unsignedInteger('year');
-            $table->binary('status')->default(1);
+            $table->boolean('soft_delete')->default(0);
+            $table->boolean('status')->default(1);
             $table->bigInteger('log_id');
             $table->timestamps();
         });

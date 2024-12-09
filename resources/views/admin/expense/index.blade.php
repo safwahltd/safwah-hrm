@@ -39,29 +39,29 @@
                                 <td>{{$expense->date}}</td>
                                 <td>{{$expense->user->name}} <sub>({{$expense->user->userInfo->employee_id}})</sub> </td>
                                 <td>
-                                    <span style="background-color: {{ $expense->status == 0 ? '#9e7c50':''}}{{ $expense->status == 1 ? '#5BC43A':''}}{{ $expense->status == 2 ? 'red':''}}; " class="text-white p-1 me-1 rounded-2">{{ $expense->status == 0 ? 'Pending':''}}{{ $expense->status == 1 ? 'Accepted':''}}{{ $expense->status == 2 ? 'Rejected':''}} </span>
+                                    <span style="background-color: {{ $expense->status == 0 ? '#9e7c50':''}}{{ $expense->status == 1 ? '#5BC43A':''}}{{ $expense->status == 2 ? 'red':''}}; " class="text-white px-1 mx-1 rounded-2">{{ $expense->status == 0 ? 'Pending':''}}{{ $expense->status == 1 ? 'Accepted':''}}{{ $expense->status == 2 ? 'Rejected':''}} </span>
                                 @if($expense->checked_by != null)
-                                    <span class="bg-success text-white p-1 mx-1 rounded-2">{{ $expense->checked_by != null ? 'Checked':''}} </span>
+                                    <span class="bg-success text-white px-1 mx-1 rounded-2">{{ $expense->checked_by != null ? 'Checked':''}} </span>
                                     @endif
                                     @if($expense->approved_by != null)
-                                    <span class="bg-primary text-white p-1 rounded-2">{{ $expense->approved_by != null ? 'Approved':''}} </span>
+                                    <span class="bg-primary text-white px-1 mx-1 rounded-2">{{ $expense->approved_by != null ? 'Approved':''}} </span>
                                     @endif
                                     @if($expense->received_by != null)
-                                    <span class="bg-secondary text-white mx-1  p-1 rounded-2">{{ $expense->received_by != null ? 'Received':''}} </span>
+                                    <span class="bg-secondary text-white mx-1 px-1 rounded-2">{{ $expense->received_by != null ? 'Received':''}} </span>
                                     @endif
                                 </td>
                                 <td align="center">{{ $expense->amount }} /-</td>
                                 <td class="d-sm-flex d-grid align-items-center">
-                                    <a class="" href="#" data-bs-toggle="modal" data-bs-target="#show_asset{{$key}}"><i class="fa-solid btn btn-primary btn-sm fa-eye m-r-5"></i></a>
-                                    <a class="mx-2" href="{{route('admin.expense.edit',$expense->id)}}"><i class="fa-solid btn btn-primary btn-sm fa-pencil m-r-5"></i></a>
-                                    <a href="#" class="" onclick="return confirm('are you sure to delete ?') ? document.getElementById('destroy-form-{{$key}}').submit():''">
+                                    <a class="m-1" href="#" data-bs-toggle="modal" data-bs-target="#show_asset{{$key}}"><i class="fa-solid btn btn-primary text-white btn-sm fa-eye m-r-5"></i></a>
+                                    <a class="m-1" href="{{route('admin.expense.edit',$expense->id)}}"><i class="fa-solid btn btn-success btn-sm text-white fa-pencil m-r-5"></i></a>
+                                    <a href="#" class="m-1" onclick="return confirm('are you sure to delete ?') ? document.getElementById('destroy-form-{{$key}}').submit():''">
                                         <i onclick="" class="fa-regular btn btn-danger btn-sm text-white fa-trash-can m-r-5" type="submit"></i>
                                     </a>
                                     <form class="" id="destroy-form-{{$key}}" action="{{route('admin.expense.destroy',$expense->id)}}" method="post">
                                         @csrf
                                         @method('PUT')
                                     </form>
-                                    <a target="_blank" class="mx-2" href="{{route('admin.expense.download',$expense->id)}}"><i class="fa-solid btn btn-primary btn-sm fa-print"></i></a>
+                                    <a target="_blank" class="m-1" href="{{route('admin.expense.download',$expense->id)}}"><i class="fa-solid btn text-white btn-info btn-sm fa-print"></i></a>
                                 </td>
                             </tr>
                             <!-- Show Asset Modal-->

@@ -6,7 +6,7 @@
             <div class="card-header py-3 no-bg bg-transparent d-flex align-items-center px-0 justify-content-between border-bottom flex-wrap">
                 <h3 class="fw-bold mb-0 text-white">Permission</h3>
                 <div class="col-auto d-flex w-sm-100">
-                    <button type="button" class="btn btn-dark btn-set-task w-sm-100" data-bs-toggle="modal" data-bs-target="#addPermission">Add Permission <i class="icofont-plus-circle me-2 fs-6"></i></button>
+{{--                    <button type="button" class="btn btn-dark btn-set-task w-sm-100" data-bs-toggle="modal" data-bs-target="#addPermission">Add Permission <i class="icofont-plus-circle me-2 fs-6"></i></button>--}}
                 </div>
             </div>
         </div>
@@ -44,63 +44,21 @@
                                 </td>
                             </tr>
                             <div class="modal fade" id="Editpermission{{$key}}">
-                                <div class="modal-dialog modal-dialog-centered modal-md task-view-modal" role="document">
-                                    <div class="modal-content modal-content-demo">
-                                        <div class="modal-header p-5">
-                                            <button aria-label="Close" class="btn-close" data-bs-dismiss="modal" type="button">
-                                                <span aria-hidden="true">&times;</span>
-                                            </button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <div class="card">
-                                                <div class="card-header border-bottom justify-content-between">
-                                                    <h3 class="card-title"><i class="fa fa-role-circle-o"></i> Create permission</h3>
-                                                </div>
-                                                <div class="card-body">
-                                                    <form class="form-horizontal" action="{{route('admin.permission.update',$permission->id)}}" method="post" enctype="multipart/form-data">
-                                                        @csrf
-                                                        @method('PUT')
-                                                        <div class="row mb-4">
-                                                            <label for="name" class="col-md-3 form-label">Name <span class="text-danger">*</span></label>
-                                                            <div class="col-md-9">
-                                                                <input class="form-control" value="{{ $permission->name }}" id="name" name="name" placeholder="Enter name" type="text">
-                                                                <span class="text-danger">{{$errors->has('name') ? $errors->first('name'):''}}</span>
-                                                            </div>
-                                                        </div>
-                                                        <div class="row mb-4 d-flex form-group">
-                                                            <div class="col-md-3 form-label">
-                                                                <label class="" for="status">Status</label>
-                                                            </div>
-                                                            <div class="col-md-9">
-                                                                <select class="form-control select2 form-select" id="status" name="status" data-placeholder="Choose one">
-                                                                    <option class="form-control" label="Choose one"></option>
-                                                                    <option {{$permission->status == 1 ? 'selected':''}} value="1">Active</option>
-                                                                    <option {{$permission->status == 0 ? 'selected':''}} value="0">Inactive</option>
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                        <button class="btn btn-primary float-end" type="submit">Submit</button>
-                                                    </form>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="modal fade" id="Editpermission{{$key}}" tabindex="-1"  aria-hidden="true">
-                                <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
+                                <div class="modal-dialog modal-dialog-centered modal-md modal-dialog-scrollable">
                                     <div class="modal-content">
                                         <div class="modal-header">
-                                            <h5 class="modal-title  fw-bold" id="depaddLabel">New Permission Create</h5>
+                                            <h5 class="modal-title  fw-bold" id="depaddLabel">Edit Permission </h5>
                                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                         </div>
                                         <div class="modal-body">
-                                            <form class="form-horizontal" action="{{route('admin.permission.store')}}" method="post" enctype="multipart/form-data">
+                                            <form class="form-horizontal" action="{{route('admin.permission.update',$permission->id)}}" method="post" enctype="multipart/form-data">
                                                 @csrf
+                                                @method('PUT')
                                                 <div class="row mb-4">
-                                                    <label for="name" class="col-md-3 form-label">Name <span class="text-danger">*</span></label>
+                                                    <label for="name" class="col-md-3 form-label">Name </label>
                                                     <div class="col-md-9">
-                                                        <input class="form-control" value="{{old('name')}}" id="name" name="name" placeholder="Enter name" type="text">
+                                                        <p class="form-control">{{ $permission->name }}</p>
+{{--                                                        <input class="form-control" value="" id="name" name="name" placeholder="Enter name" type="text">--}}
                                                         <span class="text-danger">{{$errors->has('name') ? $errors->first('name'):''}}</span>
                                                     </div>
                                                 </div>
@@ -110,13 +68,12 @@
                                                     </div>
                                                     <div class="col-md-9">
                                                         <select class="form-control select2 form-select" id="status" name="status" data-placeholder="Choose one">
-                                                            <option class="form-control" label="Choose one" disabled selected></option>
-                                                            <option selected value="1">Active</option>
-                                                            <option value="0">Inactive</option>
+                                                            <option class="form-control" label="Choose one"></option>
+                                                            <option {{$permission->status == 1 ? 'selected':''}} value="1">Active</option>
+                                                            <option {{$permission->status == 0 ? 'selected':''}} value="0">Inactive</option>
                                                         </select>
                                                     </div>
                                                 </div>
-
                                                 <button class="btn btn-primary float-end" type="submit">Submit</button>
                                             </form>
                                         </div>

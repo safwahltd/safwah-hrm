@@ -41,7 +41,7 @@ class EmployeeController extends Controller
                                     $q->where('employee_type', $type);
                                 });
                             })
-                            ->get();
+                            ->latest()->get();
                     }
                     else{
                         $users = User::whereNotIn('role',['admin'])
@@ -57,21 +57,23 @@ class EmployeeController extends Controller
                                 return $q->whereHas('userInfo', function ($q) use ($type) {
                                     $q->where('employee_type', $type);
                                 });
-                            })->get();
+                            })->latest()->get();
                     }
                     $designations = Designation::where('status',1)->get();
                     $roles = Role::where('status',1)->get();
                     $userss = User::whereNotIn('role',['admin'])->get();
-                    return view('admin.user.index',compact('designations','users','roles','userss','user_id','designation_id','type'));
+                    $status = $request->status ?? 2;
+                    return view('admin.user.index',compact('designations','users','roles','userss','user_id','designation_id','type','status'));
                 }
                 $user_id = 0;
+                $status = 2;
                 $type = 0;
                 $designation_id = 0;
                 $designations = Designation::where('status',1)->get();
                 $userss = User::latest()->whereNotIn('role',['admin'])->get();
                 $users = User::latest()->whereNotIn('role',['admin'])->get();
                 $roles = Role::where('status',1)->get();
-                return view('admin.user.index',compact('designations','users','roles','userss','user_id','designation_id','type'));
+                return view('admin.user.index',compact('designations','users','roles','userss','user_id','designation_id','type','status'));
             }
             else{
                 toastr()->error('Permission Denied');

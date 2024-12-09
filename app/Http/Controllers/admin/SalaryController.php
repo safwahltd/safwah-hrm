@@ -12,6 +12,7 @@ use App\Models\WorkingDay;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class SalaryController extends Controller
@@ -30,7 +31,7 @@ class SalaryController extends Controller
                         ->when($month, function($q) use ($month) {
                             $q->where('month', $month);
                         });
-                })->latest()->paginate(100);
+                })->latest()->where('soft_delete',0)->paginate(100);
                 $salaryPaymentInputs = SalarySetting::where('status',1)->where('type','payment')->get();
                 $salaryDeductInputs = SalarySetting::where('status',1)->where('type','deduct')->get();
                 return view('admin.salary.index', compact('users', 'year', 'month', 'salaries','salaryPaymentInputs','salaryDeductInputs'));
@@ -39,7 +40,7 @@ class SalaryController extends Controller
                 $year = 0;
                 $month = 0;
                 $users = User::where('status',1)->whereNotIn('id',[1])->get();
-                $salaries = Salary::with('user')->latest()->paginate(100);
+                $salaries = Salary::with('user')->latest()->where('soft_delete',0)->paginate(100);
                 $salaryPaymentInputs = SalarySetting::where('status',1)->where('type','payment')->get();
                 $salaryDeductInputs = SalarySetting::where('status',1)->where('type','deduct')->get();
                 return view('admin.salary.index', compact('users', 'year', 'month', 'salaries','salaryPaymentInputs','salaryDeductInputs'));
@@ -52,7 +53,6 @@ class SalaryController extends Controller
     }
     public function store(Request $request)
     {
-//        return $request->all();
         if(auth()->user()->hasPermission('admin salary store')){
             try {
                 $validate = Validator::make($request->all(), [
@@ -219,9 +219,19 @@ class SalaryController extends Controller
     {
         if(auth()->user()->hasPermission('admin salary destroy')){
             $salary = Salary::find($id);
-            $salary->delete();
-            toastr()->success('Salary deleted successfully.');
-            return back();
+            $salaryPayment = SalaryPayment::where('salary_id',$salary->id);
+            if ($salaryPayment){
+                $salary->soft_delete = 1;
+                $salary->save();
+                toastr()->success('Salary deleted successfully.');
+                return back();
+            }
+            else{
+                $salary->delete();
+                toastr()->success('Salary deleted successfully.');
+                return back();
+            }
+
         }
         else{
             toastr()->error('Permission Denied');
@@ -314,17 +324,12 @@ class SalaryController extends Controller
     }
     public function download($id){
         $salary = Salary::find($id);
-        /*$paymentDate = Carbon::parse($payment->payment_date);
-        $previousMonthDate = $paymentDate->subMonth();
-        $previous = Carbon::parse($payment->payment_date);
-        $previousMonth = $previous->subMonth()->month;
-        $currentYear = $previous->year;*/
         $totalAttendance = collect(Attendance::where('user_id', $salary->user_id)
-            ->whereMonth('clock_in', $salary->month)
-            ->whereYear('clock_in', $salary->year)
+            ->where('month', $salary->month)
+            ->where('year', $salary->year)
             ->get());
 
-        $totalAttendance = $totalAttendance->unique('clock_in_date')->count();
+        $totalAttendance = $totalAttendance->sum('attend');
         /* payment dynamic column */
         $salaryPaymentInputs = SalarySetting::where('status',1)->where('type','payment')->get();
         $pay = 0 ;
@@ -358,23 +363,18 @@ class SalaryController extends Controller
             if ($request->all()) {
                 $year = $request->input('year');
                 $month = $request->input('month');
-                $day = $request->input('day', null);
-                $payments = SalaryPayment::where('user_id',auth()->user()->id)->with('user', 'salary')->where(function($query) use ($year, $month, $day) {
+                $payments = SalaryPayment::where('user_id',auth()->user()->id)->with('user', 'salary')->whereHas('salary', function ($query) use ($year, $month) {
                     $query->when($year, function($q) use ($year) {
-                        $q->whereYear('payment_date', $year);
-                    })
-                        ->when($month, function($q) use ($month) {
-                            $q->whereMonth('payment_date', $month);
-                        })
-                        ->when($day, function($q) use ($day) {
-                            $q->whereDay('payment_date', $day);
-                        });
-                })->latest()->paginate(50);
+                        $q->where('year', $year);
+                    })->when($month, function($q) use ($month) {
+                        $q->where('month', $month);
+                    });
+                })->latest()->paginate(100);
                 $salaries = Salary::where('status', '1')->get();
                 $salaryPaymentInputs = SalarySetting::where('status',1)->where('type','payment')->get();
                 $salaryDeductInputs = SalarySetting::where('status',1)->where('type','deduct')->get();
 
-                return view('employee.salary.index', compact('payments','salaries','year', 'month','day','salaryPaymentInputs','salaryDeductInputs'));
+                return view('employee.salary.index', compact('payments','salaries','year', 'month','salaryPaymentInputs','salaryDeductInputs'));
             }
             else{
                 $year = 0;
