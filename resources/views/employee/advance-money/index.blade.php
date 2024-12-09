@@ -2,26 +2,26 @@
 @section('title','Money Receipts')
 @section('body')
     <div class="row px-0">
-        <div class="col-md-3 col-6 text-center">
-            <div class="card p-2">
+        <div class="col-md-4 col-lg-3 col-6 text-center">
+            <div class="card p-2 my-1">
                 <p class="text-black m-0 fw-bold text-uppercase" style="font-size: 12px;">Total Advance </p>
                 <p class="fw-bold" style="margin-bottom: 0; margin-top: 5px; color: #664d03">{{$totalAdvanceAmount}}</p>
             </div>
         </div>
-        <div class="col-md-3 col-6 text-center">
-            <div class="card p-2">
+        <div class="col-md-4 col-lg-3 col-6 text-center">
+            <div class="card p-2 my-1">
                 <p class="text-black m-0 fw-bold text-uppercase" style="font-size: 12px;">Total Money Receipt</p>
                 <p class="fw-bold text-primary" style="margin-bottom: 0; margin-top: 5px;">{{ $totalMoneyAmount }}</p>
             </div>
         </div>
-        <div class="col-md-2 col-6 text-center">
-            <div class="card p-2">
+        <div class="col-md-4 col-lg-2 col-6 text-center">
+            <div class="card p-2 my-1">
                 <p class="text-black m-0 fw-bold text-uppercase" style="font-size: 12px;">Total Payment</p>
                 <p class="fw-bold text-success" style="margin-bottom: 0; margin-top: 5px;">{{ $totalPayment }}</p>
             </div>
         </div>
-        <div class="col-md-2 col-6 text-center">
-            <div class="card p-2">
+        <div class="col-md-4 col-lg-2 col-6 text-center">
+            <div class="card p-2 my-1">
                 <p class="text-black m-0 fw-bold text-uppercase" style="font-size: 12px;">Total Due</p>
                 <p class="fw-bold text-danger" style="margin-bottom: 0; margin-top: 5px;">
                     @if($totalMoneyAmount < ($totalAdvanceAmount + $totalPayment))
@@ -32,8 +32,8 @@
                 </p>
             </div>
         </div>
-        <div class="col-md-2 col-6 text-center">
-            <div class="card p-2">
+        <div class="col-md-4 col-lg-2 col-6 text-center">
+            <div class="card p-2 my-1">
                 <p class="text-black m-0 fw-bold text-uppercase" style="font-size: 12px;">Total Receivable</p>
                 @php
                 if($totalMoneyAmount > ($totalAdvanceAmount + $totalPayment)){
@@ -42,7 +42,6 @@
                     else{
                         $t = 0;
                     }
-
                 @endphp
                 <p class="fw-bold text-primary" style="margin-bottom: 0; margin-top: 5px;">{{ str_replace('-','', ($t)) }}</p>
             </div>
@@ -83,24 +82,24 @@
                                 <td>{{$expense->date}}</td>
                                 <td align="center">{{ $expense->amount }} /-</td>
                                 <td>
-                                    <span style="background-color: {{ $expense->status == 0 ? '#9e7c50':''}}{{ $expense->status == 1 ? '#5BC43A':''}}{{ $expense->status == 2 ? 'red':''}}; " class="text-white p-1 me-1 rounded-2">{{ $expense->status == 0 ? 'Pending':''}}{{ $expense->status == 1 ? 'Accepted':''}}{{ $expense->status == 2 ? 'Rejected':''}} </span>
+                                    <span style="background-color: {{ $expense->status == 0 ? '#9e7c50':''}}{{ $expense->status == 1 ? '#5BC43A':''}}{{ $expense->status == 2 ? 'red':''}}; " class="text-white  px-1 mx-1 rounded-2">{{ $expense->status == 0 ? 'Pending':''}}{{ $expense->status == 1 ? 'Accepted':''}}{{ $expense->status == 2 ? 'Rejected':''}} </span>
                                     @if($expense->checked_by != null)
-                                        <span class="bg-success text-white p-1 me-1 rounded-2">{{ $expense->checked_by != null ? 'Checked':''}} </span>
+                                        <span class="bg-success text-white  px-1 mx-1 rounded-2">{{ $expense->checked_by != null ? 'Checked':''}} </span>
                                     @endif
                                     @if($expense->approved_by != null)
-                                        <span class="bg-primary text-white p-1 rounded-2">{{ $expense->approved_by != null ? 'Approved':''}} </span>
+                                        <span class="bg-primary text-white  px-1 mx-1 rounded-2">{{ $expense->approved_by != null ? 'Approved':''}} </span>
                                     @endif
                                     @if($expense->received_by != null)
-                                        <span class="bg-secondary text-white p-1 rounded-2">{{ $expense->received_by != null ? 'Received':''}} </span>
+                                        <span class="bg-secondary text-white  px-1 mx-1 rounded-2">{{ $expense->received_by != null ? 'Received':''}} </span>
                                     @endif
 
                                 </td>
                                 <td class="d-sm-flex d-grid align-items-center">
-                                    <a class="" href="#" data-bs-toggle="modal" data-bs-target="#show_asset{{$key}}"><i class="fa-solid btn btn-info btn-sm fa-eye m-r-5"></i></a>
+                                    <a class="m-1" href="#" data-bs-toggle="modal" data-bs-target="#show_asset{{$key}}"><i class="fa-solid btn btn-info btn-sm fa-eye m-r-5"></i></a>
                                     @if($expense->receipt_type == 'advance_money_receipt')
                                        @if($expense->approved_by == null || $expense->status == 0)
-                                        <a class="mx-2" href="#" data-bs-toggle="modal" data-bs-target="#degedit{{$key}}"><i class="fa-solid btn btn-success btn-sm fa-pencil m-r-5"></i></a>
-                                        <a href="#" class="" onclick="return confirm('are you sure to delete ?') ? document.getElementById('destroy-form-{{$key}}').submit():''">
+                                        <a class="m-1" href="#" data-bs-toggle="modal" data-bs-target="#degedit{{$key}}"><i class="fa-solid btn btn-success btn-sm fa-pencil m-r-5"></i></a>
+                                        <a href="#" class="m-1" onclick="return confirm('are you sure to delete ?') ? document.getElementById('destroy-form-{{$key}}').submit():''">
                                             <i onclick="" class="fa-regular btn btn-danger btn-sm text-white fa-trash-can m-r-5" type="submit"></i>
                                         </a>
                                         <form class="" id="destroy-form-{{$key}}" action="{{route('admin.expense.destroy',$expense->id)}}" method="post">
@@ -110,7 +109,7 @@
                                         @endif
                                     @endif
                                     @if($expense->status != 2)
-                                    <a target="_blank" class="mx-2" href="{{route('admin.expense.download',$expense->id)}}"><i class="fa-solid btn btn-primary btn-sm fa-print m-r-5"></i></a>
+                                    <a target="_blank" class="m-1" href="{{route('admin.expense.download',$expense->id)}}"><i class="fa-solid btn btn-primary btn-sm fa-print m-r-5"></i></a>
                                     @endif
                                 </td>
                             </tr>

@@ -35,12 +35,6 @@
                                 <option {{ $i == $year ? 'selected' : '' }} value="{{ $i }}">{{ $i }}</option>
                             @endfor
                         </select>
-                        <select class="form-control-sm"  name="day" id="day">
-                            <option value="">All Days</option>
-                            @for($d = 1; $d <= 31; $d++)
-                                <option value="{{ $d }}" {{ $d == $day ? 'selected' : '' }}>{{ $d }}</option>
-                            @endfor
-                        </select>
                         <button class="form-control-sm text-white bg-success px-3"  type="submit">Filter</button>
                     </form>
                 </div>
@@ -52,6 +46,7 @@
                         <tr>
                             <th>Employee</th>
                             <th>Paid Amount</th>
+                            <th>Salary</th>
                             <th>Payment Date</th>
                             <th>Payment Method</th>
                             <th>Reference</th>
@@ -63,6 +58,7 @@
                             <tr>
                                 <td>{{ $payment->user->name }}</td>
                                 <td>{{ $payment->paid_amount }}</td>
+                                <td>{{ date('F', mktime(0, 0, 0, $payment->salary->month, 1)) }}  {{ $payment->salary->year }}</td>
                                 <td>{{ $payment->payment_date }}</td>
                                 <td>{{ $payment->payment_method }}</td>
                                 <td>{{ $payment->payment_reference }}</td>
@@ -94,13 +90,11 @@
                                         $query->when($user_id, function($q) use ($user_id) {
                                             $q->where('user_id', $user_id);
                                         })->when($yearr, function($q) use ($yearr) {
-                                            $q->whereYear('clock_in', $yearr);
+                                            $q->where('year', $yearr);
                                         })->when($monthh, function($q) use ($monthh) {
-                                            $q->whereMonth('clock_in', $monthh);
+                                            $q->where('month', $monthh);
                                         });
-                                    })->get()->groupBy(function ($item) {
-                                        return \Carbon\Carbon::parse($item->clock_in)->toDateString();
-                                    });
+                                    })->get();
 
                                     $attendanceData = collect($allDates)->mapWithKeys(function ($date) use ($attendancesForDay) {
                                         return [$date => $attendancesForDay->get($date, collect())];
@@ -128,7 +122,7 @@
                                                                 </div>
                                                                 <div class="col-md-6">
                                                                     <p><small class="fw-bold" style="font-weight: bold">ID </small> : <small> {{$payment->salary->user->userInfo->employee_id}}</small></p>
-                                                                    <p><small class="fw-bold" style="font-weight: bold">TOTAL ATTENDENCE </small> : <small> {{count($attendancesForDay)}}</small></p>
+                                                                    <p><small class="fw-bold" style="font-weight: bold">TOTAL ATTENDENCE </small> : <small> {{$attendancesForDay->sum('attend')}}</small></p>
                                                                     @php
                                                                         $workingDaysRecord = \App\Models\WorkingDay::where('year', $payment->salary->year)->where('month', $payment->salary->month)->first();
                                                                     @endphp

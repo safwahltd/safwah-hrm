@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('type');
             $table->string('placeholder');
             $table->tinyInteger('status')->default(0);
+            $table->tinyInteger('soft_delete')->default(0);
             $table->timestamps();
         });
     }

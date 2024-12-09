@@ -40,13 +40,14 @@
                             <td>{{date_format(new DateTime($holiday->date_to),'d M ,Y')}}</td>
                             <td>{{$holiday->total_day}}</td>
                             <td>
-                                <form action="{{route('admin.holiday.StatusUpdate',$holiday->id)}}" method="post">
+                                {{--<form action="{{route('admin.holiday.StatusUpdate',$holiday->id)}}" method="post">
                                     @csrf
                                     <select name="status" id="" class="form-control-sm text-white {{$holiday->status == 1 ? 'bg-success':'bg-danger'}}" onchange="this.form.submit()">
                                         <option {{$holiday->status == 1 ? 'selected':''}} value="1">Active</option>
                                         <option {{$holiday->status == 0 ? 'selected':''}} value="0">Inactive</option>
                                     </select>
-                                </form>
+                                </form>--}}
+                                <span class="bg-{{$holiday->status == 1 ? 'success':'danger'}} text-white  px-1 mx-1 rounded-2">{{$holiday->status == 1 ? 'On':''}}{{$holiday->status == 0 ? 'Off':''}}</span>
                             </td>
                             <td>
                                 <div class="btn-group" role="group" aria-label="Basic outlined example">

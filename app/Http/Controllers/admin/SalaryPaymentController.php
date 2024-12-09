@@ -35,7 +35,7 @@ class SalaryPaymentController extends Controller
                         ->when($day, function($q) use ($day) {
                             $q->whereDay('payment_date', $day);
                         });
-                })->latest()->paginate(50);
+                })->orderBy('id','desc')->where('soft_delete',0)->paginate(100);
                 $salaries = Salary::where('status', '1')->get();
                 $salaryPaymentInputs = SalarySetting::where('status',1)->where('type','payment')->get();
                 $salaryDeductInputs = SalarySetting::where('status',1)->where('type','deduct')->get();
@@ -45,7 +45,7 @@ class SalaryPaymentController extends Controller
                 $year = 0;
                 $month = 0;
                 $day = 0;
-                $payments = SalaryPayment::with('user', 'salary')->latest()->paginate(20);
+                $payments = SalaryPayment::with('user', 'salary')->orderBy('id','desc')->where('soft_delete',0)->paginate(100);
                 $salaries = Salary::where('status', '1')->get();
                 $salaryPaymentInputs = SalarySetting::where('status',1)->where('type','payment')->get();
                 $salaryDeductInputs = SalarySetting::where('status',1)->where('type','deduct')->get();
@@ -139,7 +139,8 @@ class SalaryPaymentController extends Controller
     {
         if(auth()->user()->hasPermission('admin salary payment destroy')){
             $payment = SalaryPayment::find($id);
-            $payment->delete();
+            $payment->soft_delete = 1;
+            $payment->save();
             toastr()->success('Salary Payment Delete Successfully.');
             return back();
         }

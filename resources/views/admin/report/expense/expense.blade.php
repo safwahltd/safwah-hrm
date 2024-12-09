@@ -45,22 +45,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-md-6 col-12 my-2">
-                    <div class="card ">
-                        <div class="card-header"><label for="leave_type" class="text-dark">Employee</label></div>
-                        <div class="card-body">
-                            <div class="d-flex align-items-center">
-                                <select class="form-control-lg select2-example w-100"  name="user_id" id="user_id">
-                                    <option value="">All Employee</option>
-                                    @foreach($users as $user)
-                                        <option value="{{ $user->id }}">{{ $user->name }} <sub>({{ $user->userInfo->employee_id }})</sub></option>
-                                    @endforeach
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-md-6 col-6 my-2">
+                <div class="col-md-4 col-6 my-2">
                     <div class="card ">
                         <div class="card-header"><label for="leave_type" class="text-dark">Status</label></div>
                         <div class="card-body">
@@ -70,6 +55,21 @@
                                     <option value="0">Pending</option>
                                     <option value="1">Approved</option>
                                     <option value="2">Rejected</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-8 col-12 my-2">
+                    <div class="card ">
+                        <div class="card-header"><label for="leave_type" class="text-dark">Employee</label></div>
+                        <div class="card-body">
+                            <div class="d-flex align-items-center">
+                                <select class="form-control-lg select2-example w-100" style="width: 100%;" name="user_id" id="user_id">
+                                    <option value="">All Employee</option>
+                                    @foreach($users as $user)
+                                        <option value="{{ $user->id }}">{{ $user->name }} <sub>({{ $user->userInfo->employee_id }})</sub></option>
+                                    @endforeach
                                 </select>
                             </div>
                         </div>

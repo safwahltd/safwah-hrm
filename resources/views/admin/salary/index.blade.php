@@ -38,9 +38,10 @@
 
             <div class="card mb-3">
                 <div class="card-body table-responsive bg-dark-subtle table-responsive">
-                    <table id="basic-datatable" class="table table-bordered text-nowrap table-secondary key-buttons border-bottom w-100">
+                    <table id="basic-datatable" class="table table-bordered text-nowrap table-secondary key-buttons border-bottom w-100" style="font-size: 13px;">
                         <thead>
                             <tr>
+                                <th>SL</th>
                                 <th>Employee</th>
                                 <th>Date</th>
                                 <th>Basic Salary <sub>(BDT)</sub></th>
@@ -54,6 +55,7 @@
                         <tbody>
                         @foreach($salaries as $key => $salary)
                             <tr>
+                                <td>{{ $loop->iteration }}</td>
                                 <td>{{ $salary->user->name }}</td>
                                 <td>{{ date('F', mktime(0, 0, 0, $salary->month, 1)) }}, {{ $salary->year }}</td>
                                 <td>{{ $salary->basic_salary }} </td>
@@ -92,7 +94,7 @@
                                         <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#salaryEdit{{$key}}"><i class="icofont-edit text-success"></i></button>
                                         <form action="{{route('admin.salary.destroy',$salary->id)}}" method="post">
                                             @csrf
-                                            @method('DELETE')
+                                            @method('PUT')
                                             <button type="submit" onclick="return confirm('are you sure to delete ? ')" class="btn btn-outline-secondary mx-1 deleterow"><i class="icofont-ui-delete text-danger"></i></button>
                                         </form>
                                         <a href="{{route('admin.salary.download',$salary->id)}}"  class="btn btn-outline-secondary"><i class="icofont-download text-success"></i></a>
@@ -244,13 +246,11 @@
                                         $query->when($user_id, function($q) use ($user_id) {
                                             $q->where('user_id', $user_id);
                                         })->when($yearr, function($q) use ($yearr) {
-                                            $q->whereYear('clock_in', $yearr);
+                                            $q->where('year', $yearr);
                                         })->when($monthh, function($q) use ($monthh) {
-                                            $q->whereMonth('clock_in', $monthh);
+                                            $q->where('month', $monthh);
                                         });
-                                    })->get()->groupBy(function ($item) {
-                                        return \Carbon\Carbon::parse($item->clock_in)->toDateString();
-                                    });
+                                    })->get();
 
                                     $attendanceData = collect($allDates)->mapWithKeys(function ($date) use ($attendancesForDay) {
                                         return [$date => $attendancesForDay->get($date, collect())];
@@ -278,7 +278,7 @@
                                                                 </div>
                                                                 <div class="col-md-6">
                                                                     <p><small class="fw-bold" style="font-weight: bold">ID </small> : <small> {{$salary->user->userInfo->employee_id}}</small></p>
-                                                                    <p><small class="fw-bold" style="font-weight: bold">TOTAL ATTENDENCE </small> : <small> {{count($attendancesForDay)}}</small></p>
+                                                                    <p><small class="fw-bold" style="font-weight: bold">TOTAL ATTENDENCE </small> : <small> {{ $attendancesForDay->sum('attend')}}</small></p>
                                                                     @php
                                                                         $workingDaysRecord = \App\Models\WorkingDay::where('year', $salary->year)->where('month', $salary->month)->first();
                                                                     @endphp

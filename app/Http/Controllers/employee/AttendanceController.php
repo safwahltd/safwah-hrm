@@ -7,6 +7,7 @@ use App\Models\Attendance;
 use App\Models\Holiday;
 use App\Models\Leave;
 use App\Models\User;
+use App\Models\UserInfos;
 use App\Models\WorkingDay;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
@@ -22,8 +23,172 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class AttendanceController extends Controller
 {
+    public function index(){
+        if(auth()->user()->hasPermission('admin attendance index')){
+            $attendances = Attendance::latest()->paginate(30);
+            $users = User::where('status',1)->whereNotIn('id',[1])->get();
+            return view('admin.attendance.index',compact('attendances','users'));
+        }
+        else{
+            toastr()->error('Permission Denied');
+            return back();
+        }
+    }
+    public function store(Request $request){
+        if(auth()->user()->hasPermission('admin attendance store')){
+            try{
+                $validate = Validator::make($request->all(),[
+                    'user_id' => 'required',
+                    'month' => 'required',
+                    'year' => 'required',
+                    'attend' => 'required',
+                    'late' => 'required',
+                    'absent' => 'required',
+                ]);
+                if($validate->fails()){
+                    toastr()->error($validate->messages());
+                    return back();
+                }
+                $user = UserInfos::where('user_id',$request->user_id)->first();
+                $attend = Attendance::where('user_id',$request->user_id)->where('month',$request->month)->where('year',$request->year)->first();
+                if (!$attend){
+                    $attendance = new Attendance();
+                    $attendance->user_id = $request->user_id;
+                    $attendance->month = $request->month;
+                    $attendance->year = $request->year;
+                    $attendance->attend = $request->attend;
+                    $attendance->late = $request->late;
+                    $attendance->absent = $request->absent;
+                    /* File Upload Start */
+                    if ($request->file('attachment')){
+                        $fileExtension = $request->file('attachment')->getClientOriginalExtension();
+                        $fileName = $user->employee_id.'_'.date('F', mktime(0, 0, 0, $request->month, 1)).'_'.$request->year.'.'.$fileExtension;
+                        $path = 'upload/attendance/';
+                        $request->file('attachment')->move($path,$fileName);
+                        $url = $path.$fileName;
+                        $attendance->attachment = $url;
+                    }
+                    /* File Upload End */
+
+                    $attendance->save();
+                    toastr()->success('Attendance Create Successfully.');
+                    return back();
+                }
+                else{
+                    toastr()->error('Already Have This Attendance Data.');
+                    return back();
+                }
+            }
+            catch(Exception $e){
+                toastr()->error($e->getMessage());
+                return back();
+            }
+        }
+        else{
+            toastr()->error('Permission Denied');
+            return back();
+        }
+    }
+    public function update(Request $request,$id){
+        if(auth()->user()->hasPermission('admin attendance update')){
+            try{
+                $attendance = Attendance::find($id);
+                $validate = Validator::make($request->all(),[
+                    'month' => 'required',
+                    'year' => 'required',
+                    'attend' => 'required',
+                    'late' => 'required',
+                    'absent' => 'required',
+                ]);
+                if($validate->fails()){
+                    toastr()->error($validate->messages());
+                    return back();
+                }
+                $user = UserInfos::where('user_id',$attendance->user_id)->first();
+                $attend = Attendance::where('user_id',$attendance->user_id)->where('month',$request->month)->where('year',$request->year)->whereNotIn('id',[$id])->first();
+                if (!$attend){
+                    $attendance->user_id = $attendance->user_id;
+                    $attendance->month = $request->month;
+                    $attendance->year = $request->year;
+                    $attendance->attend = $request->attend;
+                    $attendance->late = $request->late;
+                    $attendance->absent = $request->absent;
+                    /* File Upload Start */
+                    if ($request->file('attachment')){
+                        if (isset($attendance->attachment)){
+                            unlink($attendance->attachment);
+                        }
+                        $fileExtension = $request->file('attachment')->getClientOriginalExtension();
+                        $fileName = $user->employee_id.'_'.date('F', mktime(0, 0, 0, $request->month, 1)).'_'.$request->year.'.'.$fileExtension;
+                        $path = 'upload/attendance/';
+                        $request->file('attachment')->move($path,$fileName);
+                        $url = $path.$fileName;
+                        $attendance->attachment = $url;
+                    }
+                    /* File Upload End */
+
+                    $attendance->save();
+                    toastr()->success('Attendance Update Successfully.');
+                    return back();
+                }
+                else{
+                    toastr()->error('Already Have This Attendance Data.');
+                    return back();
+                }
+            }
+            catch(Exception $e){
+                toastr()->error($e->getMessage());
+                return back();
+            }
+        }
+        else{
+            toastr()->error('Permission Denied');
+            return back();
+        }
+
+    }
+    public function destroy($id){
+        if(auth()->user()->hasPermission('admin attendance destroy')){
+            try{
+                $attendance = Attendance::find($id);
+                if (isset($attendance->attachment)){
+                    unlink($attendance->attachment);
+                }
+                $attendance->delete();
+                toastr()->success('Delete Successfully.');
+                return back();
+            }
+            catch(Exception $e){
+                toastr()->error($e->getMessage());
+                return back();
+            }
+        }
+        else{
+            toastr()->error('Permission Denied');
+            return back();
+        }
+    }
+    public function showFile($id)
+    {
+        if(auth()->user()->hasPermission('admin attendance showfile')){
+            $attend = Attendance::findOrFail($id);
+            $filePath = $attend->attachment;
+            $extension = pathinfo($filePath, PATHINFO_EXTENSION);
+            // Handle PDF and image files
+            if (in_array($extension, ['pdf', 'jpg', 'jpeg', 'png', 'gif', 'bmp','webp','svg','docx', 'doc', 'xlsx', 'xls'])) {
+                return response()->file($filePath);
+            }
+            abort(404, 'File format not supported');
+            return response()->file($filePath);
+        }
+        else{
+            toastr()->error('Permission Denied');
+            return back();
+        }
+
+    }
     public function attendanceList(){
-        $attendances = Attendance::where('user_id',auth()->user()->id)->latest()->paginate(30);
+        $attendances = Attendance::where('user_id',auth()->user()->id)->latest()->paginate(100);
         return view('employee.attendance.index',compact('attendances'));
     }
     public function adminAttendanceList(){

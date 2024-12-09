@@ -163,7 +163,7 @@
                 <strong style="width:100%; text-transform: uppercase; font-size: 10px;">Received with Thanks From:</strong>
             </div>
             <div class="col-8" style="">
-                <span style="width: 90%; border-bottom: 1px dashed #000; display: inline-block;">{{ $expense->user->name }} {{ $expense->money_payment_type == 'cash' ? '(Petty Cash)':'' }}</span>
+                <span style="width: 90%; border-bottom: 1px dashed #000; display: inline-block;">{{ $expense->user->name }}</span>
             </div>
         </div>
         <div class="row">

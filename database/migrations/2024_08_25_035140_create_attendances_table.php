@@ -14,11 +14,12 @@ return new class extends Migration
         Schema::create('attendances', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('user_id');
-            $table->timestamp('clock_in')->nullable();
-            $table->date('clock_in_date')->nullable();
-            $table->timestamp('clock_out')->nullable();
-            $table->date('clock_out_date')->nullable();
-            $table->string('working_time')->nullable();
+            $table->integer('month')->nullable();
+            $table->integer('year')->nullable();
+            $table->integer('attend')->nullable();
+            $table->integer('late')->nullable();
+            $table->integer('absent')->nullable();
+            $table->text('attachment')->nullable();
             $table->tinyInteger('status')->nullable();
             $table->tinyInteger('soft_delete')->default(0);
             $table->timestamps();

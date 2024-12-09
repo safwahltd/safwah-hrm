@@ -14,6 +14,7 @@ use App\Models\LeaveBalance;
 use App\Models\Salary;
 use App\Models\SalaryPayment;
 use App\Models\Termination;
+use App\Models\User;
 use App\Models\UserInfos;
 use App\Models\WorkingDay;
 use Illuminate\Http\Request;
@@ -27,31 +28,33 @@ class DashboardController extends Controller
             $totalEmployeeMale = UserInfos::where('status',1)->whereNotIn('user_id',[1])->where('gender',1)->count();
             $totalEmployeeFeMale = UserInfos::where('status',1)->whereNotIn('user_id',[1])->where('gender',2)->count();
             $totalEmployeeOther = UserInfos::where('status',1)->whereNotIn('user_id',[1])->whereNotIn('gender',[1,2])->count();
-            $totalPresent = Attendance::whereDate('clock_in', today())->pluck('user_id');
+            $atten = Attendance::where('year',Carbon::now()->year)->get();
+            $totalPresent = $atten->sum('attend');
+            $totalLate = $atten->sum('late');
+            $totalAbsent = $atten->sum('absent');
             $absentEmployees = $totalEmployees->whereNotIn('user_id', $totalPresent)->count();
-            $totalLateAttend = Attendance::whereDate('clock_in', today())->where('clock_in', '>', today()->setTime(9, 15))->count();
-            $leaveApply = Leave::whereDate('created_at', today())->count();
+            $leaveApply = Leave::whereYear('created_at', Carbon::now()->year)->count();
             $holidays = Holiday::where('date_from', '>', \Illuminate\Support\Carbon::now())->latest()->simplePaginate(5);
             $departments = Department::count();
             $designations = Designation::count();
             $terminations = Termination::count();
             $assets = Asset::where('status',1)->get();
             $totalAssets = $assets->sum('value');
+            $users = User::whereNotIn('id',[1])->where('status',1)->get();
             $totalSalaryPayment = SalaryPayment::sum('paid_amount');
             return view('admin.dashboard.index',compact(
                     'totalEmployees','totalEmployeeMale',
                     'totalEmployeeFeMale','totalEmployeeOther',
-                    'totalPresent','totalLateAttend','absentEmployees',
+                    'totalPresent','totalLate','totalAbsent',
                     'leaveApply','holidays','departments',
-                    'designations','terminations','assets','totalAssets','totalSalaryPayment')
+                    'designations','terminations','assets','totalAssets','totalSalaryPayment','users')
             );
         }
         else{
             $currentMonth = Carbon::now()->month;
-            $totalWorkingDay = WorkingDay::whereDate('year', Carbon::now()->year )->latest()->sum('working_day');
-            $attendance = Attendance::where('user_id', auth()->user()->id)->whereDate('clock_in', now()->toDateString())->latest()->first();
-            $attendances = Attendance::where('user_id',auth()->user()->id)->latest()->whereMonth('created_at',Carbon::now()->month)->paginate(7);
-            $totalAttend = Attendance::where('user_id',auth()->user()->id)->whereYear('created_at',Carbon::now()->year)->count();
+            $totalWorkingDay = WorkingDay::where('year', Carbon::now()->year )->latest()->sum('working_day');
+            $attendances = Attendance::where('user_id',auth()->user()->id)->latest()->take(10)->get();
+            $totalAttend = Attendance::where('user_id',auth()->user()->id)->where('year',Carbon::now()->year)->sum('attend');
             $totalHolidays = Holiday::whereYear('date_from',Carbon::now()->year)->sum('total_day');
             $holidays = Holiday::where('date_from', '>', \Illuminate\Support\Carbon::now())->latest()->simplePaginate(5);
             $leavesPending = Leave::where('user_id',auth()->user()->id)->whereYear('created_at',Carbon::now()->year)->where('status',0)->count();
@@ -61,8 +64,33 @@ class DashboardController extends Controller
                                         \Illuminate\Support\Facades\DB::raw('SUM(spent) as spent_total'),
                                         \Illuminate\Support\Facades\DB::raw('SUM(`left`) as left_total'),
                                     ])->first();
+            $totalAssets = $assets = Asset::where('user_id',auth()->user()->id)->sum('value');
 
-            return view('admin.dashboard.index',compact('attendance','leaveBalance','holidays','leave','attendances','totalAttend','leavesPending','totalWorkingDay','totalHolidays'));
+            return view('admin.dashboard.index',compact('leaveBalance','holidays','leave','attendances','totalAttend','leavesPending','totalWorkingDay','totalHolidays','totalAssets'));
         }
+    }
+    public function AttendanceFilter(Request $request){
+        $month = $request->month;
+        $user_id = $request->user_id;
+        $year = $request->year;
+        $attendances = Attendance::when($user_id, function ($q) use ($user_id) {
+            return $q->where('user_id', $user_id);
+        })->when($month, function ($q) use ($month) {
+                return $q->where('month', $month);
+        })->when($year, function ($q) use ($year) {
+                return $q->where('year', $year);
+        })->get();
+        $totalAttend = $attendances->sum('attend');
+        $totalLate = $attendances->sum('late');
+        $totalAbsent = $attendances->sum('absent');
+        $leaveApply = Leave::when($user_id, function ($q) use ($user_id) {
+            return $q->where('user_id', $user_id);
+        })->when($month, function ($q) use ($month) {
+            return $q->whereMonth('created_at', $month);
+        })->when($year, function ($q) use ($year) {
+            return $q->whereYear('created_at', $year);
+        })->count();
+        $html = view('admin.dashboard.attendance', compact('totalAttend','totalLate','totalAbsent','leaveApply'))->render();
+        return response()->json(['html' => $html]);
     }
 }

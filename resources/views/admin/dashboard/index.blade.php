@@ -158,39 +158,58 @@
                 <div class="col-12">
                     <div class="card">
                         <div class="card-header py-3 d-flex justify-content-between bg-transparent border-bottom-0">
-                            <h6 class="mb-0 fw-bold ">Employees Availability</h6>
+                            <h6 class="mb-0 fw-bold ">
+                                <select class="select2-example my-2" name="month" id="user_id_attendance">
+                                    <option value="">select one</option>
+                                        @foreach($users as $user)
+                                            <option value="{{ $user->id }}">{{ $user->name.' '.'('.$user->userInfo->employee_id.')' }}</option>
+                                        @endforeach
+                                </select>
+                                <select class="my-2" name="month" id="month">
+                                    <option value="">All Month</option>
+                                        @for ($i = 1; $i <= 12; $i++)
+                                            <option value="{{ $i }}">{{ date('F', mktime(0, 0, 0, $i, 1)) }}</option>
+                                        @endfor
+                                    </select>
+                                <select class="my-2" name="year" id="year" required>
+                                        @for ($i = date('Y'); $i >= 2022; $i--)
+                                            <option value="{{ $i }}">{{ $i }}</option>
+                                        @endfor
+                                    </select>
+                                <button id="filter-btn"  class="btn-success mx-2 px-3 my-2 rounded-2">filter</button>
+                            </h6>
                         </div>
                         <div class="card-body">
-                            <div class="row">
+                            <div class="row" id="attendanceFilter">
                                 <div class="col-6 my-1 text-center">
-                                    <a href="{{route('admin.attendance.list')}}">
+                                    <a href="{{route('admin.attendance.index')}}">
                                         <div class="card" style="background-color: #990055; width: 100%;">
                                             <div class="card-body">
                                                 <i class="icofont-checked fs-3 text-white"></i>
-                                                <h6 class="mt-3 mb-2 text-white fw-bold small-14">Today Attendance</h6>
-                                                <span class="text-white fs-4 fw-bold">{{count($totalPresent)}}</span>
+                                                <h6 class="mt-3 mb-2 text-white fw-bold small-14"> Attendance</h6>
+                                                <span class="text-white fs-4 fw-bold">{{$totalPresent}}</span>
                                             </div>
                                         </div>
                                     </a>
                                 </div>
                                 <div class="col-6 my-1 text-center">
-                                    <a href="{{route('admin.attendance.list')}}">
+                                    <a href="{{route('admin.attendance.index')}}">
                                         <div class="card" style="background-color: #2c0b0e; width: 100%;">
                                             <div class="card-body ">
                                                 <i class="icofont-stopwatch fs-3 text-white"></i>
-                                                <h6 class="mt-3 mb-2 fw-bold small-14 text-white">Today Late Coming</h6>
-                                                <span class="text-white fs-4 fw-bold">{{$totalLateAttend}}</span>
+                                                <h6 class="mt-3 mb-2 fw-bold small-14 text-white">Late Attendance</h6>
+                                                <span class="text-white fs-4 fw-bold">{{$totalLate}}</span>
                                             </div>
                                         </div>
                                     </a>
                                 </div>
                                 <div class="col-6 my-1 text-center">
-                                    <a href="{{route('admin.attendance.list')}}">
+                                    <a href="{{route('admin.attendance.index')}}">
                                         <div class="card" style="background-color: #000000; width: 100%;">
                                             <div class="card-body ">
                                                 <i class="icofont-ban fs-3 text-white text-left"></i>
-                                                <h6 class="mt-3 mb-2 fw-bold small-14 text-white">Today Absent</h6>
-                                                <span class="text-white fs-4 fw-bold">{{$absentEmployees}}</span>
+                                                <h6 class="mt-3 mb-2 fw-bold small-14 text-white">Absent</h6>
+                                                <span class="text-white fs-4 fw-bold">{{$totalAbsent}}</span>
                                             </div>
                                         </div>
                                     </a>
@@ -225,6 +244,26 @@
             </div>
         </div>
     @else
+        <style>
+            .clock {
+                font-family: 'Courier New', Courier, monospace;
+                font-size: 35px;
+                font-weight: bold;
+                color: #fff;
+                padding: 20px;
+                border: 10px solid white;
+                border-radius: 10px;
+                background-color: #111;
+                box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+                text-align: center;
+                height: 170px;
+            }
+
+            .date {
+                font-size: 20px;
+                color: #aaa;
+            }
+        </style>
         <div class="row">
             <div class="col-xxl-12 col-lg-12 col-md-12">
                 <div class="row">
@@ -251,65 +290,137 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="card bg-dark-subtle my-1">
+                    </div>
+                    <div class="col-lg-6 col-md-12 my-1">
+                        <div class="clock">
+                            <div id="digital-clock">00:00:00 AM</div>
+                            <div class="date" id="digital-date">Sunday, December 9, 2024</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="">
+                        <div class="card flex-fill my-1">
                             <div class="card-body">
-                                <div class="row">
-                                    <div class="col-7">
+                                <div class="attendance-list">
+                                    <div class="row p-3">
+                                        <div class="col-md-3 col-6 my-1" align="center">
+                                            <div class="attendance-details bg-success p-2 rounded-2">
+                                                <h5 class="fw-bold text-white">{{$totalWorkingDay}}</h5>
+                                                <p class="fw-bold text-uppercase text-white" style="font-size: 13px">Working Days</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 col-6 my-1" align="center">
+                                            <div class="attendance-details bg-primary-gradient p-2 rounded-2">
+                                                <h5 class="fw-bold text-white">{{$totalAttend}}</h5>
+                                                <p class="fw-bold text-uppercase" style="font-size: 13px">Total Attend</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 col-6 my-1" align="center">
+                                            <div class="attendance-details bg-primary p-2 rounded-2">
+                                                <h5 class="fw-bold text-white">{{ $totalWorkingDay - $totalAttend }}</h5>
+                                                <p class="fw-bold text-uppercase text-white" style="font-size: 13px">Total Absent</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 col-6 my-1" align="center">
+                                            <div class="attendance-details bg-dark-defualt p-2 rounded-2">
+                                                <h5 class="fw-bold text-white">{{ $totalHolidays }}</h5>
+                                                <p class="fw-bold text-uppercase text-white" style="font-size: 13px">Holidays</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 col-6 my-1" align="center">
+                                            <div class="attendance-details p-2 rounded-2" style="background-color: blue">
+                                                <h5 class="fw-bold text-white">{{ $leave->sick + $leave->casual }}</h5>
+                                                <p class="fw-bold text-uppercase text-white" style="font-size: 13px">Total Leave</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 col-6 my-1" align="center">
+                                            <div class="attendance-details p-2 rounded-2" style="background-color: orangered">
+                                                <h5 class="fw-bold text-white">{{ $leave->sick_spent + $leave->casual_spent }}</h5>
+                                                <p class="fw-bold text-uppercase text-white" style="font-size: 13px">Leaves Taken</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 col-6 my-1" align="center">
+                                            <div class="attendance-details p-2 rounded-2" style="background-color: #006b60">
+                                                <h5 class="fw-bold text-white">{{ $leave->sick_left + $leave->casual_left }}</h5>
+                                                <p class="fw-bold text-uppercase text-white" style="font-size: 13px">Leaves Left</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 col-6 my-1" align="center">
+                                            <div class="attendance-details p-2 rounded-2" style="background-color: #990055">
+                                                <h5 class="fw-bold text-white">{{$leaveBalance->half_day_total}}</h5>
+                                                <p class="fw-bold text-uppercase text-white" style="font-size: 13px">Half Day</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 col-6 my-1" align="center">
+                                            <div class="attendance-details p-2 rounded-2" style="background-color: olivedrab">
+                                                <h5 class="fw-bold text-white">{{$leaveBalance->left_total}}</h5>
+                                                <p class="fw-bold text-uppercase text-white" style="font-size: 13px">Left</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 col-6 my-1" align="center">
+                                            <div class="attendance-details p-2 rounded-2" style="background-color: #146c43">
+                                                <h5 class="fw-bold text-white">{{$totalAssets}}</h5>
+                                                <p class="fw-bold text-uppercase text-white" style="font-size: 13px">Total Asset</p>
+                                            </div>
+                                        </div>
 
-                                        <div class="">
-                                            <p class="mb-0">Working Time</p>
-                                            <small class="fw-bold" id="workingTime">{{ $attendance->working_time ?? ''}}{{--{{ \Illuminate\Support\Carbon::parse($attendance->clock_in)->format('jS F Y, h:i a')}}--}}</small>
-                                        </div>
-                                        <div class="">
-                                            <p class="mb-0">Clock In</p>
-                                            <small class="fw-bold" id="clock_in_time">
-                                                @if($attendance)
-                                                {{ $attendance->clock_in ? \Illuminate\Support\Carbon::parse($attendance->clock_in)->format('d M, Y H:i a'): 'Not Clock In Yet'}}
-                                                @else
-                                                    Not Clock In Yet
-                                                @endif
-                                            </small>
-                                        </div>
-                                        <div class="">
-                                            <p class="mb-0">Clock Out</p>
-                                            <small class="fw-bold" id="clock_out_time">
-                                                @if($attendance)
-                                                {{ $attendance->clock_out ? \Illuminate\Support\Carbon::parse($attendance->clock_out)->format('d M, Y H:i a') : 'Not Clock Out Yet'}}
-                                                @else
-                                                    Not Clock Out Yet
-                                                @endif
-                                            </small>
-                                        </div>
 
-                                    </div>
-                                    <div class="col-5 align-content-center">
-                                        <button class="btn btn-primary" hidden id="clockInBtn"><i class="fa-solid fa-play"></i> Clock In</button>
-                                        <button class="btn text-white btn-danger" hidden id="clockOutBtn"><i class="fa-solid fa-person-walking-arrow-right "></i> Clock Out</button>
-                                        <div class="" id="clockInCLockOut">
-                                            <button class="btn btn-primary" hidden id="clockInBtn"><i class="fa-solid fa-play"></i> Clock In</button>
-                                            <button class="btn text-white btn-danger" hidden id="clockOutBtn"><i class="fa-sharp fa-solid fa-person-walking-arrow-right"></i> Clock Out</button>
-                                        </div>
                                     </div>
                                 </div>
-                                {{--<div class="clock-in-list">
-                                    <ul class="nav">
-                                        <li>
-                                            <p>Remaining</p>
-                                            <h6>2 Hrs 36 Min</h6>
-                                        </li>
-                                        <li>
-                                            <p>Overtime</p>
-                                            <h6>0 Hrs 00 Min</h6>
-                                        </li>
-                                        <li>
-                                            <p>Break</p>
-                                            <h6>1 Hrs 20 Min</h6>
-                                        </li>
-                                    </ul>
-                                </div>--}}
+                                <div class="view-attendance">
+                                    <a href="{{route('employee.leave')}}" class="btn btn-primary">
+                                        Apply Leave <i class="fa fa-arrow-right"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="">
+                        <div class="card bg-dark-subtle my-1">
+                            <div class="card-body">
+                                <h5 class="fw-bold">Attendances</h5>
+                                <div class="row table-responsive">
+                                    <table class="table text-center table-bordered text-nowrap table-secondary key-buttons border-bottom w-100" style="font-size: 12px;">
+                                        <thead class="bg-primary">
+                                        <tr class="bg-secondary">
+                                            <th class="bg-primary-subtle">No</th>
+                                            <th class="bg-primary-subtle">Date</th>
+                                            <th class="bg-primary-subtle">Attend</th>
+                                            <th class="bg-primary-subtle">Late</th>
+                                            <th class="bg-primary-subtle">Absent</th>
+                                            <th class="bg-primary-subtle">Attachment</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        @forelse($attendances as $key => $attendance)
+                                            <tr>
+                                                <td><span class="fw-bold">{{$loop->iteration}}</span></td>
+                                                <td align="center">{{ date('F', mktime(0, 0, 0, $attendance->month, 1)) }} , {{ $attendance->year }}</td>
+                                                <td class="text-center">{{ $attendance->attend ?? '-' }}</td>
+                                                <td class="text-center">{{ $attendance->late ?? '-' }}</td>
+                                                <td align="center">{{ $attendance->absent ?? '-' }}</td>
+                                                <td align="center">
+                                                    @if(!empty($attendance->attachment))
+                                                    <a href="{{ route('admin.attendance.showFile', $attendance->id) }}" target="_blank" class="btn btn-success">View Attachment</a>
+                                                    @else
+                                                        -
+                                                    @endif
+                                                </td>
+                                            </tr>
+                                        @empty
+                                            <tr>
+                                                <td colspan="6" class="text-center"><span class="fw-bold">No Result</span></td>
+                                            </tr>
+                                        @endforelse
+                                        </tbody>
+                                    </table>
+                                </div>
                                 <div class="view-attendance">
                                     <a href="{{route('employee.attendance.list')}}" class="btn btn-primary p-1 my-2">
-                                        View Attendance <i class="fe fe-arrow-right-circle"></i>
+                                        View All <i class="fe fe-arrow-right-circle"></i>
                                     </a>
                                 </div>
                             </div>
@@ -321,7 +432,7 @@
                                     <div class="">
                                         <div class="">
                                             <div class="row table-responsive">
-                                                <table class="table table-hover table-striped align-middle mb-0" style="width:100%">
+                                                <table class="table text-center table-bordered text-nowrap table-secondary key-buttons border-bottom w-100" style="font-size: 12px;">
                                                     <thead class="bg-primary">
                                                     <tr class="bg-secondary">
                                                         <th  class="bg-primary-subtle">Name</th>
@@ -350,116 +461,11 @@
                                                 </table>
                                             </div>
                                         </div>
-
                                     </div>
                                     <div class="holiday-btn">
                                         <a href="{{route('employee.holiday.index')}}" class="btn btn-primary p-1 my-2">
                                             View All <i class="fe fe-arrow-right-circle"></i>
                                         </a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-6 col-md-12 my-1">
-                        <div class="card flex-fill my-1">
-                            <div class="card-body">
-                                <div class="statistic-header d-flex">
-                                    <h6 class="fw-bold text-uppercase">Attendance & Leaves {{ \Illuminate\Support\Carbon::now()->year }}</h6>
-                                </div>
-                                <div class="attendance-list">
-                                    <div class="row p-3">
-                                        <div class="col-md-4 my-1" align="center">
-                                            <div class="attendance-details bg-success p-2 rounded-2">
-                                                <h5 class="fw-bold text-white">{{$totalWorkingDay}}</h5>
-                                                <p class="fw-bold text-uppercase text-white" style="font-size: 13px">Working Days</p>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 my-1" align="center">
-                                            <div class="attendance-details bg-primary-gradient p-2 rounded-2">
-                                                <h5 class="fw-bold text-white">{{$totalAttend}}</h5>
-                                                <p class="fw-bold text-uppercase" style="font-size: 13px">Total Attend</p>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 my-1" align="center">
-                                            <div class="attendance-details bg-primary p-2 rounded-2">
-                                                <h5 class="fw-bold text-white">{{ $totalWorkingDay - $totalAttend }}</h5>
-                                                <p class="fw-bold text-uppercase text-white" style="font-size: 13px">Total Absent</p>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 my-1" align="center">
-                                            <div class="attendance-details bg-dark-defualt p-2 rounded-2">
-                                                <h5 class="fw-bold text-white">{{ $totalHolidays }}</h5>
-                                                <p class="fw-bold text-uppercase text-white" style="font-size: 13px">Holidays</p>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-md-4 my-1" align="center">
-                                            <div class="attendance-details p-2 rounded-2" style="background-color: blue">
-                                                <h5 class="fw-bold text-white">{{ $leave->sick + $leave->casual }}</h5>
-                                                <p class="fw-bold text-uppercase text-white" style="font-size: 13px">Total Leave</p>
-                                            </div>
-                                        </div>
-
-                                        <div class="col-md-4 my-1" align="center">
-                                            <div class="attendance-details p-2 rounded-2" style="background-color: orangered">
-                                                <h5 class="fw-bold text-white">{{ $leave->sick_spent + $leave->casual_spent }}</h5>
-                                                <p class="fw-bold text-uppercase text-white" style="font-size: 13px">Leaves Taken</p>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 my-1" align="center">
-                                            <div class="attendance-details p-2 rounded-2" style="background-color: #006b60">
-                                                <h5 class="fw-bold text-white">{{ $leave->sick_left + $leave->casual_left }}</h5>
-                                                <p class="fw-bold text-uppercase text-white" style="font-size: 13px">Leaves Left</p>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 my-1" align="center">
-                                            <div class="attendance-details p-2 rounded-2" style="background-color: #990055">
-                                                <h5 class="fw-bold text-white">{{$leaveBalance->half_day_total}}</h5>
-                                                <p class="fw-bold text-uppercase text-white" style="font-size: 13px">Half Day</p>
-                                            </div>
-                                        </div>
-                                        <div class="col-md-4 my-1" align="center">
-                                            <div class="attendance-details p-2 rounded-2" style="background-color: olivedrab">
-                                                <h5 class="fw-bold text-white">{{$leaveBalance->left_total}}</h5>
-                                                <p class="fw-bold text-uppercase text-white" style="font-size: 13px">Left</p>
-                                            </div>
-                                        </div>
-
-
-                                    </div>
-                                </div>
-                                <div class="view-attendance">
-                                    <a href="{{route('employee.leave')}}" class="btn btn-primary">
-                                        Apply Leave <i class="fa fa-arrow-right"></i>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="card flex-fill my-1">
-                            <div class="card-body">
-                                <div class="statistic-header">
-                                    <h5 class="fw-bold">Working Hours</h5>
-                                </div>
-                                <div class="working-hour-info">
-                                    <div id="working_chart" class="table-responsive">
-                                        <table class="table table-striped">
-                                            <thead>
-                                            <tr>
-                                                <th>Date</th>
-                                                <th>Working Hours</th>
-                                            </tr>
-                                            </thead>
-                                            <tbody>
-                                            @foreach($attendances as $attendance)
-                                                <tr>
-                                                    <td>{{ \Illuminate\Support\Carbon::parse($attendance->created_at)->format('d M,Y')}}</td>
-                                                    <td>{{$attendance->working_time ?? '00:00:00' }} hour</td>
-                                                </tr>
-                                            @endforeach
-                                            </tbody>
-
-                                        </table>
                                     </div>
                                 </div>
                             </div>
@@ -513,8 +519,32 @@
             chart.render();
         });
     </script>
-    @else
         <script>
+            $(document).ready(function() {
+                $('#filter-btn').click(function() {
+                    const user_id = $('#user_id_attendance').val();
+                    const month = $('#month').val();
+                    const year = $('#year').val();
+                    console.log(month,year);
+                    $.ajax({
+                        url: '{{ route('admin.dashboard.attendance.filter') }}',
+                        method: 'GET',
+                        data: {
+                            user_id: user_id,
+                            month: month,
+                            year: year
+                        },
+                        success: function(response) {
+                            $('#attendanceFilter').empty();
+                            $('#attendanceFilter').html(response.html);
+                        }
+                    });
+                });
+            });
+        </script>
+
+    @else
+        {{--<script>
             $(document).ready(function () {
                 function updateButtonStatus() {
                     $.ajax({
@@ -581,6 +611,46 @@
                     }
                 });
             });
+        </script>--}}
+        <script>
+            function updateClock() {
+                const now = new Date();
+
+                let hours = now.getHours();
+                const minutes = String(now.getMinutes()).padStart(2, '0');
+                const seconds = String(now.getSeconds()).padStart(2, '0');
+
+                // Determine AM or PM
+                const period = hours >= 12 ? 'PM' : 'AM';
+
+                // Convert to 12-hour format
+                hours = hours % 12;
+                hours = hours ? String(hours).padStart(2, '0') : '12'; // 0 becomes 12
+
+                // Format time as HH:MM:SS AM/PM
+                const timeString = `${hours}:${minutes}:${seconds} ${period}`;
+
+                // Update the clock time
+                document.getElementById('digital-clock').innerText = timeString;
+
+                // Get the current date
+                const day = now.toLocaleString('default', { weekday: 'long' });
+                const month = now.toLocaleString('default', { month: 'long' });
+                const date = now.getDate();
+                const year = now.getFullYear();
+
+                // Format date as Day, Month Date, Year
+                const dateString = `${day}, ${month} ${date}, ${year}`;
+
+                // Update the clock date
+                document.getElementById('digital-date').innerText = dateString;
+            }
+
+            // Update the clock and date every 1000ms (1 second)
+            setInterval(updateClock, 1000);
+
+            // Initialize the clock and date immediately
+            updateClock();
         </script>
     @endif
 @endpush

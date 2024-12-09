@@ -60,7 +60,6 @@
             <tr style="background-color: aliceblue; font-size: 14px">
                 <th>SL</th>
                 <th>Date</th>
-                <th>Attendance</th>
                 <th>Leave</th>
                 <th>Termination</th>
                 <th>Asset</th>
@@ -71,7 +70,6 @@
                 <tr>
                     <td>{{ $loop->iteration }}</td>
                     <td>{{ \Carbon\Carbon::parse($data['date'])->format('d-M-Y') }}</td>
-                    <td>{{ $data['attendance_count'] }}</td>
                     <td>{{ $data['leave_count'] }}</td>
                     <td>{{ $data['termination_count'] }}</td>
                     <td>{{ $data['asset_count'] }}</td>

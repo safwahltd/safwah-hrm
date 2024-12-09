@@ -22,7 +22,6 @@ class NoticeController extends Controller
             return back();
         }
     }
-
     public function store(Request $request)
     {
         if(auth()->user()->hasPermission('admin notice store')){
@@ -59,7 +58,6 @@ class NoticeController extends Controller
         }
 
     }
-
     public function update(Request $request,$id)
     {
         if(auth()->user()->hasPermission('admin notice update')){
@@ -116,16 +114,37 @@ class NoticeController extends Controller
 
     }
     public function download($id){
-        $notice = Notice::find($id);
+        if(auth()->user()->hasPermission('admin notice download')){
+            try {
+                $notice = Notice::find($id);
+                $pdf = Pdf::loadView('admin.notice.pdf', compact('notice'));
+                return $pdf->download('notice_'.$notice->title.'.pdf');
+            }
+            catch (\Exception $e){
+                toastr()->error($e->getMessage());
+                return back();
+            }
+        }
+        else{
+            toastr()->error('Permission Denied');
+            return back();
+        }
 
-        // Generate PDF for the notice letter
-        $pdf = Pdf::loadView('admin.notice.pdf', compact('notice'));
-
-        // Return the PDF download response
-        return $pdf->download('notice_'.$notice->title.'.pdf');
     }
     public function employeeShowList(){
-        $notices = Notice::where('status',1)->orderBy('created_at', 'desc')->get();
-        return view('employee.notice.index',compact('notices'));
+        if(auth()->user()->hasPermission('employee notice list')){
+            try {
+                $notices = Notice::where('status',1)->orderBy('created_at', 'desc')->get();
+                return view('employee.notice.index',compact('notices'));
+            }
+            catch (\Exception $e){
+                toastr()->error($e->getMessage());
+                return back();
+            }
+        }
+        else{
+            toastr()->error('Permission Denied');
+            return back();
+        }
     }
 }

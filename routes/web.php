@@ -39,6 +39,8 @@ Route::middleware(['employee.auth'])->prefix('employee/')->group(function () {
     Route::middleware(['admin.auth'])->group(function () {
         ################################/*   Admin Panel Start  */########################################
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
+        Route::get('/attendance-filter', [DashboardController::class, 'AttendanceFilter'])->name('admin.dashboard.attendance.filter');
+
         Route::prefix('admin')->group(function (){
             Route::resource('employees', EmployeeController::class);
             Route::post('/employee-ban-unban/{id}', [EmployeeController::class, 'banUnbanUSer'])->name('admin.user.ban.unban');
@@ -49,14 +51,13 @@ Route::middleware(['employee.auth'])->prefix('employee/')->group(function () {
             Route::put('/designation-soft-delete/{id}', [DesignationController::class,'destroy'])->name('designations.soft.destroy');
             Route::post('/designation-status-update/{id}', [DesignationController::class, 'StatusUpdate'])->name('admin.designation.StatusUpdate');
             Route::resource('holidays', HolidayController::class);
-            Route::resource('holidays', HolidayController::class);
             Route::post('/holiday-status-update/{id}', [HolidayController::class, 'StatusUpdate'])->name('admin.holiday.StatusUpdate');
             Route::resource('asset', AssetController::class);
             Route::get('/assets-search-employee', [AssetController::class,'employeeFilter'])->name('employee.filter.asset');
             Route::get('/employee-profile/{id}', [EmployeeController::class,'employeeProfile'])->name('employee.profile');
             Route::get('/attendance-list', [AttendanceController::class,'adminAttendanceList'])->name('admin.attendance.list');
-            Route::get('/attendance-report', [AttendanceController::class,'adminAttendanceReport'])->name('admin.attendance.report');
-            Route::get('/export-attendance', [AttendanceController::class, 'exportAttendance'])->name('admin.attendance.report.export');
+//            Route::get('/attendance-report', [AttendanceController::class,'adminAttendanceReport'])->name('admin.attendance.report');
+//            Route::get('/export-attendance', [AttendanceController::class, 'exportAttendance'])->name('admin.attendance.report.export');
             Route::get('/employee-attendance-details', [AttendanceController::class,'details'])->name('admin.attendance.details');
             Route::get('/employee-attendance', [AttendanceController::class,'attendanceMonthly'])->name('admin.attendance.month.details');
             Route::get('/employee-attendance-details-download', [AttendanceController::class,'attendanceMonthlyDownload'])->name('admin.attendance.details.download');
@@ -103,6 +104,14 @@ Route::middleware(['employee.auth'])->prefix('employee/')->group(function () {
                 /*Route::get('/email-setting','emailSetting')->name('admin.email.setting.index');
                 Route::put('/email-setting-update/{id}','emailSettingUpdate')->name('admin.email.setting.update');*/
             });
+            Route::controller(AttendanceController::class)->group(function (){
+                Route::get('/attendances','index')->name('admin.attendance.index');
+                Route::post('/attendances-store','store')->name('admin.attendance.store');
+                Route::put('/attendances-update/{id}','update')->name('admin.attendance.update');
+                Route::delete('/attendances-destroy/{id}','destroy')->name('admin.attendance.destroy');
+                Route::post('/attendances-download/{id}', 'download')->name('admin.attendance.download');
+                Route::get('attendance/{attendance}/file', 'showFile')->name('admin.attendance.showFile');
+            });
             Route::controller(NoticeController::class)->prefix('hr')->group(function (){
                 Route::get('/notices','index')->name('admin.notice.index');
                 Route::post('/notices-store','store')->name('admin.notice.store');
@@ -114,13 +123,13 @@ Route::middleware(['employee.auth'])->prefix('employee/')->group(function () {
                 Route::get('/salary-setting','index')->name('admin.salary.setting.index');
                 Route::post('/salary-setting-store','store')->name('admin.salary.setting.store');
                 Route::put('/salary-setting-update/{id}','update')->name('admin.salary.setting.update');
-                Route::delete('/salary-setting-destroy/{id}','destroy')->name('admin.salary.setting.destroy');
+                Route::put('/salary-setting-destroy/{id}','destroy')->name('admin.salary.setting.destroy');
             });
             Route::controller(SalaryController::class)->prefix('account')->group(function (){
                 Route::get('/salaries','index')->name('admin.salary.index');
                 Route::post('/salaries-store','store')->name('admin.salary.store');
                 Route::put('/salaries-update/{id}','update')->name('admin.salary.update');
-                Route::delete('/salaries-destroy/{id}','destroy')->name('admin.salary.destroy');
+                Route::put('/salaries-destroy/{id}','destroy')->name('admin.salary.destroy');
                 Route::get('/salaries-download/{id}', 'download')->name('admin.salary.download');
                 Route::get('/get-salary-details/{id}', [SalaryController::class, 'getSalaryDetails'])->name('salary.getDetails');
                 Route::get('/salaries-payment-download/{id}', 'download')->name('admin.salary.payment.download');
@@ -130,7 +139,7 @@ Route::middleware(['employee.auth'])->prefix('employee/')->group(function () {
                 Route::get('/salaries-payment','index')->name('admin.salary.payment.index');
                 Route::post('/salaries-payment-store','store')->name('admin.salary.payment.store');
                 Route::put('/salaries-payment-update/{id}','update')->name('admin.salary.payment.update');
-                Route::delete('/salaries-payment-destroy/{id}','destroy')->name('admin.salary.payment.destroy');
+                Route::put('/salaries-payment-destroy/{id}','destroy')->name('admin.salary.payment.destroy');
             });
             /*Route::controller(BillingController::class)->group(function (){
                 Route::get('/billings','index')->name('admin.billings.index');
@@ -142,7 +151,6 @@ Route::middleware(['employee.auth'])->prefix('employee/')->group(function () {
                 Route::get('/daily-report','daily')->name('admin.daily.report');
                 Route::get('/daily-report-show','dailyReport')->name('admin.daily.report.show');
                 Route::get('/daily-report-download','dailyReportDownload')->name('admin.download.daily.report');
-                Route::get('/payment','payment')->name('admin.payment.report');
                 Route::get('/leave', 'leave')->name('admin.leave.report');
                 Route::get('/leave-report-show', 'leaveReportShow')->name('admin.leave.report.show');
                 Route::get('/download-leave-report', 'leaveReportDownload')->name('admin.download.leave.report');
@@ -205,12 +213,12 @@ Route::middleware(['employee.auth'])->prefix('employee/')->group(function () {
             Route::post('/bank-info-update', [EmployeeAccountController::class,'bankInfoUpdate'])->name('employee.bank.info.update');
             Route::post('/profile-picture-update', [EmployeeAccountController::class,'profilePictureUpdate'])->name('employee.profile.picture.update');
             Route::post('/personal-info-update', [EmployeeAccountController::class,'personalInfoUpdate'])->name('employee.personal.info.update');
-            Route::get('/employee-clock-status', [AttendanceController::class,'getClockStatus'])->name('employee.clock.status');
+            /*Route::get('/employee-clock-status', [AttendanceController::class,'getClockStatus'])->name('employee.clock.status');
             Route::post('/employee-clock-in', [AttendanceController::class,'clockIn'])->name('employee.clock.in');
-            Route::post('/employee-clock-out', [AttendanceController::class,'clockOut'])->name('employee.clock.out');
+            Route::post('/employee-clock-out', [AttendanceController::class,'clockOut'])->name('employee.clock.out');*/
             Route::get('/attendance-list', [AttendanceController::class,'attendanceList'])->name('employee.attendance.list');
-            Route::get('/attendance-calendar', [AttendanceController::class,'attendanceReport'])->name('employee.attendance.report');
-            Route::get('/attendance-report-event', [AttendanceController::class,'getEvents'])->name('employee.attendance.report.event');
+//            Route::get('/attendance-calendar', [AttendanceController::class,'attendanceReport'])->name('employee.attendance.report');
+//            Route::get('/attendance-report-event', [AttendanceController::class,'getEvents'])->name('employee.attendance.report.event');
             Route::get('/holiday', [HolidayController::class,'employeeIndex'])->name('employee.holiday.index');
             Route::controller(LeaveController::class)->group(function (){
                 Route::get('/leave', 'employeeLeaveIndex')->name('employee.leave');

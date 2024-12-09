@@ -302,7 +302,6 @@
                                                 <thead>
                                                 <tr>
                                                     <th>SL</th>
-                                                    <th>Asset User</th>
                                                     <th>Asset Name</th>
                                                     <th>Asset Id</th>
                                                     <th>Hand In</th>
@@ -315,7 +314,6 @@
                                                 @foreach($assets as $key => $asset)
                                                     <tr>
                                                         <td>{{$loop->iteration}}</td>
-                                                        <td>{{$asset->user->name}}</td>
                                                         <td>
                                                             <strong>{{$asset->asset_name}}</strong>
                                                         </td>
@@ -414,12 +412,7 @@
                                                                         <div class="col-4"><label for="description" class="form-label">Status</label></div>
                                                                         <div class="col-2">:</div>
                                                                         <div class="col-6">
-                                                                            <p class="">
-                                                                                <select class="form-control {{$asset->status == 1 ? 'bg-success text-dark':''}}{{$asset->status == 0 ? 'bg-danger text-white':''}}" name="status" id="status" disabled>
-                                                                                    <option {{$asset->status == 1 ? 'selected':''}} value="1">Active</option>
-                                                                                    <option {{$asset->status == 0 ? 'selected':''}}  value="0">Inactive</option>
-                                                                                </select>
-                                                                            </p>
+                                                                            <span class="p-1 rounded-2 {{$asset->status == 1 ? 'bg-success text-white':''}}{{$asset->status == 0 ? 'bg-danger text-white':''}}">{{$asset->status == 1 ? 'Active':'Inactive'}}</span>
                                                                         </div>
                                                                     </div>
                                                                 </div>
