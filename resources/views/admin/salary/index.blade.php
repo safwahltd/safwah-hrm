@@ -97,7 +97,7 @@
                                             @method('PUT')
                                             <button type="submit" onclick="return confirm('are you sure to delete ? ')" class="btn btn-outline-secondary mx-1 deleterow"><i class="icofont-ui-delete text-danger"></i></button>
                                         </form>
-                                        <a href="{{route('admin.salary.download',$salary->id)}}"  class="btn btn-outline-secondary"><i class="icofont-download text-success"></i></a>
+                                        <a href="{{route('admin.salary.download',$salary->id)}}" target="_blank" class="btn btn-outline-secondary"><i class="icofont-download text-success"></i></a>
                                     </div>
                                 </td>
                             </tr>
@@ -234,15 +234,8 @@
                                 $user_id = $salary->user_id;
                                 $yearr = $salary->year;
                                 $monthh = $salary->month;
-                                $daysInaMonth = \Illuminate\Support\Carbon::create($yearr, $monthh, 1)->daysInMonth;
-                                $startDate = \Illuminate\Support\Carbon::create($yearr, $monthh, 1);
-                                $endDate = $startDate->copy()->endOfMonth();
-                                $allDates = [];
-                                for ($date = $startDate; $date <= $endDate; $date->addDay()) {
-                                    $allDates[] = $date->toDateString(); // Store the dates in an array
-                                }
-                                for ($day = 1; $day <= $daysInaMonth; $day++) {
-                                    $attendancesForDay = \App\Models\Attendance::with('user')->where(function($query) use ($user_id, $yearr, $monthh, $day) {
+
+                                    $attendancesForDay = \App\Models\Attendance::with('user')->where(function($query) use ($user_id, $yearr, $monthh) {
                                         $query->when($user_id, function($q) use ($user_id) {
                                             $q->where('user_id', $user_id);
                                         })->when($yearr, function($q) use ($yearr) {
@@ -250,13 +243,7 @@
                                         })->when($monthh, function($q) use ($monthh) {
                                             $q->where('month', $monthh);
                                         });
-                                    })->get();
-
-                                    $attendanceData = collect($allDates)->mapWithKeys(function ($date) use ($attendancesForDay) {
-                                        return [$date => $attendancesForDay->get($date, collect())];
-                                    });
-                                }
-
+                                    })->first();
                             @endphp
                             <div class="modal fade" id="salaryShow{{$key}}" tabindex="-1"  aria-hidden="true">
                                 <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
@@ -278,11 +265,8 @@
                                                                 </div>
                                                                 <div class="col-md-6">
                                                                     <p><small class="fw-bold" style="font-weight: bold">ID </small> : <small> {{$salary->user->userInfo->employee_id}}</small></p>
-                                                                    <p><small class="fw-bold" style="font-weight: bold">TOTAL ATTENDENCE </small> : <small> {{ $attendancesForDay->sum('attend')}}</small></p>
-                                                                    @php
-                                                                        $workingDaysRecord = \App\Models\WorkingDay::where('year', $salary->year)->where('month', $salary->month)->first();
-                                                                    @endphp
-                                                                    <p><small class="fw-bold" style="font-weight: bold">TOTAL WORKING DAY </small> : <small> {{$workingDaysRecord->working_day ?? 0}} </small></p>
+                                                                    <p><small class="fw-bold" style="font-weight: bold">TOTAL ATTENDENCE </small> : <small> {{ $attendancesForDay->attend ?? 0}}</small></p>
+                                                                    <p><small class="fw-bold" style="font-weight: bold">TOTAL WORKING DAY </small> : <small> {{ $attendancesForDay->working_day ?? 0}} </small></p>
                                                                 </div>
 
                                                             </div>

@@ -333,97 +333,6 @@ class ReportController extends Controller
             return back();
         }
     }
-    /*public function payment(Request $request){
-        if(auth()->user()->hasPermission('admin payment report')){
-            if ($request->all()){
-                $year = $request->input('year');
-                $month = $request->input('month');
-                $day = $request->input('day',null);
-                $attendanceReport = Attendance::where(function($query) use ($year, $month) {
-                    $query->when($year, function($q) use ($year) {
-                        $q->where('year', $year);
-                    })
-                        ->when($month, function($q) use ($month) {
-                            $q->where('month', $month);
-                        });
-                })->sum('attend');
-                $leaveReport = Leave::where(function($query) use ($year, $month, $day) {
-                    $query->when($year, function($q) use ($year) {
-                        $q->whereYear('created_at', $year);
-                    })
-                        ->when($month, function($q) use ($month) {
-                            $q->whereMonth('created_at', $month);
-                        })
-                        ->when($day, function($q) use ($day) {
-                            $q->whereDay('created_at', $day);
-                        });
-                })->count();
-                $terminationReport = Termination::where(function($query) use ($year, $month, $day) {
-                    $query->when($year, function($q) use ($year) {
-                        $q->whereYear('created_at', $year);
-                    })
-                        ->when($month, function($q) use ($month) {
-                            $q->whereMonth('created_at', $month);
-                        })
-                        ->when($day, function($q) use ($day) {
-                            $q->whereDay('created_at', $day);
-                        });
-                })->count();
-                $assetReport = Asset::where(function($query) use ($year, $month, $day) {
-                    $query->when($year, function($q) use ($year) {
-                        $q->whereYear('created_at', $year);
-                    })
-                        ->when($month, function($q) use ($month) {
-                            $q->whereMonth('created_at', $month);
-                        })
-                        ->when($day, function($q) use ($day) {
-                            $q->whereDay('created_at', $day);
-                        });
-                })->count();
-                $salaryReport = SalaryPayment::where(function($query) use ($year, $month, $day) {
-                    $query->when($year, function($q) use ($year) {
-                        $q->whereYear('created_at', $year);
-                    })
-                        ->when($month, function($q) use ($month) {
-                            $q->whereMonth('created_at', $month);
-                        })
-                        ->when($day, function($q) use ($day) {
-                            $q->whereDay('created_at', $day);
-                        });
-                })->count();
-                $noticeReport = Notice::where(function($query) use ($year, $month, $day) {
-                    $query->when($year, function($q) use ($year) {
-                        $q->whereYear('created_at', $year);
-                    })
-                        ->when($month, function($q) use ($month) {
-                            $q->whereMonth('created_at', $month);
-                        })
-                        ->when($day, function($q) use ($day) {
-                            $q->whereDay('created_at', $day);
-                        });
-                })->count();
-                return view('admin.report.daily', compact('year','month','day','attendanceReport', 'leaveReport', 'terminationReport', 'assetReport', 'salaryReport', 'noticeReport'));
-            }
-            else{
-                $year = Carbon::today()->year;
-                $month = Carbon::today()->month;
-                $day = Carbon::today()->day;
-                $today = Carbon::today();
-                $attendanceReport = Attendance::whereDate('created_at', $today)->count();
-                $leaveReport = Leave::whereDate('start_date', $today)->count();
-                $terminationReport = Termination::whereDate('terminated_at', $today)->count();
-                $assetReport = Asset::whereDate('created_at', $today)->count();
-                $salaryReport = SalaryPayment::whereDate('payment_date', $today)->count();
-                $noticeReport = Notice::whereDate('start_date', $today)->count();
-                return view('admin.report.daily', compact('year','month','day','attendanceReport', 'leaveReport', 'terminationReport', 'assetReport', 'salaryReport', 'noticeReport'));
-            }
-        }
-        else{
-            toastr()->error('Permission Denied');
-            return back();
-        }
-
-    }*/
     public function leave(){
         if(auth()->user()->hasPermission('admin leave report')){
             $users = User::whereNotIn('id',[1])->orderBy('name','asc')->get();
@@ -736,10 +645,6 @@ class ReportController extends Controller
             $user_id = $request->user_id;
             $reportData = [];
             foreach ($months as $month) {
-                $workingDaysRecord = WorkingDay::where('year', $year)
-                    ->where('month', $month)
-                    ->first();
-                $totalWorkingDays = $workingDaysRecord ? $workingDaysRecord->working_day : 0;
                 /* Attendance Count Query */
                 $attendanceQuery = Attendance::when($user_id, function($q) use ($user_id) {
                     return $q->where('user_id', $user_id);
@@ -751,10 +656,11 @@ class ReportController extends Controller
                     $user = User::find($userId);
 
                     // Count presents and absents for this user
+                    $totalWorkingDays = $attendanceRecords->sum('working_day');
                     $totalPresents = $attendanceRecords->sum('attend');
                     $total_late = $attendanceRecords->sum('late');
                     $totalAbsents = $attendanceRecords->sum('absent');
-
+                    $totalLeave = Leave::where('user_id',$userId)->whereMonth('start_date',$month)->whereYear('start_date',$year)->whereNotIn('leave_type',['half_day'])->where('status',1)->sum('days_taken');
                     $monthData[] = [
                         'user_name' => $user->name,
                         'user_id' => $user->userInfo->employee_id,
@@ -763,6 +669,7 @@ class ReportController extends Controller
                         'total_absents' => $totalAbsents,
                         'total_late' => $total_late,
                         'total_working_days' => $totalWorkingDays,
+                        'totalLeave' => $totalLeave,
                     ];
                 }
                 $reportData[$month] = $monthData;
@@ -782,10 +689,6 @@ class ReportController extends Controller
             $user_id = $request->user_id;
             $reportData = [];
             foreach ($months as $month) {
-                $workingDaysRecord = WorkingDay::where('year', $year)
-                    ->where('month', $month)
-                    ->first();
-                $totalWorkingDays = $workingDaysRecord ? $workingDaysRecord->working_day : 0;
                 /* Attendance Count Query */
                 $attendanceQuery = Attendance::when($user_id, function($q) use ($user_id) {
                     return $q->where('user_id', $user_id);
@@ -797,9 +700,12 @@ class ReportController extends Controller
                     $user = User::find($userId);
 
                     // Count presents and absents for this user
+                    $totalWorkingDays = $attendanceRecords->sum('working_day');
                     $totalPresents = $attendanceRecords->sum('attend');
                     $total_late = $attendanceRecords->sum('late');
                     $totalAbsents = $attendanceRecords->sum('absent');
+                    $totalLeave = Leave::whereMonth('start_date',$month)->whereYear('start_date',$year)->sum('days_taken');
+                    dd($totalLeave);
 
                     $monthData[] = [
                         'user_name' => $user->name,
@@ -813,9 +719,13 @@ class ReportController extends Controller
                 }
                 $reportData[$month] = $monthData;
             }
-//        return view('admin.report.attendance.attendance-report-download', compact('reportData','mon','year'));
             $pdf = Pdf::loadView('admin.report.attendance.attendance-report-download', compact('reportData','mon','year'));
-            return $pdf->download('attendance_report.pdf');
+            if (!empty($request->month)){
+                return $pdf->stream(date('F', mktime(0, 0, 0, $mon, 1)).'_'.$year.'_attendance_report.pdf');
+            }
+            else{
+                return $pdf->stream($year.'_all_month_attendance_report.pdf');
+            }
         }
         else{
             toastr()->error('Permission Denied');

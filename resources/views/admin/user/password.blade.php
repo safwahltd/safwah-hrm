@@ -4,7 +4,7 @@
     <div class="row align-items-center">
         <div class="border-0 mb-4">
             <div class="">
-                <h4 class="fw-bold mb-0 text-white text-center">Update User </h4>
+                <h4 class="fw-bold mb-0 text-white text-center">Update User Credentials</h4>
                 <hr class="text-white">
             </div>
         </div>

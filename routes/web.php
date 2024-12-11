@@ -19,9 +19,7 @@ use App\Http\Controllers\SettingController;
 use App\Http\Controllers\admin\NoticeController;
 use App\Http\Controllers\admin\SalaryController;
 use App\Http\Controllers\admin\SalaryPaymentController;
-use App\Http\Controllers\BillingController;
 use App\Http\Controllers\admin\ReportController;
-use App\Http\Controllers\admin\WorkingDayController;
 use App\Http\Controllers\admin\SalarySettingController;
 use App\Http\Controllers\admin\PolicyController;
 use App\Http\Controllers\admin\FormController;
@@ -173,12 +171,6 @@ Route::middleware(['employee.auth'])->prefix('employee/')->group(function () {
             Route::get('/update-user-email-password', [AdminAuthController::class, 'userPassword'])->name('admin.user.password.index');
             Route::post('/update-user-password-confirm', [AdminAuthController::class, 'updateUserPassword'])->name('admin.user.password.update');
             Route::post('/update-user-email-confirm', [AdminAuthController::class, 'updateUserEmail'])->name('admin.user.email.update');
-            Route::controller(WorkingDayController::class)->group(function (){
-                Route::get('/working-day','index')->name('admin.workingDay.index');
-                Route::post('/working-day-store','store')->name('admin.workingDay.store');
-                Route::put('/working-day-update/{id}','update')->name('admin.workingDay.update');
-                Route::put('/working-day-destroy/{id}','destroy')->name('admin.workingDay.destroy');
-            });
             Route::controller(PolicyController::class)->group(function (){
                 Route::get('/policies','index')->name('admin.policy.index');
                 Route::post('/policy-store','store')->name('admin.policy.store');
@@ -228,7 +220,7 @@ Route::middleware(['employee.auth'])->prefix('employee/')->group(function () {
                 Route::get('/leave-request-print/{id}', 'employeeLeaveRequestPrint')->name('employee.leave.request.print');
             });
             Route::controller(NoticeController::class)->group(function (){
-                Route::get('/notices-show','employeeShowList')->name('employee.notice.list');
+                Route::get('/notifications-show','employeeShowList')->name('employee.notice.list');
             });
             Route::get('/salary', [SalaryController::class, 'employeeIndex'])->name('employee.salary.index');
             Route::controller(ExpenseController::class)->group(function (){
@@ -240,7 +232,18 @@ Route::middleware(['employee.auth'])->prefix('employee/')->group(function () {
 //        });
         ####################################### /* Employee Panel End Here  */###################################################################
     });
+    Route::post('/notifications/mark-all-read', function () {
+        auth()->user()->unreadNotifications->markAsRead();
+        return back();
+    })->name('notifications.read');
 
+    Route::post('/notifications/mark-as-read/{id}', function ($id) {
+        $notification = auth()->user()->notifications()->find($id);
+        if ($notification) {
+            $notification->markAsRead();
+        }
+        return redirect()->route('employee.notice.list');
+    })->name('notifications.markAsRead');
     Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
 
 //}

@@ -303,74 +303,148 @@
                         <div class="card flex-fill my-1">
                             <div class="card-body">
                                 <div class="attendance-list">
-                                    <div class="row p-3">
+                                    <div class="row">
                                         <div class="col-md-3 col-6 my-1" align="center">
                                             <div class="attendance-details bg-success p-2 rounded-2">
-                                                <h5 class="fw-bold text-white">{{$totalWorkingDay}}</h5>
+                                                <h5 class="fw-bold text-white">{{$totalWorkingDay ?? 0}}</h5>
                                                 <p class="fw-bold text-uppercase text-white" style="font-size: 13px">Working Days</p>
                                             </div>
                                         </div>
                                         <div class="col-md-3 col-6 my-1" align="center">
-                                            <div class="attendance-details bg-primary-gradient p-2 rounded-2">
-                                                <h5 class="fw-bold text-white">{{$totalAttend}}</h5>
-                                                <p class="fw-bold text-uppercase" style="font-size: 13px">Total Attend</p>
+                                            <div class="attendance-details bg-primary p-2 rounded-2">
+                                                <h5 class="fw-bold text-white">{{$totalAttend ?? 0}}</h5>
+                                                <p class="fw-bold text-uppercase text-white" style="font-size: 13px">Total Attend</p>
                                             </div>
                                         </div>
                                         <div class="col-md-3 col-6 my-1" align="center">
-                                            <div class="attendance-details bg-primary p-2 rounded-2">
-                                                <h5 class="fw-bold text-white">{{ $totalWorkingDay - $totalAttend }}</h5>
+                                            <div class="attendance-details p-2 rounded-2" style="background-color: #98427e">
+                                                <h5 class="fw-bold text-white">{{$totalLate ?? 0}}</h5>
+                                                <p class="fw-bold text-uppercase text-white" style="font-size: 13px">Total Late</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 col-6 my-1" align="center">
+                                            <div class="attendance-details bg-primary-gradient p-2 rounded-2">
+                                                <h5 class="fw-bold text-white">{{ $totalAbsent ?? 0 }}</h5>
                                                 <p class="fw-bold text-uppercase text-white" style="font-size: 13px">Total Absent</p>
                                             </div>
                                         </div>
                                         <div class="col-md-3 col-6 my-1" align="center">
                                             <div class="attendance-details bg-dark-defualt p-2 rounded-2">
-                                                <h5 class="fw-bold text-white">{{ $totalHolidays }}</h5>
+                                                <h5 class="fw-bold text-white">{{ $totalHolidays  ?? 0 }}</h5>
                                                 <p class="fw-bold text-uppercase text-white" style="font-size: 13px">Holidays</p>
                                             </div>
                                         </div>
                                         <div class="col-md-3 col-6 my-1" align="center">
                                             <div class="attendance-details p-2 rounded-2" style="background-color: blue">
-                                                <h5 class="fw-bold text-white">{{ $leave->sick + $leave->casual }}</h5>
+                                                <h5 class="fw-bold text-white">{{ ($leave->sick + $leave->casual) ?? 0 }}</h5>
                                                 <p class="fw-bold text-uppercase text-white" style="font-size: 13px">Total Leave</p>
                                             </div>
                                         </div>
                                         <div class="col-md-3 col-6 my-1" align="center">
                                             <div class="attendance-details p-2 rounded-2" style="background-color: orangered">
-                                                <h5 class="fw-bold text-white">{{ $leave->sick_spent + $leave->casual_spent }}</h5>
+                                                <h5 class="fw-bold text-white">{{ ($leave->sick_spent + $leave->casual_spent) ?? 0 }}</h5>
                                                 <p class="fw-bold text-uppercase text-white" style="font-size: 13px">Leaves Taken</p>
                                             </div>
                                         </div>
                                         <div class="col-md-3 col-6 my-1" align="center">
                                             <div class="attendance-details p-2 rounded-2" style="background-color: #006b60">
-                                                <h5 class="fw-bold text-white">{{ $leave->sick_left + $leave->casual_left }}</h5>
+                                                <h5 class="fw-bold text-white">{{ ($leave->sick_left + $leave->casual_left) ?? 0 }}</h5>
                                                 <p class="fw-bold text-uppercase text-white" style="font-size: 13px">Leaves Left</p>
                                             </div>
                                         </div>
                                         <div class="col-md-3 col-6 my-1" align="center">
                                             <div class="attendance-details p-2 rounded-2" style="background-color: #990055">
-                                                <h5 class="fw-bold text-white">{{$leaveBalance->half_day_total}}</h5>
+                                                <h5 class="fw-bold text-white">{{ $leaveBalance->half_day_total ?? 0}}</h5>
                                                 <p class="fw-bold text-uppercase text-white" style="font-size: 13px">Half Day</p>
                                             </div>
                                         </div>
                                         <div class="col-md-3 col-6 my-1" align="center">
-                                            <div class="attendance-details p-2 rounded-2" style="background-color: olivedrab">
-                                                <h5 class="fw-bold text-white">{{$leaveBalance->left_total}}</h5>
-                                                <p class="fw-bold text-uppercase text-white" style="font-size: 13px">Left</p>
+                                            <div class="attendance-details p-2 rounded-2" style="background-color: #D63B38">
+                                                <h5 class="fw-bold text-white">{{ $leaveBalance->spent_total ?? 0}}</h5>
+                                                <p class="fw-bold text-uppercase text-white" style="font-size: 13px">Half Day Spent</p>
                                             </div>
                                         </div>
                                         <div class="col-md-3 col-6 my-1" align="center">
-                                            <div class="attendance-details p-2 rounded-2" style="background-color: #146c43">
-                                                <h5 class="fw-bold text-white">{{$totalAssets}}</h5>
+                                            <div class="attendance-details p-2 rounded-2" style="background-color: olivedrab">
+                                                <h5 class="fw-bold text-white">{{$leaveBalance->left_total ?? 0}}</h5>
+                                                <p class="fw-bold text-uppercase text-white" style="font-size: 13px">Half Day Left</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 col-6 my-1" align="center">
+                                            <div class="attendance-details p-2 rounded-2" style="background-color: #444444">
+                                                <h5 class="fw-bold text-white">{{ $totalAssets->count() ?? 0}}</h5>
                                                 <p class="fw-bold text-uppercase text-white" style="font-size: 13px">Total Asset</p>
                                             </div>
                                         </div>
-
-
+                                        <div class="col-md-3 col-6 my-1" align="center">
+                                            <div class="attendance-details p-2 rounded-2" style="background-color: #3788d8">
+                                                <h5 class="fw-bold text-white">{{$totalAssets->sum('value') ??  0}}</h5>
+                                                <p class="fw-bold text-uppercase text-white" style="font-size: 13px">Asset Value</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 col-6 my-1" align="center">
+                                            <div class="attendance-details p-2 rounded-2" style="background-color: #7b5e3e">
+                                                <h5 class="fw-bold text-white">{{$totalAdvanceAmount ??  0}}</h5>
+                                                <p class="fw-bold text-uppercase text-white" style="font-size: 13px">Advance Money</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 col-6 my-1" align="center">
+                                            <div class="attendance-details p-2 rounded-2" style="background-color: #021e16">
+                                                <h5 class="fw-bold text-white">{{$totalMoneyAmount ??  0}}</h5>
+                                                <p class="fw-bold text-uppercase text-white" style="font-size: 13px">Money Receipt</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 col-6 my-1" align="center">
+                                            <div class="attendance-details p-2 rounded-2" style="background-color: #6c757d">
+                                                <h5 class="fw-bold text-white">{{$totalPayment ??  0}}</h5>
+                                                <p class="fw-bold text-uppercase text-white" style="font-size: 13px">Payment</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 col-6 my-1" align="center">
+                                            <div class="attendance-details p-2 rounded-2" style="background-color: #523e02">
+                                                <h5 class="fw-bold text-white">
+                                                    @if($totalMoneyAmount < ($totalAdvanceAmount + $totalPayment))
+                                                        {{ $TOTaldue = str_replace('-','', (($totalAdvanceAmount + $totalPayment) - $totalMoneyAmount)) }}
+                                                    @else
+                                                        {{ $TOTaldue = 0 }}
+                                                    @endif
+                                                </h5>
+                                                <p class="fw-bold text-uppercase text-white" style="font-size: 13px">Due</p>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 col-6 my-1" align="center">
+                                            <div class="attendance-details p-2 rounded-2" style="background-color: #033b3a">
+                                                <h5 class="fw-bold text-white">
+                                                    @php
+                                                        if($totalMoneyAmount > ($totalAdvanceAmount + $totalPayment)){
+                                                            $t = $totalMoneyAmount - ($totalAdvanceAmount + $totalPayment );
+                                                            }
+                                                            else{
+                                                                $t = 0;
+                                                            }
+                                                    @endphp
+                                                    {{ str_replace('-','', ($t)) }}
+                                                </h5>
+                                                <p class="fw-bold text-uppercase text-white" style="font-size: 13px">Receivable</p>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="view-attendance">
-                                    <a href="{{route('employee.leave')}}" class="btn btn-primary">
+                                <div class="my-2">
+                                    <a href="{{route('employee.attendance.list')}}" class="btn text-white bg-success">
+                                        Attendance <i class="fa fa-arrow-right"></i>
+                                    </a>
+                                    <a href="{{route('employee.leave')}}" class="btn text-white" style="background-color: #990055">
                                         Apply Leave <i class="fa fa-arrow-right"></i>
+                                    </a>
+                                    <a href="{{route('employee.advance.money.index')}}" class="btn text-white" style="background-color: #006b60">
+                                        Apply Advance Money <i class="fa fa-arrow-right"></i>
+                                    </a>
+                                    <a href="{{route('employee.holiday.index')}}" class="btn text-white  bg-dark-defualt">
+                                        Holidays <i class="fa fa-arrow-right"></i>
+                                    </a>
+                                    <a href="{{route('employee.profile.details')}}" class="btn text-white btn-secondary">
+                                        Profile <i class="fa fa-arrow-right"></i>
                                     </a>
                                 </div>
                             </div>

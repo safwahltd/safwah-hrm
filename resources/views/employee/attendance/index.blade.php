@@ -4,7 +4,7 @@
     <div class="row align-items-center">
         <div class="border-0 mb-4">
             <div class="card-header py-3 no-bg bg-transparent d-flex align-items-center px-0 justify-content-between border-bottom flex-wrap">
-                <h3 class="fw-bold mb-0 text-white">Attendance Management</h3>
+                <h3 class="fw-bold mb-0 text-white">My Attendance</h3>
             </div>
         </div>
     </div>
@@ -18,6 +18,7 @@
                         <tr class="">
                             <th>No</th>
                             <th>Date</th>
+                            <th>Working Day</th>
                             <th>Attend</th>
                             <th>Late</th>
                             <th>Absent</th>
@@ -29,6 +30,7 @@
                             <tr>
                                 <td><span class="fw-bold">{{$loop->iteration}}</span></td>
                                 <td align="center">{{ date('F', mktime(0, 0, 0, $attendance->month, 1)) }} , {{ $attendance->year }}</td>
+                                <td class="text-center">{{ $attendance->working_day ?? '-' }}</td>
                                 <td class="text-center">{{ $attendance->attend ?? '-' }}</td>
                                 <td class="text-center">{{ $attendance->late ?? '-' }}</td>
                                 <td align="center">{{ $attendance->absent ?? '-' }}</td>

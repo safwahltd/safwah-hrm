@@ -137,21 +137,21 @@
 
                                         <tr>
                                             <td style="text-transform: uppercase"><small class="fw-bold" style="font-weight: bold">NAME </small></td>
-                                            <td style="text-transform: uppercase"><small> {{$salary->user->name}}</small></td>
+                                            <td style="text-transform: uppercase"><small> {{$salary->user->name ?? '-'}}</small></td>
                                             <td style="text-transform: uppercase"><small style="font-weight: bold"> DESIGNATION</small></td>
-                                            <td style="text-transform: uppercase"><small> {{$salary->user->userInfo->designations->name}}</small></td>
+                                            <td style="text-transform: uppercase"><small> {{$salary->user->userInfo->designations->name ?? '-'}}</small></td>
                                         </tr>
                                         <tr>
                                             <td><small class="fw-bold" style="font-weight: bold">ID</small></td>
-                                            <td><small> {{$salary->user->userInfo->employee_id}}</small></td>
+                                            <td><small> {{$salary->user->userInfo->employee_id ?? '-'}}</small></td>
                                             <td><small class="fw-bold" style="font-weight: bold">DEPARTMENT</small></td>
-                                            <td style="text-transform: uppercase"><small> {{$salary->user->userInfo->designations->department->department_name}}</small></td>
+                                            <td style="text-transform: uppercase"><small> {{$salary->user->userInfo->designations->department->department_name ?? '-'}}</small></td>
                                         </tr>
                                         <tr>
                                             <td><small class="fw-bold" style="font-weight: bold">TOTAL ATTENDENCE</small></td>
-                                            <td><small> {{ $totalAttendance }}</small></td>
+                                            <td><small> {{ $totalAttendance->attend ?? 0 }}</small></td>
                                             <td><small class="fw-bold" style="font-weight: bold">TOTAL WORKING DAY</small></td>
-                                            <td><small> {{$workingDay}} </small></td>
+                                            <td><small> {{ $totalAttendance->working_day ?? 0 }} </small></td>
                                         </tr>
                                         </tbody>
                                     </table>
@@ -167,31 +167,31 @@
                                                 <table style="border-collapse: collapse">
                                                     <tr style="border-top: none;  border-collapse: collapse">
                                                         <td style="width: 150px; border-top: none;">BASIC SALARY</td>
-                                                        <td align="center" style="width: 70px; border-top: none;">{{$salary->basic_salary}}</td>
+                                                        <td align="center" style="width: 70px; border-top: none;">{{$salary->basic_salary ?? 0}}</td>
                                                     </tr>
                                                     <tr>
                                                         <td>HOUSE RENT</td>
-                                                        <td align="center">{{$salary->house_rent}}</td>
+                                                        <td align="center">{{$salary->house_rent ?? 0}}</td>
                                                     </tr>
                                                     <tr>
                                                         <td>MEDICAL ALLOWANCE</td>
-                                                        <td align="center">{{$salary->medical_allowance}}</td>
+                                                        <td align="center">{{$salary->medical_allowance ?? 0}}</td>
                                                     </tr>
                                                     <tr>
                                                         <td>CONVEYANCE ALLOWANCE</td>
-                                                        <td align="center">{{$salary->conveyance_allowance}}</td>
+                                                        <td align="center">{{$salary->conveyance_allowance ?? 0}}</td>
                                                     </tr>
                                                     <tr>
                                                         <td>OTHERS</td>
-                                                        <td align="center">{{$salary->others}}</td>
+                                                        <td align="center">{{$salary->others ?? 0}}</td>
                                                     </tr>
                                                     <tr>
                                                         <td>MOBILE ALLOWANCE</td>
-                                                        <td align="center">{{$salary->mobile_allowance}}</td>
+                                                        <td align="center">{{$salary->mobile_allowance ?? 0}}</td>
                                                     </tr>
                                                     <tr>
-                                                        <td>BONUS @if($salary->bonus_note) <span style="text-transform: uppercase">({{$salary->bonus_note}})</span> @endif</td>
-                                                        <td align="center">{{$salary->bonus}}</td>
+                                                        <td>BONUS @if($salary->bonus_note) <span style="text-transform: uppercase">({{$salary->bonus_note ?? '-'}})</span> @endif</td>
+                                                        <td align="center">{{$salary->bonus ?? 0}}</td>
                                                     </tr>
                                                     @if($salary->payment != '')
                                                         @php
@@ -211,15 +211,15 @@
                                                 <table style="border-collapse: collapse;">
                                                     <tr>
                                                         <td style="width: 220px; border: none; border-right: 1px solid black ">MEAL DEDUCTION</td>
-                                                        <td style="border: none; border-collapse: collapse;" align="center">{{$salary->meal_deduction}}</td>
+                                                        <td style="border: none; border-collapse: collapse;" align="center">{{$salary->meal_deduction ?? 0}}</td>
                                                     </tr>
                                                     <tr>
                                                         <td style="border-left: none; ">INCOME TAX</td>
-                                                        <td style="border-right: none;" align="center">{{$salary->income_tax}}</td>
+                                                        <td style="border-right: none;" align="center">{{$salary->income_tax ?? 0}}</td>
                                                     </tr>
                                                     <tr>
                                                         <td style="border-left: none; ">OTHER DEDUCTION</td>
-                                                        <td style="border-right: none;" align="center">{{$salary->other_deduction}}</td>
+                                                        <td style="border-right: none;" align="center">{{$salary->other_deduction ?? 0}}</td>
                                                     </tr>
                                                     <tr>
                                                         <td style="border-left: none; ">ATTENDANCE DEDUCTION</td>
@@ -241,7 +241,7 @@
                                                 </table>
                                             </td>
                                             <td style="" align="center">
-                                                <span style="font-weight: bold">{{$net}}</span>
+                                                <span style="font-weight: bold">{{$net ?? 0}}</span>
                                             </td>
                                         </tr>
                                         <tr align="center">

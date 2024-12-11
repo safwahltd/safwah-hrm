@@ -81,7 +81,7 @@
                                             @method('PUT')
                                             <button type="submit" onclick="return confirm('are you sure to delete ? ')" class="btn btn-outline-secondary mx-1 deleterow"><i class="icofont-ui-delete text-danger"></i></button>
                                         </form>
-                                        <a href="{{route('admin.salary.payment.download',$payment->salary->id)}}"  class="btn btn-outline-secondary"><i class="icofont-download text-success"></i></a>
+                                        <a href="{{route('admin.salary.payment.download',$payment->salary->id)}}" target="_blank" class="btn btn-outline-secondary"><i class="icofont-download text-success"></i></a>
                                     </div>
                                 </td>
                             </tr>
@@ -213,10 +213,7 @@
                                                                 <div class="col-md-6">
                                                                     <p><small class="fw-bold" style="font-weight: bold">ID </small> : <small> {{$payment->salary->user->userInfo->employee_id}}</small></p>
                                                                     <p><small class="fw-bold" style="font-weight: bold">TOTAL ATTENDENCE </small> : <small> {{$attendancesForDay->sum('attend')}}</small></p>
-                                                                    @php
-                                                                        $workingDaysRecord = \App\Models\WorkingDay::where('year', $payment->salary->year)->where('month', $payment->salary->month)->first();
-                                                                    @endphp
-                                                                    <p><small class="fw-bold" style="font-weight: bold">TOTAL WORKING DAY </small> : <small> {{$workingDaysRecord->working_day ?? 0}} </small></p>
+                                                                    <p><small class="fw-bold" style="font-weight: bold">TOTAL WORKING DAY </small> : <small>  {{$attendancesForDay->sum('working_day')}} </small></p>
                                                                 </div>
 
                                                             </div>
@@ -316,7 +313,7 @@
         <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title  fw-bold" id="depaddLabel"> Salary Add</h5>
+                    <h5 class="modal-title  fw-bold" id="depaddLabel"> Salary Payment Add</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 
@@ -352,12 +349,12 @@
                                     <hr>
                                     <p><strong>Total Pay:</strong> <span id="total_pay"></span></p>
                                     <p><strong>Total Deduction:</strong> <span id="deductions"></span></p>
-                                    <p><strong>Net Pay:</strong> <span id="total_payable"></span></p>
+                                    <p><strong>Net Pay:</strong> <input name="netPay" class="border-0" value="" readonly id="total_payable"></p>
                                 </div>
 
                                 <div class="col-sm-6">
                                     <label for="" class="form-label">Paid Amount</label>
-                                    <input type="number" name="paid_amount" class="form-control" id="" placeholder="example : 10000">
+                                    <input type="number" name="paid_amount" min="0" value="" max="" class="form-control" id="PaidAmountAdd" placeholder="example : 10000">
                                 </div>
                                 <div class="col-sm-6">
                                     <label for="" class="form-label">Payment Date</label>
@@ -406,7 +403,9 @@
                             $('#total_pay').text(allowance ? allowance : 0.00);
                             $('#deductions').text(deduction ? deduction : 0.00);
                             var totalPayable = (parseFloat(allowance) - parseFloat(deduction)).toFixed(2);
-                            $('#total_payable').text(totalPayable);
+                            $('#total_payable').val(totalPayable);
+                            // $('#PaidAmountAdd').max(totalPayable);
+                            $('#PaidAmountAdd').val(totalPayable);
                         },
                         error: function() {
 

@@ -6,41 +6,64 @@
             <div class="h-right d-flex align-items-center mr-5 mr-lg-0 order-1">
                 <div class="dropdown notifications">
                     <a class="nav-link dropdown-toggle pulse" href="#" role="button" data-bs-toggle="dropdown">
-                        <i class="icofont-alarm  text-white fs-5"></i><sup class="text-white m-0 fw-bold bg-success rounded-circle p-1">{{ $noticeCount ?? '0' }}</sup>
+                        <i class="icofont-alarm  text-white fs-5"></i><sup class="text-white m-0 fw-bold bg-success rounded-circle p-1">{{ \Illuminate\Support\Facades\Auth::user()->unreadNotifications->count() ?? '0' }}</sup>
                         <span class="pulse-ring text-white"></span>
                     </a>
                     <div id="NotificationsDiv" class="dropdown-menu rounded-lg shadow border-0 dropdown-animation dropdown-menu-sm-end p-0 m-0">
                         <div class="card border-0 w380">
                             <div class="card-header border-0 p-3">
                                 <h5 class="mb-0 font-weight-light d-flex justify-content-between">
-                                    <span>Notices</span>
+                                    <span>Notifications</span>
                                 </h5>
                             </div>
                             <div class="tab-content card-body">
                                 <div class="tab-pane fade show active">
                                     <ul class="list-unstyled list mb-0">
-                                        @if($notices->count())
-                                            @foreach($notices as $key => $notice)
-                                            <li class="py-2 mb-1 border-bottom">
-                                                <a href="{{route('employee.notice.list')}}#notice{{$key}}" class="d-flex">
-                                                    <img class="avatar rounded-circle" src="{{asset('/')}}admin/assets/images/xs/avatar1.jpg" alt="">
-                                                    <div class="flex-fill ms-2">
-                                                        <strong></strong>
-                                                        <p class="d-flex justify-content-between mb-0 ">
-                                                            <span class="font-weight-bold">{{ $notice->title }}</span> <small>{{ $notice->created_at->diffForHumans() }}</small>
-                                                            <p>{{ \Illuminate\Support\Str::limit($notice->content, 70) }}</p>
-                                                        </p>
-                                                    </div>
-                                                </a>
-                                            </li>
+                                        @if(\Illuminate\Support\Facades\Auth::user()->unreadNotifications->count())
+                                            @foreach (\Illuminate\Support\Facades\Auth::user()->unreadNotifications as $key => $notification)
+                                                <li class="py-2 mb-1 border-bottom">
+                                                    @if(isset($notification->data['data']['url']))
+                                                        <a href="{{ $notification->data['data']['url'] }}" class="d-flex">
+                                                    @else
+                                                        <a href="{{route('employee.notice.list')}}#notice{{$key}}" class="d-flex">
+                                                    @endif
+                                                        <div class="flex-fill ms-2 {{ $notification->read_at == null ? '':'text-muted' }} ">
+
+                                                            <p class="d-flex justify-content-between mb-0 ">
+                                                                @if($notification->data['type'])
+                                                                <span class="font-weight-bold">{{ ucwords(str_replace('_', ' ', $notification->data['type'])) }} </span>
+                                                                @endif
+                                                                <small>{{ $notification->created_at->diffForHumans() }}</small>
+                                                            </p>
+
+                                                            <p>{{ ucfirst(str_replace('_', ' ', $notification->data['message'])) }}</p>
+
+                                                        </div>
+                                                    </a>
+                                                </li>
                                             @endforeach
                                         @else
-                                            <a class="dropdown-item" href="#">No new notices</a>
+                                            <a class="dropdown-item" href="#">No New Notification</a>
                                         @endif
                                     </ul>
                                 </div>
                             </div>
-                            <a class="card-footer text-center border-top-0" href="{{route('employee.notice.list')}}"> View All Notices</a>
+                            <div class="row {{\Illuminate\Support\Facades\Auth::user()->unreadNotifications->count() ? '':'justify-content-center'}}">
+                                @if(\Illuminate\Support\Facades\Auth::user()->unreadNotifications->count())
+                                <div class="col-6 my-2">
+                                    <form action="{{ route('notifications.read') }}" method="POST">
+                                        @csrf
+                                        <button class="card-footer text-center border-0" type="submit">Mark All As Read</button>
+                                    </form>
+                                </div>
+                                @endif
+                                <div class="col-6 my-2">
+                                    <form action="{{route('employee.notice.list')}}" method="get">
+                                        @csrf
+                                        <button class="card-footer text-center border-0" type="submit">View All Notifications</button>
+                                    </form>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

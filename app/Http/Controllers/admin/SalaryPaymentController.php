@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\admin;
 
+use App\Events\EmployeeNotificationEvent;
+use App\Events\GeneralNotificationEvent;
 use App\Http\Controllers\Controller;
 use App\Models\Attendance;
 use App\Models\Salary;
@@ -60,6 +62,7 @@ class SalaryPaymentController extends Controller
     }
     public function store(Request $request)
     {
+//        return $request;
         if(auth()->user()->hasPermission('admin salary payment store')){
             try {
                 $validate = Validator::make($request->all(), [
@@ -73,16 +76,44 @@ class SalaryPaymentController extends Controller
                     toastr()->error($validate->messages());
                     return back();
                 }
-                $user_id = Salary::find($request->salary_id);
-                $payment = new SalaryPayment();
-                $payment->user_id = $user_id->user_id;
-                $payment->salary_id = $request->salary_id;
-                $payment->paid_amount = $request->paid_amount;
-                $payment->payment_date = $request->payment_date;
-                $payment->payment_method = $request->payment_method;
-                $payment->payment_reference = $request->payment_reference;
-                $payment->log_id = auth()->user()->id;
-                $payment->saveOrFail();
+                $salary = Salary::find($request->salary_id);
+                if ($request->paid_amount <= $request->netPay){
+                    $payment = new SalaryPayment();
+                    $payment->user_id = $salary->user_id;
+                    $payment->salary_id = $request->salary_id;
+                    $payment->paid_amount = $request->paid_amount;
+                    $payment->payment_date = $request->payment_date;
+                    $payment->payment_method = $request->payment_method;
+                    $payment->payment_reference = $request->payment_reference;
+                    $payment->log_id = auth()->user()->id;
+                    $payment->saveOrFail();
+                    $user = User::find($salary->user_id);
+                    // Trigger event
+                    event(new GeneralNotificationEvent(
+                        'new_salary_paid',
+                        $user->name.' ৳'.$payment->paid_amount.' Salary Of '.date('F', mktime(0, 0, 0, $salary->month, 1)).', '.$salary->year.' Is Paid',
+                        [
+                            'content' => $user->name.' ৳'.$payment->paid_amount.' Salary Of '.date('F', mktime(0, 0, 0, $salary->month, 1)).', '.$salary->year.' Is Paid',
+                            'user_id' => auth()->user()->id,
+                            'url' => route('admin.salary.payment.index'),
+                        ]
+                    ));
+                    event(new EmployeeNotificationEvent(
+                        '',
+                        'Your Salary Of '.date('F', mktime(0, 0, 0, $salary->month, 1)).', '.$salary->year.' Is Paid.',
+                        $payment->user_id,
+                        [
+                            'content' => 'Your Salary Of '.date('F', mktime(0, 0, 0, $salary->month, 1)).', '.$salary->year.' ৳ '.$payment->paid_amount.' Is Paid',
+                            'user_id' => auth()->user()->id,
+                            'url' => route('employee.salary.index'),
+                        ]
+                    ));
+                }
+                else{
+                    toastr()->error('Paid Amount Can Not Greater Than Net Pay Amount.');
+                    return back();
+                }
+
                 toastr()->success('Salary Payment Successfully.');
                 return back();
             }
@@ -184,6 +215,6 @@ class SalaryPaymentController extends Controller
 //        return view('admin.salary.pdf',compact('salary','totalAttendance','net','netWords','workingDay','salaryPaymentInputs','salaryDeductInputs'));
         $pdf = Pdf::loadView('admin.salary.pdf', compact('salary','totalAttendance','net','netWords','workingDay','salaryPaymentInputs','salaryDeductInputs'));
         $pdf->setPaper('A4', 'portrait');
-        return $pdf->download($salary->user->userInfo->employee_id.'_salary_slip.pdf');
+        return $pdf->stream($salary->user->userInfo->employee_id.'_salary_slip.pdf');
     }
 }

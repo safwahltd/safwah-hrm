@@ -324,12 +324,11 @@ class SalaryController extends Controller
     }
     public function download($id){
         $salary = Salary::find($id);
-        $totalAttendance = collect(Attendance::where('user_id', $salary->user_id)
+        $totalAttendance = Attendance::where('user_id', $salary->user_id)
             ->where('month', $salary->month)
             ->where('year', $salary->year)
-            ->get());
+            ->first();
 
-        $totalAttendance = $totalAttendance->sum('attend');
         /* payment dynamic column */
         $salaryPaymentInputs = SalarySetting::where('status',1)->where('type','payment')->get();
         $pay = 0 ;
@@ -352,11 +351,10 @@ class SalaryController extends Controller
 
         $net = ($salary->basic_salary + $salary->house_rent + $salary->medical_allowance + $salary->conveyance_allowance + $salary->others + $salary->mobile_allowance + $salary->bonus + $pay) - ($salary->meal_deduction + $salary->income_tax + $salary->other_deduction + $salary->attendance_deduction + $deduct);
         $netWords = $this->numberToWords( $net );
-        $workingDay = WorkingDay::where('month',$salary->month)->where('year',$salary->year)->first()->working_day ?? 0;
 //        return view('admin.salary.pdf',compact('salary','totalAttendance','net','netWords','workingDay','salaryPaymentInputs','salaryDeductInputs'));
-        $pdf = Pdf::loadView('admin.salary.pdf', compact('salary','totalAttendance','net','netWords','workingDay','salaryPaymentInputs','salaryDeductInputs'));
+        $pdf = Pdf::loadView('admin.salary.pdf', compact('salary','totalAttendance','net','netWords','salaryPaymentInputs','salaryDeductInputs'));
         $pdf->setPaper('A4', 'portrait');
-        return $pdf->download($salary->user->userInfo->employee_id.'_salary_slip.pdf');
+        return $pdf->stream($salary->user->userInfo->employee_id.'_salary_slip.pdf');
     }
     public function employeeIndex(Request $request){
 //        if(auth()->user()->hasPermission('admin salary payment index')){
