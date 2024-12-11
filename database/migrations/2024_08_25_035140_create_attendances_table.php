@@ -16,6 +16,7 @@ return new class extends Migration
             $table->unsignedBigInteger('user_id');
             $table->integer('month')->nullable();
             $table->integer('year')->nullable();
+            $table->integer('working_day')->nullable();
             $table->integer('attend')->nullable();
             $table->integer('late')->nullable();
             $table->integer('absent')->nullable();

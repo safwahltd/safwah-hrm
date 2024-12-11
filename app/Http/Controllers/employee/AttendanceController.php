@@ -41,6 +41,7 @@ class AttendanceController extends Controller
                     'user_id' => 'required',
                     'month' => 'required',
                     'year' => 'required',
+                    'working_day' => 'required',
                     'attend' => 'required',
                     'late' => 'required',
                     'absent' => 'required',
@@ -56,6 +57,7 @@ class AttendanceController extends Controller
                     $attendance->user_id = $request->user_id;
                     $attendance->month = $request->month;
                     $attendance->year = $request->year;
+                    $attendance->working_day = $request->working_day;
                     $attendance->attend = $request->attend;
                     $attendance->late = $request->late;
                     $attendance->absent = $request->absent;
@@ -96,6 +98,7 @@ class AttendanceController extends Controller
                 $validate = Validator::make($request->all(),[
                     'month' => 'required',
                     'year' => 'required',
+                    'working_day' => 'required',
                     'attend' => 'required',
                     'late' => 'required',
                     'absent' => 'required',
@@ -110,6 +113,7 @@ class AttendanceController extends Controller
                     $attendance->user_id = $attendance->user_id;
                     $attendance->month = $request->month;
                     $attendance->year = $request->year;
+                    $attendance->working_day = $request->working_day;
                     $attendance->attend = $request->attend;
                     $attendance->late = $request->late;
                     $attendance->absent = $request->absent;

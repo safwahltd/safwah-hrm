@@ -87,7 +87,7 @@
             @endif
             @if(auth()->user()->hasPermission('admin notice index') || auth()->user()->hasPermission('asset index') || auth()->user()->hasPermission('admin daily report') || auth()->user()->hasPermission('admin leave report')
                     || auth()->user()->hasPermission('admin attendance report') || auth()->user()->hasPermission('admin salary report') || auth()->user()->hasPermission('admin expense report') || auth()->user()->hasPermission('admin asset report')
-                    || auth()->user()->hasPermission('admin leave management') || auth()->user()->hasPermission('admin workingDay index') || auth()->user()->hasPermission('admin policy index') || auth()->user()->hasPermission('admin form index')
+                    || auth()->user()->hasPermission('admin leave management') || auth()->user()->hasPermission('admin policy index') || auth()->user()->hasPermission('admin form index')
                     || auth()->user()->hasPermission('admin salary setting index'))
                 <li class="collapsed">
                     <a class="m-link" data-bs-toggle="collapse" data-bs-target="#tikit-Components" href="#"><i
@@ -98,7 +98,6 @@
                 {{ Request::route()->getName() == 'admin.notice.index' ? 'show':'' }}
                     {{ Request::route()->getName() == 'asset.index' ? 'show':'' }}
                     {{ Request::route()->getName() == 'admin.leave.management' ? 'show':'' }}
-                    {{ Request::route()->getName() == 'admin.workingDay.index' ? 'show':'' }}
                     {{ Request::route()->getName() == 'admin.policy.index' ? 'show':'' }}
                     {{ Request::route()->getName() == 'admin.form.index' ? 'show':'' }}
                     {{ Request::route()->getName() == 'admin.salary.setting.index' ? 'show':'' }}
@@ -114,9 +113,6 @@
                         @endif
                         @if(auth()->user()->hasPermission('asset index'))
                         <li><a class="ms-link {{ Request::route()->getName() == 'asset.index' ? 'active':'' }}" href="{{route('asset.index')}}"> <i class="icofont-contrast"></i> <span>Assets</span></a></li>
-                        @endif
-                        @if(auth()->user()->hasPermission('admin workingDay index'))
-                        <li><a class="ms-link {{ Request::route()->getName() == 'admin.workingDay.index' ? 'active':'' }}" href="{{route('admin.workingDay.index')}}"> <i class="icofont-address-book"></i> <span>Working Day</span></a></li>
                         @endif
                         @if(auth()->user()->hasPermission('admin leave management'))
                         <li><a class="ms-link {{ Request::route()->getName() == 'admin.leave.management' ? 'active':'' }}" href="{{route('admin.leave.management')}}"> <i class="icofont-leaf"></i> <span>Leave Management</span></a></li>

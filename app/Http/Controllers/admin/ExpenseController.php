@@ -2,12 +2,19 @@
 
 namespace App\Http\Controllers\admin;
 
+use App\Events\EmployeeNotificationEvent;
+use App\Events\GeneralNotificationEvent;
 use App\Models\Expense;
+use App\Models\Permission;
+use App\Models\RolePermission;
 use App\Models\User;
+use App\Models\UserRole;
+use App\Notifications\AdminNotification;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Validator;
 use Barryvdh\Snappy\Facades\SnappyPdf;
 use function Brick\Math\sum;
@@ -121,6 +128,93 @@ class ExpenseController extends Controller
                     $expense->received_date = Carbon::today()->toDateString();
                 }
                 $expense->save();
+
+                // Step 1: Find the permission ID for 'admin leave requests'
+                $permission = Permission::where('name', 'admin expense index')->first();
+                if ($permission){
+                    // Step 2: Find all role IDs that have this permission
+                    $roleIds = RolePermission::where('permission_id', $permission->id)->pluck('role_id');
+                    if ($roleIds){
+                        // Step 3: Find all users with roles associated with these role IDs
+                        $userIds = UserRole::whereIn('role_id', $roleIds)->pluck('user_id');
+                        $f = [$userIds,[$expense->user_id]];
+                        if ($userIds){
+                            $employees = User::whereIn('id',Arr::flatten($f))->get();
+                        }
+                    }
+                }
+
+                if ($expense->receipt_type == 'advance_money_receipt'){
+                    if ($expense->status == 0){
+                        $status = 'New Advance Money Request Created.';
+                    }
+                    if ($expense->status == 1){
+                        $status = 'New Advance Money Request Created & Approved.';
+                    }
+                    if ($expense->status == 2){
+                        $status = 'New Advance Money Request Created & Rejected.';
+                    }
+                    // Trigger event
+                    event(new GeneralNotificationEvent(
+                        'advance_money_request',
+                        $expense->advance_payment_type." ".$expense->amount,
+                        [
+                            'content' => $expense->reason,
+                            'user_id' => $expense->user_id,
+                            'url' => route('admin.expense.index'),
+                        ]
+                    ));
+                    // Trigger event
+                    foreach ($employees as $employee) {
+                        event(new EmployeeNotificationEvent(
+                            '',
+                            $status,
+                            $employee->id,
+                            [
+                                'content' => $expense->reason,
+                                'user_id' => auth()->user()->id,
+                                'url' => $employee->id == $expense->user_id ? route('employee.advance.money.index') : route('admin.expense.index'),
+                            ]
+                        ));
+                    }
+
+
+                }
+                elseif ($expense->receipt_type == 'money_receipt'){
+                    if ($expense->status == 0){
+                        $status = 'New Money Receipt Created.';
+                    }
+                    if ($expense->status == 1){
+                        $status = 'New Money Receipt Created & Approved.';
+                    }
+                    if ($expense->status == 2){
+                        $status = 'New Money Receipt Created & Rejected.';
+                    }
+
+                    // Trigger event
+                    event(new GeneralNotificationEvent(
+                        'money_receipt',
+                        $expense->advance_payment_type." ".$expense->amount,
+                        [
+                            'content' => $expense->reason,
+                            'user_id' => $expense->user_id,
+                            'url' => route('admin.expense.index'),
+                        ]
+                    ));
+                    // Trigger event
+                    foreach ($employees as $employee) {
+                        event(new EmployeeNotificationEvent(
+                            '',
+                            $status,
+                            $employee->id,
+                            [
+                                'content' => $expense->reason,
+                                'user_id' => auth()->user()->id,
+                                'url' => $employee->id == $expense->user_id ? route('employee.advance.money.index') : route('admin.expense.index'),
+                            ]
+                        ));
+                    }
+                }
                 toastr()->success('Expense Create Successfully.');
                 return redirect()->route('admin.expense.index');
 
@@ -216,6 +310,43 @@ class ExpenseController extends Controller
                     $expense->received_date = Carbon::today()->toDateString();
                 }
                 $expense->save();
+
+                if ($expense->receipt_type == 'advance_money_receipt'){
+                    if ($expense->status == 1){
+                        $status = 'Your Advance Money Request Approved.';
+                    }
+                    if ($expense->status == 2){
+                        $status = 'Your Advance Money Request Rejected.';
+                    }
+                    event(new EmployeeNotificationEvent(
+                        '',
+                        $status,
+                        $expense->user_id,
+                        [
+                            'content' => $expense->reason,
+                            'user_id' => auth()->user()->id,
+                            'url' => route('employee.advance.money.index'),
+                        ]
+                    ));
+                }
+                elseif ($expense->receipt_type == 'money_receipt'){
+                    if ($expense->status == 1){
+                        $status = 'Your Money Receipt Approved.';
+                    }
+                    if ($expense->status == 2){
+                        $status = 'Your Money Receipt Rejected.';
+                    }
+                    event(new EmployeeNotificationEvent(
+                        '',
+                        $status,
+                        $expense->user_id,
+                        [
+                            'content' => $expense->reason,
+                            'user_id' => auth()->user()->id,
+                            'url' => route('employee.advance.money.index'),
+                        ]
+                    ));
+                }
                 toastr()->success('Expense Update Successfully.');
                 return back();
             }
@@ -335,7 +466,7 @@ class ExpenseController extends Controller
     public function indexAdvance(){
         if(auth()->user()->hasPermission('employee advance money index')){
             try{
-                $expenses = Expense::latest()->where('soft_delete',0)->where('user_id',auth()->user()->id)->paginate(100);
+                $expenses = Expense::latest()->where('soft_delete',0)->where('user_id',auth()->user()->id)->get();
                 $totalAdvanceAmount = $expenses->where('status',1)->where('receipt_type', 'advance_money_receipt')->sum('amount');
                 $totalMoneyAmount = $expenses->where('status',1)->where('receipt_type', 'money_receipt')->sum('amount');
                 $totalPayment = $expenses->where('status',1)->where('receipt_type', 'money_receipt')->sum('payment');
@@ -369,6 +500,20 @@ class ExpenseController extends Controller
                     toastr()->error($validate->messages());
                     return back();
                 }
+                // Step 1: Find the permission ID for 'admin leave requests'
+                $permission = Permission::where('name', 'admin expense index')->first();
+                if ($permission){
+                    // Step 2: Find all role IDs that have this permission
+                    $roleIds = RolePermission::where('permission_id', $permission->id)->pluck('role_id');
+                    if ($roleIds){
+                        // Step 3: Find all users with roles associated with these role IDs
+                        $userIds = UserRole::whereIn('role_id', $roleIds)->pluck('user_id');
+                        if ($userIds){
+                            $employees = User::whereIn('id', $userIds)->get();
+                        }
+                    }
+                }
+
                 $expense = new Expense();
                 $expense->receipt_type = $request->receipt_type;
                 $expense->receipt_no = $request->receipt_no;
@@ -378,6 +523,31 @@ class ExpenseController extends Controller
                 $expense->reason = $request->reason;
                 $expense->amount = $request->amount;
                 $expense->save();
+
+                // Trigger event
+                event(new GeneralNotificationEvent(
+                    'advance_money_request',
+                    $expense->advance_payment_type." ".$expense->amount,
+                    [
+                        'content' => $expense->reason,
+                        'user_id' => $expense->user_id,
+                        'url' => route('admin.expense.index'),
+                    ]
+                ));
+                // Trigger event
+                foreach ($employees as $employee) {
+                    event(new EmployeeNotificationEvent(
+                        'advance_money_request',
+                        $expense->advance_payment_type." ".$expense->amount,
+                        $employee->id,
+                        [
+                            'content' => $expense->reason,
+                            'user_id' => $expense->user_id,
+                            'url' => route('admin.expense.index'),
+                        ]
+                    ));
+                }
+
                 toastr()->success('Advance Money Receipt Create Successfully.');
                 return redirect()->route('employee.advance.money.index');
             }

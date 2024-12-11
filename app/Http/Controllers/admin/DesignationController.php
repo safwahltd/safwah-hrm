@@ -46,21 +46,6 @@ class DesignationController extends Controller
                 $designation->status = $request->status;
                 $designation->save();
                 toastr()->success('Designation Added Success.');
-/*
-                $activityData = [
-                    'type' => 'Designation Update',
-                    'message' => 'Your designation has been updated to ' . $request->designation,
-                    'url' => '#',
-                ];
-                $user = User::find(auth()->user()->id);
-                if (!$user) {
-                    throw new Exception("User not found.");
-                }
-
-                if (!$user->id) {
-                    throw new Exception("User ID is null.");
-                }
-                $user->notify(new ActivityNotification($activityData));*/
                 return back();
             }
             catch (Exception $exception){

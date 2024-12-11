@@ -5,12 +5,74 @@
         <div class="border-0 mb-4">
             <div class="card-header py-3 no-bg bg-transparent d-flex align-items-center px-0 justify-content-between border-bottom flex-wrap">
                 <h3 class="fw-bold mb-0 text-white">Attendance Management</h3>
+                <div class="col-auto d-flex w-sm-100 mt-sm-0 mt-3">
+                    <a class="btn btn-primary form-control" data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+                        Add +
+                    </a>
+                </div>
             </div>
+
         </div>
     </div>
     <!-- Row end  -->
     <div class="row clearfix g-3">
-        <div class="col-sm-8">
+        <div class="collapse" id="collapseExample">
+            <div class="col-12 card">
+                <form class="p-4" action="{{route('admin.attendance.store')}}" method="post" enctype="multipart/form-data">
+                    @csrf
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-4 col-sm-6">
+                            <label for="user_idFull" class="form-label"> Employee  <span class="text-danger">*</span></label><br>
+                            <select class="form-control select2-example"  name="user_id" id="user_idFull" style="width: 100%;" required>
+                                @foreach($users as $user)
+                                    <option value="{{ $user->id }}">{{ $user->name }} <sub>({{ $user->userInfo->employee_id }})</sub></option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-md-2 col-sm-3 col-6">
+                            <label for="yearFullEdit" class="form-label">Month <span class="text-danger">*</span></label><br>
+                            <select class="form-control-sm" name="month" id="month" required>
+                                @for ($i = 1; $i <= 12; $i++)
+                                    <option value="{{ $i }}">{{ date('F', mktime(0, 0, 0, $i, 1)) }}</option>
+                                @endfor
+                            </select>
+                        </div>
+                        <div class="col-md-2 col-sm-3 col-6">
+                            <label for="yearFullEdit" class="form-label">Year <span class="text-danger">*</span></label><br>
+                            <select class="form-control-lg select2-example" name="year" id="yearFullEdit" required>
+                                @for ($i = date('Y'); $i >= 2022; $i--)
+                                    <option {{old('year') == $i ? 'selected':''}} value="{{ $i }}">{{ $i }}</option>
+                                @endfor
+                            </select>
+                        </div>
+                        <div class="col-sm-4 col-6">
+                            <label class="form-label">Working Day <span class="text-danger">*</span></label>
+                            <input type="number" min="0" name="working_day" class="form-control" value="{{old('working_day')}}" placeholder="Working Day" required>
+                        </div>
+                        <div class="col-sm-4 col-md-2 col-6">
+                            <label class="form-label">Attend <span class="text-danger">*</span></label>
+                            <input type="number" min="0" name="attend" class="form-control" value="{{old('attend')}}" placeholder="Attend Number" required>
+                        </div>
+                        <div class="col-sm-4 col-md-2 col-6">
+                            <label class="form-label">Late <span class="text-danger">*</span></label>
+                            <input type="number" min="0" name="late" class="form-control" value="{{old('late')}}" placeholder="Late Number" required>
+                        </div>
+                        <div class="col-sm-4 col-md-2 col-6">
+                            <label class="form-label">Absent <span class="text-danger">*</span></label>
+                            <input type="number" min="0" name="absent" class="form-control" value="{{old('absent')}}" placeholder="Absent Number" required>
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="form-label">Attachment </label>
+                            <input type="file" min="0" name="attachment" class="form-control" value="{{old('attachment')}}">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="col-12">
             <div class="card mb-3">
                 <div class="card-body table-responsive bg-dark-subtle">
                     <table id="basic-datatable" class="table table-bordered text-nowrap table-secondary key-buttons border-bottom w-100" style="font-size: 12px;">
@@ -19,11 +81,12 @@
                             <th>No</th>
                             <th>Name <sub>(ID)</sub> </th>
                             <th>Date</th>
-                            <th align="center">Attend</th>
-                            <th align="center">Late</th>
-                            <th align="center">Absent</th>
-                            <th align="center">Attachment</th>
-                            <th align="center">Action</th>
+                            <th>Working Day</th>
+                            <th>Attend</th>
+                            <th>Late</th>
+                            <th>Absent</th>
+                            <th>Attachment</th>
+                            <th>Action</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -32,12 +95,13 @@
                                 <td><span class="fw-bold">{{$loop->iteration}}</span></td>
                                 <td>{{ $attendance->user->name }}<sub>({{ $attendance->user->userInfo->employee_id }})</sub> </td>
                                 <td align="center">{{ date('F', mktime(0, 0, 0, $attendance->month, 1)) }} , {{ $attendance->year }}</td>
+                                <td class="text-center">{{ $attendance->working_day ?? '-' }}</td>
                                 <td class="text-center">{{ $attendance->attend ?? '-' }}</td>
                                 <td class="text-center">{{ $attendance->late ?? '-' }}</td>
                                 <td align="center">{{ $attendance->absent ?? '-' }}</td>
                                 <td align="center">
                                     @if(!empty($attendance->attachment))
-                                        <a href="{{ route('admin.attendance.showFile', $attendance->id) }}" target="_blank" class="btn btn-success">View</a>
+                                        <a href="{{ route('admin.attendance.showFile', $attendance->id) }}" target="_blank" class="btn btn-primary">View</a>
                                     @else
                                         -
                                     @endif
@@ -87,6 +151,10 @@
                                                             </select>
                                                         </div>
                                                         <div class="col-sm-6">
+                                                            <label class="form-label">Working Day <span class="text-danger">*</span></label>
+                                                            <input type="number" min="0" name="working_day" class="form-control" value="{{$attendance->working_day}}" placeholder="Working Day" required>
+                                                        </div>
+                                                        <div class="col-sm-6">
                                                             <label class="form-label">Attend <span class="text-danger">*</span></label>
                                                             <input type="number" min="0" name="attend" class="form-control" value="{{$attendance->attend}}" placeholder="Attend Number" required>
                                                         </div>
@@ -124,59 +192,6 @@
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="col-sm-4">
-            <div class="card">
-                <form class="p-4" action="{{route('admin.attendance.store')}}" method="post" enctype="multipart/form-data">
-                    @csrf
-                    <div class="row g-3 mb-3">
-                        <div class="col-sm-12">
-                            <label for="user_idFull" class="form-label"> Employee  <span class="text-danger">*</span></label><br>
-                            <select class="form-control select2-example"  name="user_id" id="user_idFull" style="width: 100%;">
-                                @foreach($users as $user)
-                                    <option value="{{ $user->id }}">{{ $user->name }} <sub>({{ $user->userInfo->employee_id }})</sub></option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="col-sm-6">
-                            <label for="yearFullEdit" class="form-label">Month <span class="text-danger">*</span></label><br>
-                            <select class="form-control-sm" name="month" id="month">
-                                @for ($i = 1; $i <= 12; $i++)
-                                    <option value="{{ $i }}">{{ date('F', mktime(0, 0, 0, $i, 1)) }}</option>
-                                @endfor
-                            </select>
-                        </div>
-                        <div class="col-sm-6">
-                            <label for="yearFullEdit" class="form-label">Year <span class="text-danger">*</span></label><br>
-                            <select class="form-control-lg select2-example" name="year" id="yearFullEdit" required>
-                                @for ($i = date('Y'); $i >= 2022; $i--)
-                                    <option {{old('year') == $i ? 'selected':''}} value="{{ $i }}">{{ $i }}</option>
-                                @endfor
-                            </select>
-                        </div>
-                        <div class="col-sm-6">
-                            <label class="form-label">Attend <span class="text-danger">*</span></label>
-                            <input type="number" min="0" name="attend" class="form-control" value="{{old('attend')}}" placeholder="Attend Number" required>
-                        </div>
-                        <div class="col-sm-6">
-                            <label class="form-label">Late <span class="text-danger">*</span></label>
-                            <input type="number" min="0" name="late" class="form-control" value="{{old('late')}}" placeholder="Late Number" required>
-                        </div>
-                        <div class="col-sm-6">
-                            <label class="form-label">Absent <span class="text-danger">*</span></label>
-                            <input type="number" min="0" name="absent" class="form-control" value="{{old('absent')}}" placeholder="Absent Number" required>
-                        </div>
-                        <div class="col-sm-12">
-                            <label class="form-label">Attachment <span class="text-danger">*</span></label>
-                            <input type="file" min="0" name="attachment" class="form-control" value="{{old('attachment')}}">
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary">Save</button>
-                    </div>
-                </form>
-            </div>
-
         </div>
     </div>
     <!-- Row End -->

@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers\admin;
 
+use App\Events\EmployeeNotificationEvent;
+use App\Events\GeneralNotificationEvent;
 use App\Models\Notice;
+use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -14,7 +17,7 @@ class NoticeController extends Controller
     public function index()
     {
         if(auth()->user()->hasPermission('admin notice index')){
-            $notices = Notice::latest()->paginate(20);
+            $notices = Notice::latest()->paginate(100);
             return view('admin.notice.index', compact('notices'));
         }
         else{
@@ -44,6 +47,32 @@ class NoticeController extends Controller
                 $notice->end_date = $request->end_date;
                 $notice->status = $request->status;
                 $notice->save();
+
+                // Trigger event
+                event(new GeneralNotificationEvent(
+                    'new_notice',
+                     $notice->title,
+                     [
+                         'content' => $notice->content,
+                         'user_id' => $notice->user_id,
+                     ]
+                ));
+                // Fetch all active employees
+                $employees = User::where('status', '1')->where('role','employee')->get();
+                // Trigger event
+                foreach ($employees as $employee) {
+                    event(new EmployeeNotificationEvent(
+                        'new_notice',
+                        $notice->title,
+                        $employee->id,
+                        [
+                            'content' => $notice->content,
+                            'user_id' => $notice->user_id,
+                        ]
+
+                    ));
+                }
+
                 toastr()->success('Notice created successfully.');
                 return back();
             }
@@ -134,8 +163,8 @@ class NoticeController extends Controller
     public function employeeShowList(){
         if(auth()->user()->hasPermission('employee notice list')){
             try {
-                $notices = Notice::where('status',1)->orderBy('created_at', 'desc')->get();
-                return view('employee.notice.index',compact('notices'));
+                $notifications = auth()->user()->notifications()->paginate(500);
+                return view('employee.notice.index', compact('notifications'));
             }
             catch (\Exception $e){
                 toastr()->error($e->getMessage());

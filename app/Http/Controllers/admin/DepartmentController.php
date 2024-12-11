@@ -17,7 +17,7 @@ class DepartmentController extends Controller
     {
         if(auth()->user()->hasPermission('admin department index')){
             return view('admin.department.index', [
-                'departments' => Department::latest()->simplePaginate(100),
+                'departments' => Department::latest()->where('soft_delete',0)->simplePaginate(100),
                 'users' => User::whereNotIn('id',[1])->orderBy('name','asc')->get(),
             ]);
         }
@@ -29,7 +29,7 @@ class DepartmentController extends Controller
     public function edit($id){
         try {
             $dept = Department::find($id);
-            $departments = Department::latest()->whereNotIn('id',[$dept->id])->simplePaginate(100);
+            $departments = Department::latest()->whereNotIn('id',[$dept->id])->where('soft_delete',0)->simplePaginate(100);
             $users = User::whereNotIn('id',[1])->orderBy('name','asc')->get();
             return view('admin.department.edit',compact('dept','departments','users'));
         }

@@ -5,13 +5,49 @@
         <div class="border-0 mb-4">
             <div class="card-header py-3 no-bg bg-transparent d-flex align-items-center px-0 justify-content-between border-bottom flex-wrap">
                 <h3 class="fw-bold mb-0 text-white">Departments</h3>
+                <div class="col-auto d-flex w-sm-100">
+                    <a class="btn btn-primary" data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+                        Add +
+                    </a>
+                </div>
             </div>
         </div>
     </div>
     <!-- Row end  -->
 
     <div class="row clearfix g-3">
-        <div class="col-sm-8">
+        <div class="collapse" id="collapseExample">
+            <div class="col-md-12 card">
+                <form class="p-4" action="{{route('departments.store')}}" method="post">
+                    @csrf
+                    <div class="row g-3 mb-3">
+                        <div class="col-sm-4">
+                            <label for="exampleFormControlInput1111" class="form-label">Department Name <span class="text-danger">*</span></label>
+                            <input type="text" name="department_name" class="form-control" id="exampleFormControlInput1111" placeholder="Department Name" required>
+                        </div>
+                        <div class="col-sm-4">
+                            <label for="department_head" class="form-label"> Department Head  </label><br>
+                            <select class="form-control select2-example"  name="department_head" id="department_head" style="width: 100%;" required>
+                                @foreach($users as $user)
+                                    <option value="{{ $user->id }}">{{ $user->name }} <sub>({{ $user->userInfo->employee_id }})</sub></option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="col-sm-4">
+                            <label for="status" class="form-label">Status</label>
+                            <select class="form-control" name="status" id="status">
+                                <option selected value="1">Active</option>
+                                <option value="0">Inactive</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-primary">Create New</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="col-sm-12">
             <div class="card mb-3">
                 <div class="card-body table-responsive export-table bg-dark-subtle">
                     <table id="basic-datatable" class="table table-bordered text-nowrap table-secondary key-buttons border-bottom w-100">
@@ -109,44 +145,6 @@
                         {{$departments->links()}}
                     </div>
                 </div>
-            </div>
-        </div>
-        <div class="col-sm-4">
-            <div class="card p-2">
-                <div class="card-header py-3 no-bg bg-transparent d-flex align-items-center px-0 justify-content-between border-bottom flex-wrap">
-                    <h5 class="fw-bold mb-0 text-dark">Add New Department</h5>
-                </div>
-                <form action="{{route('departments.store')}}" method="post">
-                    @csrf
-                    <div class="mb-3">
-                        <label for="exampleFormControlInput1111" class="form-label">Department Name <span class="text-danger">*</span></label>
-                        <input type="text" name="department_name" class="form-control" id="exampleFormControlInput1111" required>
-                    </div>
-                    <div class="deadline-form">
-                        <div class="row g-3 mb-3">
-                            <div class="col-sm-12">
-                                <label for="department_head" class="form-label">Department Head</label>
-                                <select class="form-control select2-example"  name="department_head" id="department_head">
-                                    <label for="">Select One</label>
-                                    @foreach($users as $user)
-                                        <option {{old('department_head') == $user->id ? 'selected' : ''}} value="{{$user->id}}">{{$user->name}} ({{$user->userInfo->employee_id}})</option>
-                                    @endforeach
-                                </select>
-                            </div>
-                            <div class="col-sm-12">
-                                <label for="status" class="form-label">Status</label>
-                                <select class="form-control" name="status" id="status">
-                                    <option selected value="1">Active</option>
-                                    <option value="0">Inactive</option>
-                                </select>
-                            </div>
-                        </div>
-
-                    </div>
-                    <div class="modal-footer">
-                        <button type="submit" class="btn btn-primary">Add</button>
-                    </div>
-                </form>
             </div>
         </div>
     </div>
