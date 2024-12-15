@@ -47,21 +47,23 @@
                                         @endif
                                     </ul>
                                 </div>
-                            </div>
-                            <div class="row {{\Illuminate\Support\Facades\Auth::user()->unreadNotifications->count() ? '':'justify-content-center'}}">
-                                @if(\Illuminate\Support\Facades\Auth::user()->unreadNotifications->count())
-                                <div class="col-6 my-2">
-                                    <form action="{{ route('notifications.read') }}" method="POST">
-                                        @csrf
-                                        <button class="card-footer text-center border-0" type="submit">Mark All As Read</button>
-                                    </form>
-                                </div>
-                                @endif
-                                <div class="col-6 my-2">
-                                    <form action="{{route('employee.notice.list')}}" method="get">
-                                        @csrf
-                                        <button class="card-footer text-center border-0" type="submit">View All Notifications</button>
-                                    </form>
+                                <div class="row {{\Illuminate\Support\Facades\Auth::user()->unreadNotifications->count() ? '':'justify-content-center'}}">
+                                    @if(\Illuminate\Support\Facades\Auth::user()->unreadNotifications->count())
+                                        <div class="col-6 bg-primary ">
+                                            <form action="{{ route('notifications.read') }}" method="POST">
+                                                @csrf
+                                                <button class="card-footer text-center text-white border-0" type="submit">Mark All As Read</button>
+                                            </form>
+                                        </div>
+                                    @endif
+                                    <div class="col-6 bg-primary ">
+                                        <form action="{{route('employee.notice.list')}}" method="get">
+                                            <button class="card-footer text-center text-white border-0" type="submit">View All</button>
+                                        </form>
+                                        {{--                                </div>--}}
+                                        {{--                                    <a class="card-footer text-center border-top-0" href="{{route('employee.notice.list')}}"> View All Notifications</a>--}}
+                                    </div>
+
                                 </div>
                             </div>
                         </div>

@@ -113,7 +113,6 @@ class SalaryPaymentController extends Controller
                     toastr()->error('Paid Amount Can Not Greater Than Net Pay Amount.');
                     return back();
                 }
-
                 toastr()->success('Salary Payment Successfully.');
                 return back();
             }

@@ -27,7 +27,7 @@ class DatabaseSeeder extends Seeder
                 'name' => 'Super Admin',
                 'email' => $email,
                 'password' => bcrypt('admin@safwahltd.com'),
-                'role' => 'admin',
+                'role' => 'z',
             ]);
         }
         $userInfo = UserInfos::where('user_id',1)->first();
