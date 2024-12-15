@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\employee;
 
+use App\Events\EmployeeNotificationEvent;
 use App\Exports\AttendanceExport;
 use App\Models\Attendance;
 use App\Models\Holiday;
@@ -73,6 +74,17 @@ class AttendanceController extends Controller
                     /* File Upload End */
 
                     $attendance->save();
+
+                    event(new EmployeeNotificationEvent(
+                        '',
+                        'Check your attendance report Of '.date('F', mktime(0, 0, 0, $attendance->month, 1)).', '.$attendance->year,
+                        $attendance->user_id,
+                        [
+                            'content' => 'Working Day : '.$attendance->working_day.', Attend : '.$attendance->attend.' , Late : '.$attendance->late.' , Absent : '.$attendance->absent,
+                            'user_id' => $attendance->user_id,
+                            'url' => route('employee.attendance.list'),
+                        ]
+                    ));
                     toastr()->success('Attendance Create Successfully.');
                     return back();
                 }

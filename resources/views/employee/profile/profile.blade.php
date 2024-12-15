@@ -8,7 +8,7 @@
                 <div class="card-body  d-flex teacher-fulldeatil">
                     <div class="profile-teacher pe-xl-4 pe-md-2 pe-sm-4 pe-0 text-center w220 mx-sm-0 mx-auto">
                             @if($user->userInfo->image == '')
-                                <img id="imagePreview" src="{{asset('/')}}admin/assets/images/lg/avatar3.jpg" alt="" class="avatar xl rounded-circle img-thumbnail shadow-sm">
+                                <img id="imagePreview" src="{{asset('/')}}admi-ssets/images/lg/avatar3.jpg" alt="" class="avatar xl rounded-circle img-thumbnail shadow-sm">
                             @else
                                 <img id="imagePreview" src="{{asset($user->userInfo->image)}}" alt="" class="avatar xl rounded-circle img-thumbnail shadow-sm">
                             @endif
@@ -18,8 +18,8 @@
                                     <button class="btn btn-primary my-1">change</button>
                                 </form>
                         <div class="about-info d-flex align-items-center mt-3 justify-content-center flex-column">
-                            <h6 class="mb-0 fw-bold d-block fs-6">{{$user->userInfo->designations->name ?? 'N/A'}}</h6>
-                            <span class="text-danger fw-bold small">ID : {{$user->userInfo->employee_id ?? 'N/A'}}</span>
+                            <h6 class="mb-0 fw-bold d-block fs-6">{{$user->userInfo->designations->name ?? '-'}}</h6>
+                            <span class="text-danger fw-bold small">ID : {{$user->userInfo->employee_id ?? '-'}}</span>
                         </div>
                         <div class="my-1">
                             <a class="mx-2" href="{{$user->userInfo->facebook}}" target="_blank">
@@ -43,40 +43,40 @@
                         <p class="text-end">
                             <button type="button" class="btn p-0" data-bs-toggle="modal" data-bs-target="#personalInfo"><i class="icofont-edit text-primary fs-6"></i></button>
                         </p>
-                        <h6  class="mb-0 mt-2  fw-bold d-block fs-6">{{$user->name ?? 'N/A'}}</h6>
-                        <span class="py-1 fw-bold small-11 mb-0 mt-1 text-muted">{{$user->userInfo->designations->name ?? 'N/A'}}</span>
-                        <p class="mt-2 small">{{$user->userInfo->biography ?? 'N/A'}}</p>
+                        <h6  class="mb-0 mt-2  fw-bold d-block fs-6">{{$user->name ?? '-'}}</h6>
+                        <span class="py-1 fw-bold small-11 mb-0 mt-1 text-muted">{{$user->userInfo->designations->name ?? '-'}}</span>
+                        <p class="mt-2 small">{{$user->userInfo->biography ?? '-'}}</p>
                         <div class="row g-2 pt-2">
                             <div class="col-xl-5">
                                 <div class="d-flex align-items-center">
                                     <i class="icofont-ui-touch-phone"></i>
-                                    <span class="ms-2 small">{{$user->userInfo->official_mobile ?? 'N/A'}} ( Official )</span>
+                                    <span class="ms-2 small">{{$user->userInfo->official_mobile ?? '-'}} ( Official )</span>
                                 </div>
                                 <div class="d-flex align-items-center">
                                     <i class="icofont-ui-touch-phone"></i>
-                                    <span class="ms-2 small">{{$user->userInfo->mobile ?? 'N/A'}} ( Personal )</span>
+                                    <span class="ms-2 small">{{$user->userInfo->mobile ?? '-'}} ( Personal )</span>
                                 </div>
                             </div>
                             <div class="col-xl-5">
                                 <div class="d-flex align-items-center">
                                     <i class="icofont-email"></i>
-                                    <span class="ms-2 small">{{$user->email ?? 'N/A'}} ( Official )</span>
+                                    <span class="ms-2 small">{{$user->email ?? '-'}} ( Official )</span>
                                 </div>
                                 <div class="d-flex align-items-center">
                                     <i class="icofont-email"></i>
-                                    <span class="ms-2 small">{{$user->userInfo->personal_email ?? 'N/A'}} ( Personal )</span>
+                                    <span class="ms-2 small">{{$user->userInfo->personal_email ?? '-'}} ( Personal )</span>
                                 </div>
                             </div>
                             <div class="col-xl-5">
                                 <div class="d-flex align-items-center">
                                     <i class="icofont-birthday-cake"></i>
-                                    <span class="ms-2 small">{{ $user->userInfo->date_of_birth ?? 'N/A'}}</span>
+                                    <span class="ms-2 small">{{ $user->userInfo->date_of_birth ?? '-'}}</span>
                                 </div>
                             </div>
                             <div class="col-xl-5">
                                 <div class="d-flex align-items-center">
-                                    <i class="icofont-birthday-cake"></i>
-                                    <span class="ms-2 small">{{ $user->userInfo->gender ?? 'N/A'}}</span>
+                                    <i class="icofont-users"></i>
+                                    <span class="ms-2 small">{{ $user->userInfo->gender ?? '-'}}</span>
                                 </div>
                             </div>
 
@@ -84,11 +84,11 @@
                         <div class="row">
                             <div class="col-md-5 d-flex align-items-center">
                                 <i class="icofont-address-book"></i>
-                                <span class="ms-2 small"><span class="text-danger">Present :</span> {{$user->userInfo->present_address ?? 'N/A'}}</span>
+                                <span class="ms-2 small"><span class="text-danger">Present :</span> {{$user->userInfo->present_address ?? '-'}}</span>
                             </div>
                             <div class="col-md-5 d-flex align-items-center p-1">
                                 <i class="icofont-address-book"></i>
-                                <span class="ms-2 small"><span class="text-danger">Permanent :</span> {{$user->userInfo->permanent_address ?? 'N/A'}}</span>
+                                <span class="ms-2 small"><span class="text-danger">Permanent :</span> {{$user->userInfo->permanent_address ?? '-'}}</span>
                             </div>
                         </div>
                     </div>
@@ -123,7 +123,7 @@
                                                         <span class="fw-bold">Nationality</span>
                                                     </div>
                                                     <div class="col-6">
-                                                        <span class="text-dark">{{ucwords($user->userInfo->nationality ?? 'N/A')}}</span>
+                                                        <span class="text-dark">{{ucwords($user->userInfo->nationality ?? '-')}}</span>
                                                     </div>
                                                 </li>
                                                 <li class="row flex-wrap mb-3">
@@ -131,7 +131,7 @@
                                                         <span class="fw-bold">Religion</span>
                                                     </div>
                                                     <div class="col-6">
-                                                        <span class="text-dark">{{ucwords($user->userInfo->religion ?? 'N/A')}}</span>
+                                                        <span class="text-dark">{{ucwords($user->userInfo->religion ?? '-')}}</span>
                                                     </div>
                                                 </li>
                                                 <li class="row flex-wrap mb-3">
@@ -139,7 +139,7 @@
                                                         <span class="fw-bold">Marital Status</span>
                                                     </div>
                                                     <div class="col-6">
-                                                        <span class="text-dark">{{$user->userInfo->marital_status ?? 'N/A'}}</span>
+                                                        <span class="text-dark">{{$user->userInfo->marital_status ?? '-'}}</span>
                                                     </div>
                                                 </li>
                                                 <li class="row flex-wrap mb-3">
@@ -147,7 +147,7 @@
                                                         <span class="fw-bold">Passport No.</span>
                                                     </div>
                                                     <div class="col-6">
-                                                        <span class="text-dark">{{$user->userInfo->passport_or_nid ?? 'N/A'}}</span>
+                                                        <span class="text-dark">{{$user->userInfo->passport_or_nid ?? '-'}}</span>
                                                     </div>
                                                 </li>
                                                 <li class="row flex-wrap">
@@ -155,7 +155,7 @@
                                                         <span class="fw-bold">Emergency Contact</span>
                                                     </div>
                                                     <div class="col-6">
-                                                        <span class="text-dark">{{$user->userInfo->emergency_contact ?? 'N/A'}}</span>
+                                                        <span class="text-dark">{{$user->userInfo->emergency_contact ?? '-'}}</span>
                                                     </div>
                                                 </li>
                                             </ul>
@@ -175,7 +175,7 @@
                                                         <span class="fw-bold">Father Name</span>
                                                     </div>
                                                     <div class="col-6">
-                                                        <span class="text-dark">{{ucwords($user->userInfo->father ?? 'N/A')}}</span>
+                                                        <span class="text-dark">{{ucwords($user->userInfo->father ?? '-')}}</span>
                                                     </div>
                                                 </li>
                                                 <li class="row flex-wrap mb-3">
@@ -183,7 +183,7 @@
                                                         <span class="fw-bold">Mother Name</span>
                                                     </div>
                                                     <div class="col-6">
-                                                        <span class="text-dark">{{ucwords($user->userInfo->mother ?? 'N/A')}}</span>
+                                                        <span class="text-dark">{{ucwords($user->userInfo->mother ?? '-')}}</span>
                                                     </div>
                                                 </li>
                                                 <li class="row flex-wrap mb-3">
@@ -191,7 +191,7 @@
                                                         <span class="fw-bold">Spouse Name</span>
                                                     </div>
                                                     <div class="col-6">
-                                                        <span class="text-dark">{{$user->userInfo->spouse ?? 'N/A'}}</span>
+                                                        <span class="text-dark">{{$user->userInfo->spouse ?? '-'}}</span>
                                                     </div>
                                                 </li>
                                                 <li class="row flex-wrap mb-3">
@@ -199,7 +199,7 @@
                                                         <span class="fw-bold">Family Member</span>
                                                     </div>
                                                     <div class="col-6">
-                                                        <span class="text-dark">{{$user->userInfo->family_member ?? 'N/A'}} &nbsp;<i class="fa-solid fa-people-roof"></i></span>
+                                                        <span class="text-dark">{{$user->userInfo->family_member ?? '-'}} &nbsp; @if(!empty($user->userInfo->family_member)) <i class="fa-solid fa-people-roof"></i> @endif</span>
                                                     </div>
                                                 </li>
                                             </ul>
@@ -210,7 +210,7 @@
                         </div>
                         <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
                             <div class="row">
-                                <div class="col-md-10">
+                                <div class="col-md-12">
                                     <div class="card bg-secondary-subtle">
                                         <div class="card-header py-3 d-flex justify-content-between">
                                             <h6 class="mb-0 fw-bold "><i class="fa-solid fa-building-columns"></i> Bank information</h6>
@@ -223,7 +223,7 @@
                                                         <span class="fw-bold">Bank Name</span>
                                                     </div>
                                                     <div class="col-6">
-                                                        <span class="text-dark">{{$user->userInfo->bank_name ?? 'N/A'}}</span>
+                                                        <span class="text-dark">{{$user->userInfo->bank_name ?? '-'}}</span>
                                                     </div>
                                                 </li>
                                                 <li class="row flex-wrap mb-3">
@@ -231,7 +231,7 @@
                                                         <span class="fw-bold">Account Name</span>
                                                     </div>
                                                     <div class="col-6">
-                                                        <span class="text-dark">{{$user->userInfo->account_name ?? 'N/A'}}</span>
+                                                        <span class="text-dark">{{$user->userInfo->account_name ?? '-'}}</span>
                                                     </div>
                                                 </li>
 
@@ -240,7 +240,7 @@
                                                         <span class="fw-bold">Account No.</span>
                                                     </div>
                                                     <div class="col-6">
-                                                        <span class="text-dark">{{$user->userInfo->account_number ?? 'N/A'}}</span>
+                                                        <span class="text-dark">{{$user->userInfo->account_number ?? '-'}}</span>
                                                     </div>
                                                 </li>
                                                 <li class="row flex-wrap mb-3">
@@ -248,7 +248,7 @@
                                                         <span class="fw-bold">Branch</span>
                                                     </div>
                                                     <div class="col-6">
-                                                        <span class="text-dark">{{$user->userInfo->name_of_branch ?? 'N/A'}}</span>
+                                                        <span class="text-dark">{{$user->userInfo->name_of_branch ?? '-'}}</span>
                                                     </div>
                                                 </li>
                                                 <li class="row flex-wrap mb-3">
@@ -256,7 +256,7 @@
                                                         <span class="fw-bold">Swift Code</span>
                                                     </div>
                                                     <div class="col-6">
-                                                        <span class="text-dark">{{$user->userInfo->swift_number ?? 'N/A'}}</span>
+                                                        <span class="text-dark">{{$user->userInfo->swift_number ?? '-'}}</span>
                                                     </div>
                                                 </li>
                                                 <li class="row flex-wrap mb-3">
@@ -264,7 +264,7 @@
                                                         <span class="fw-bold">Routing No</span>
                                                     </div>
                                                     <div class="col-6">
-                                                        <span class="text-dark">{{$user->userInfo->routing_number ?? 'N/A'}}</span>
+                                                        <span class="text-dark">{{$user->userInfo->routing_number ?? '-'}}</span>
                                                     </div>
                                                 </li>
                                                 <li class="row flex-wrap mb-3">
@@ -272,7 +272,7 @@
                                                         <span class="fw-bold">Bank Code</span>
                                                     </div>
                                                     <div class="col-6">
-                                                        <span class="text-dark">{{$user->userInfo->bank_code ?? 'N/A'}}</span>
+                                                        <span class="text-dark">{{$user->userInfo->bank_code ?? '-'}}</span>
                                                     </div>
                                                 </li>
                                                 <li class="row flex-wrap mb-3">
@@ -280,7 +280,7 @@
                                                         <span class="fw-bold">Branch Code</span>
                                                     </div>
                                                     <div class="col-6">
-                                                        <span class="text-dark">{{$user->userInfo->branch_code ?? 'N/A'}}</span>
+                                                        <span class="text-dark">{{$user->userInfo->branch_code ?? '-'}}</span>
                                                     </div>
                                                 </li>
 
@@ -318,7 +318,7 @@
                                                             <strong>{{$asset->asset_name}}</strong>
                                                         </td>
                                                         <td>{{$asset->asset_id}}</td>
-                                                        <td>{{$asset->hand_in_date ?? 'N/A'}}</td>
+                                                        <td>{{$asset->hand_in_date ?? '-'}}</td>
                                                         <td>{{$asset->value}}.tk</td>
                                                         <td class="text-center">
                                                             <span class="rounded-2 p-1  text-white {{$asset->status == 1 ? 'bg-success text-white':''}}{{$asset->status == 0 ? 'bg-danger text-dark':''}}">{{$asset->status == 1 ? 'Active':''}}{{$asset->status == 0 ? 'Inactive':''}}</span>
@@ -369,7 +369,7 @@
                                                                     <div class="row px-2  fw-bold ">
                                                                         <div class="col-4"><label for="purchase_date" class="form-label">Hand Over</label></div>
                                                                         <div class="col-2">:</div>
-                                                                        <div class="col-6"><p class="">{{$asset->hand_over_date ?? 'N/A'}}</p></div>
+                                                                        <div class="col-6"><p class="">{{$asset->hand_over_date ?? '-'}}</p></div>
                                                                     </div>
 
                                                                     <div class="row px-2  fw-bold ">
