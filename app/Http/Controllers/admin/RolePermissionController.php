@@ -64,6 +64,8 @@ class RolePermissionController extends Controller
                         return 'Clock In / Out';
                     } elseif (str_contains($permission->name, 'employees')) {
                         return 'Employee Management';
+                    } elseif (str_contains($permission->name, 'hr')) {
+                        return 'HR Dashboard';
                     } else {
                         return 'Others';
                     }

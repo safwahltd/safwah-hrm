@@ -16,9 +16,9 @@ class DesignationController extends Controller
 {
     public function index()
     {
-        if(auth()->user()->hasPermission('designations index')){
+        if(auth()->user()->hasPermission('admin designation index')){
             return view('admin.designation.index', [
-                'designations' => Designation::latest()->where('soft_delete',0)->simplePaginate(100),
+                'designations' => Designation::latest()->where('soft_delete',0)->simplePaginate(500),
                 'departments' => Department::where('status',1)->where('soft_delete',0)->orderBy('department_name')->get(),
             ]);
         }
@@ -27,9 +27,9 @@ class DesignationController extends Controller
             return back();
         }
     }
-    public function store(Request $request, User $user)
+    public function store(Request $request)
     {
-        if(auth()->user()->hasPermission('designations store')){
+        if(auth()->user()->hasPermission('admin designation store')){
             try {
                 $validate = Validator::make($request->all(),[
                     "name" => 'required',
@@ -59,9 +59,9 @@ class DesignationController extends Controller
         }
 
     }
-    public function update(Request $request, Designation $designation)
+    public function update(Request $request, $id)
     {
-        if(auth()->user()->hasPermission('designations update')){
+        if(auth()->user()->hasPermission('admin designation update')){
             try {
                 $validate = Validator::make($request->all(),[
                     "name" => 'required',
@@ -72,6 +72,7 @@ class DesignationController extends Controller
                     toastr()->error($validate->messages());
                     return redirect()->back();
                 }
+                $designation = Designation::find($id);
                 $designation->name = $request->name;
                 $designation->department_id = $request->department_id;
                 $designation->status = $request->status;
@@ -91,7 +92,7 @@ class DesignationController extends Controller
     }
     public function destroy($id)
     {
-        if(auth()->user()->hasPermission('designations soft destroy')){
+        if(auth()->user()->hasPermission('admin designation soft destroy')){
             try {
                 $designation = Designation::find($id);
                 $designation->name = $designation->name;

@@ -56,9 +56,9 @@
                                     <strong>{{$asset->asset_name}}</strong>
                                 </td>
                                 <td>{{$asset->asset_id}}</td>
-                                <td align="center">{{$asset->hand_in_date ?? 'N/A'}}</td>
-                                <td align="center">{{$asset->hand_over_date ?? '-'}}</td>
-                                <td align="center">{{$asset->value}}.tk</td>
+                                <td>{{$asset->hand_in_date ?? 'N/A'}}</td>
+                                <td>{{$asset->hand_over_date ?? '-'}}</td>
+                                <td>৳ {{$asset->value}}</td>
                                 <td class="text-center">
                             <span class="rounded-2 p-1  text-white {{$asset->status == 1 ? 'bg-success text-white':''}}{{$asset->status == 0 ? 'bg-danger text-dark':''}}">
                                 {{$asset->status == 1 ? 'Active':''}}
@@ -71,7 +71,7 @@
                                     <a href="#" class="border-0 bg-transparent btn-sm" onclick="return confirm('are you sure to logout ?') ? document.getElementById('destroy-form').submit():''">
                                         <i onclick="" class="fa-regular btn btn-danger btn-sm text-white fa-trash-can m-r-5" type="submit"></i>
                                     </a>
-                                    <form class="list-group-item list-group-item-action border-0" id="destroy-form" action="{{route('asset.destroy',$asset->id)}}" method="post">
+                                    <form class="list-group-item list-group-item-action border-0" id="destroy-form" action="{{route('admin.asset.destroy',$asset->id)}}" method="post">
                                         @csrf
                                         @method('DELETE')
                                     </form>
@@ -85,7 +85,7 @@
                                             <h5 class="modal-title  fw-bold" id="depaddLabel"> Asset Edit</h5>
                                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                         </div>
-                                        <form action="{{route('asset.update',$asset->id)}}" method="post">
+                                        <form action="{{route('admin.asset.update',$asset->id)}}" method="post">
                                             @csrf
                                             @method('PUT')
                                             <div class="modal-body">
@@ -284,7 +284,7 @@
                     <h5 class="modal-title  fw-bold" id="depaddLabel"> Asset Add</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form action="{{route('asset.store')}}" method="post">
+                <form action="{{route('admin.asset.store')}}" method="post">
                     @csrf
                     <div class="modal-body">
                         <div class="row g-3 mb-3">
@@ -381,7 +381,7 @@
                 }
                 console.log(employeeName);
                 $.ajax({
-                        url: '--}}{{--{{route('employee.filter.asset')}}--}}{{--',
+                        url: '--}}{{--{{route('admin.employee.filter.asset')}}--}}{{--',
                         type: 'GET',
                         data: {
                             employeeName: employeeName,
@@ -407,7 +407,7 @@
                 }
                 console.log(employeeId);
                 $.ajax({
-                        url: '--}}{{--{{route('employee.filter.asset')}}--}}{{--',
+                        url: '--}}{{--{{route('admin.employee.filter.asset')}}--}}{{--',
                         type: 'GET',
                         data: {
                             // employeeName: employeeName,
@@ -443,7 +443,7 @@
 
                 // Send data via AJAX
                 $.ajax({
-                    url: '{{route('employee.filter.asset')}}',
+                    url: '{{route('admin.employee.filter.asset')}}',
                     type: 'GET',
                     data: {
                         employeeId : employeeId,

@@ -18,7 +18,7 @@
                 <div class="card-body  d-flex teacher-fulldeatil">
                     <div class="profile-teacher pe-xl-4 pe-md-2 pe-sm-4 pe-0 text-center w220 mx-sm-0 mx-auto">
                         @if($user->userInfo->image == '')
-                            <img src="{{asset('/')}}admin/assets/images/lg/avatar3.jpg" alt="" class="avatar xl rounded-circle img-thumbnail shadow-sm">
+                            <img src="{{asset('/')}}admin/assets/images/lg/{{$user->userInfo->gender == '1' ? 'avatar5.jpg':''}}{{$user->userInfo->gender == '2' ? 'avatar2.jpg':''}}{{$user->userInfo->gender == '3' ? 'avatar4.jpg':''}}" alt="" class="avatar xl rounded-circle img-thumbnail shadow-sm">
                         @else
                             <img src="{{asset($user->userInfo->image)}}" alt="" class="avatar xl rounded-circle img-thumbnail shadow-sm">
                         @endif
@@ -77,8 +77,8 @@
                             </div>
                             <div class="col-xl-5">
                                 <div class="d-flex align-items-center">
-                                    <i class="icofont-birthday-cake"></i>
-                                    <span class="ms-2 small">{{ $user->userInfo->gender ?? 'N/A'}}</span>
+                                    <i class="icofont-users"></i>
+                                    <span class="ms-2 small">{{ $user->userInfo->gender == '1' ? 'Male':''}}{{ $user->userInfo->gender == '2' ? 'Female':''}}{{ $user->userInfo->gender == '3' ? 'Other':''}} </span>
                                 </div>
                             </div>
 

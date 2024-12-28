@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Expense Report</title>
+    <title>Money Receipt Report</title>
     <style>
         body { font-family: Arial, sans-serif; line-height: 1.5;font-size: 15px; }
         h1 { text-align: center; }
@@ -54,8 +54,8 @@
 <div class="content">
     <div class="row" style="margin-top: 4px;">
         <div style="border-top: 1px solid black; border-left: 1px solid #000000; border-right: 1px solid black; margin:0">
-            <h4  style="margin: 0; padding: 5px; text-transform: uppercase;" align="center">Expense Report </h4>
-            <p align="center" style="margin-bottom: 0; padding-bottom: 5px; text-transform: uppercase;">Period : {{$start_date}} to {{$end_date}}</p>
+            <h4  style="margin: 0; padding: 5px; text-transform: uppercase;" align="center">Money Receipt Report </h4>
+            <p align="center" style="margin-bottom: 0; font-size: 12px; padding-bottom: 5px; text-transform: uppercase;">Period : {{$start_date}} to {{$end_date}}</p>
         </div>
         @if($receipt_type == 'advance_money_receipt')
             <table style="width:100% ; text-align: center ;margin-bottom: 4px">

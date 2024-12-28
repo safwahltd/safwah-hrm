@@ -39,20 +39,11 @@
                             <td>{{date_format(new DateTime($holiday->date_from),'d M ,Y')}}</td>
                             <td>{{date_format(new DateTime($holiday->date_to),'d M ,Y')}}</td>
                             <td>{{$holiday->total_day}}</td>
-                            <td>
-                                {{--<form action="{{route('admin.holiday.StatusUpdate',$holiday->id)}}" method="post">
-                                    @csrf
-                                    <select name="status" id="" class="form-control-sm text-white {{$holiday->status == 1 ? 'bg-success':'bg-danger'}}" onchange="this.form.submit()">
-                                        <option {{$holiday->status == 1 ? 'selected':''}} value="1">Active</option>
-                                        <option {{$holiday->status == 0 ? 'selected':''}} value="0">Inactive</option>
-                                    </select>
-                                </form>--}}
-                                <span class="bg-{{$holiday->status == 1 ? 'success':'danger'}} text-white  px-1 mx-1 rounded-2">{{$holiday->status == 1 ? 'On':''}}{{$holiday->status == 0 ? 'Off':''}}</span>
-                            </td>
+                            <td><span class="bg-{{$holiday->status == 1 ? 'success':'danger'}} text-white  px-1 mx-1 rounded-2">{{$holiday->status == 1 ? 'On':''}}{{$holiday->status == 0 ? 'Off':''}}</span></td>
                             <td>
                                 <div class="btn-group" role="group" aria-label="Basic outlined example">
                                     <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#depedit{{$key}}"><i class="icofont-edit text-success"></i></button>
-                                    <form action="{{route('holidays.destroy',$holiday->id)}}" method="post">
+                                    <form action="{{route('admin.holiday.destroy',$holiday->id)}}" method="post">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" onclick="return confirm('are you sure to delete ? ')" class="btn btn-outline-secondary deleterow"><i class="icofont-ui-delete text-danger"></i></button>
@@ -70,7 +61,7 @@
                                     </div>
                                     <div class="modal-body">
                                         <div class="deadline-form">
-                                            <form action="{{route('holidays.update',$holiday->id)}}" method="post">
+                                            <form action="{{route('admin.holiday.update',$holiday->id)}}" method="post">
                                                 @csrf
                                                 @method('PUT')
                                                 <div class="modal-body">
@@ -128,7 +119,7 @@
                     <h5 class="modal-title  fw-bold" id="depaddLabel"> Holiday Add</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form action="{{route('holidays.store')}}" method="post">
+                <form action="{{route('admin.holiday.store')}}" method="post">
                     @csrf
                     <div class="modal-body">
                         <div class="mb-3">

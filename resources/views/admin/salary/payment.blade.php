@@ -81,7 +81,7 @@
                                             @method('PUT')
                                             <button type="submit" onclick="return confirm('are you sure to delete ? ')" class="btn btn-outline-secondary mx-1 deleterow"><i class="icofont-ui-delete text-danger"></i></button>
                                         </form>
-                                        <a href="{{route('admin.salary.payment.download',$payment->salary->id)}}" target="_blank" class="btn btn-outline-secondary"><i class="icofont-download text-success"></i></a>
+                                        <a href="{{route('admin.salary.payment.download',$payment->id)}}" target="_blank" class="btn btn-outline-secondary"><i class="icofont-download text-success"></i></a>
                                     </div>
                                 </td>
                             </tr>
@@ -242,7 +242,12 @@
                                                                             $paymentSalary = json_decode($payment->salary->payment);
                                                                         @endphp
                                                                         @foreach($salaryPaymentInputs as $paymentInput)
-                                                                            <p><small class="fw-bold text-uppercase" style="font-weight: bold">{{ ucwords(str_replace('_',' ',$paymentInput->name)) }} </small> : <small> {{ $paymentSalary->{$paymentInput->name} ?? 0 }} </small></p>
+                                                                            @if(!empty($paymentSalary->{$paymentInput->name}))
+                                                                            <p>
+                                                                                <small class="fw-bold text-uppercase" style="font-weight: bold">{{ ucwords(str_replace('_',' ',$paymentInput->name)) }} </small> :
+                                                                                <small> {{ $paymentSalary->{$paymentInput->name} ?? 0 }} </small>
+                                                                            </p>
+                                                                            @endif
                                                                         @endforeach
                                                                     @endif
                                                                     <hr>
@@ -271,7 +276,12 @@
                                                                             $deducts = json_decode($payment->salary->deduct);
                                                                         @endphp
                                                                         @foreach($salaryDeductInputs as $deductInput)
-                                                                            <p><small class="fw-bold text-uppercase" style="font-weight: bold">{{ ucwords(str_replace('_',' ',$deductInput->name)) }} </small> : <small> {{ $deducts->{$deductInput->name} ?? 0 }}</small></p>
+                                                                            @if(!empty($deduct->{$deductInput->name}))
+                                                                            <p>
+                                                                                <small class="fw-bold text-uppercase" style="font-weight: bold">{{ ucwords(str_replace('_',' ',$deductInput->name)) }} </small> :
+                                                                                <small> {{ $deducts->{$deductInput->name} ?? 0 }}</small>
+                                                                            </p>
+                                                                            @endif
                                                                         @endforeach
                                                                     @endif
                                                                     <br>

@@ -16,7 +16,9 @@
             <div class="card-header py-3 no-bg bg-transparent d-flex align-items-center px-0 justify-content-between border-bottom flex-wrap">
                 <h3 class="fw-bold mb-0 text-white">Notice</h3>
                 <div class="col-auto d-flex w-sm-100">
+                    @if(auth()->user()->hasPermission('admin notice store'))
                     <button type="button" class="btn btn-dark btn-set-task w-sm-100" data-bs-toggle="modal" data-bs-target="#depadd"><i class="icofont-plus-circle me-2 fs-6"></i>Add notice</button>
+                    @endif
                 </div>
             </div>
         </div>
@@ -55,17 +57,23 @@
                                 </td>
                                 <td>
                                     <div class="btn-group" role="group" aria-label="Basic outlined example">
+                                        @if(auth()->user()->hasPermission('admin notice update'))
                                         <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#noticeEdit{{$key}}"><i class="icofont-edit text-primary"></i></button>
+                                        @endif
                                         <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#noticeShow{{$key}}"><i class="icofont-eye text-success"></i></button>
+                                        @if(auth()->user()->hasPermission('admin notice destroy'))
                                         <form action="{{route('admin.notice.destroy',$notice->id)}}" method="post">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" onclick="return confirm('are you sure to delete ? ')" class="btn btn-outline-secondary deleterow"><i class="icofont-ui-delete text-danger"></i></button>
                                         </form>
+                                        @endif
+                                        @if(auth()->user()->hasPermission('admin notice download'))
                                         <form action="{{route('admin.notice.download',$notice->id)}}" method="post">
                                             @csrf
                                             <button type="submit" onclick="return confirm('are you sure to download ? ')" class="btn btn-outline-secondary deleterow"><i class="icofont-download-alt text-primary"></i></button>
                                         </form>
+                                        @endif
                                     </div>
                                 </td>
                             </tr>

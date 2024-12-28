@@ -4,9 +4,9 @@
     <div class="row align-items-center">
         <div class="border-0 mb-4">
             <div class="card-header py-3 no-bg bg-transparent d-flex align-items-center px-0 justify-content-between border-bottom flex-wrap">
-                <h3 class="fw-bold mb-0 text-white"><a class="text-white" href="{{route('departments.index')}}">Edit Departments</a></h3>
+                <h3 class="fw-bold mb-0 text-white"><a class="text-white" href="{{route('admin.department.index')}}">Edit Departments</a></h3>
                 <div class="col-auto d-flex w-sm-100">
-                    <a href="{{route('departments.index')}}" class="btn btn-dark btn-set-task w-sm-100"><i class="icofont-list me-2 fs-6"></i>All Departments</a>
+                    <a href="{{route('admin.department.index')}}" class="btn btn-dark btn-set-task w-sm-100"><i class="icofont-list me-2 fs-6"></i>All Departments</a>
                 </div>
             </div>
         </div>
@@ -15,7 +15,7 @@
 
     <div class="row clearfix g-3">
         <div class="col-md-12 card">
-            <form class="p-4" action="{{route('departments.update',$dept->id)}}" method="post">
+            <form class="p-4" action="{{route('admin.department.update',$dept->id)}}" method="post">
                 @csrf
                 @method('PUT')
                 <div class="row g-3 mb-3">
@@ -75,12 +75,14 @@
                                 </td>
                                 <td>
                                     <div class="btn-group" role="group" aria-label="Basic outlined example">
-                                        <a href="{{route('departments.edit',$department->id)}}" class="btn btn-outline-secondary"><i class="icofont-edit text-success"></i></a>
-                                        <form action="{{route('departments.destroy',$department->id)}}" method="post">
+                                        <a href="{{route('admin.department.edit',$department->id)}}" class="btn btn-outline-secondary"><i class="icofont-edit text-success"></i></a>
+                                        @if(auth()->user()->hasPermission('admin department destroy'))
+                                        <form action="{{route('admin.department.destroy',$department->id)}}" method="post">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit" onclick="return confirm('are you sure to delete ? ')" class="btn btn-outline-secondary deleterow"><i class="icofont-ui-delete text-danger"></i></button>
                                         </form>
+                                        @endif
                                     </div>
                                 </td>
                             </tr>

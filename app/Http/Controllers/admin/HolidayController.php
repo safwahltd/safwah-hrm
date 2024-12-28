@@ -13,9 +13,9 @@ use DateTime;
 class HolidayController extends Controller
 {
     public function index(){
-        if(auth()->user()->hasPermission('holidays index')){
+        if(auth()->user()->hasPermission('admin holiday index')){
             return view('admin.holiday.index',[
-                'holidays' => Holiday::latest()->simplePaginate(10),
+                'holidays' => Holiday::latest()->simplePaginate(500),
             ]);
         }
         else{
@@ -25,7 +25,7 @@ class HolidayController extends Controller
 
     }
     public function store(Request $request){
-        if(auth()->user()->hasPermission('holidays store')){
+        if(auth()->user()->hasPermission('admin holiday store')){
             try {
                 $validate = Validator::make($request->all(),[
                     "name" => 'required',
@@ -82,7 +82,7 @@ class HolidayController extends Controller
 
     }
     public function update(Request $request,Holiday $holiday){
-        if(auth()->user()->hasPermission('holidays update')){
+        if(auth()->user()->hasPermission('admin holiday update')){
             try {
                 $validate = Validator::make($request->all(),[
                     "name" => 'required',
@@ -131,7 +131,7 @@ class HolidayController extends Controller
     }
     public function destroy(Holiday $holiday)
     {
-        if(auth()->user()->hasPermission('holidays destroy')){
+        if(auth()->user()->hasPermission('admin holiday destroy')){
             try {
                 $holiday->delete();
                 toastr()->success('Delete Holiday Success.');
@@ -147,7 +147,7 @@ class HolidayController extends Controller
     }
     public function StatusUpdate(Request $request,$id)
     {
-        if(auth()->user()->hasPermission('admin holidays statusupdate')){
+        if(auth()->user()->hasPermission('admin holiday statusupdate')){
             try {
                 $holiday = Holiday::find($id);
                 $holiday->status = $request->status;

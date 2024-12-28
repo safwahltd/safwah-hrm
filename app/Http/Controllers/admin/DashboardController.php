@@ -25,58 +25,152 @@ class DashboardController extends Controller
 {
     public function index(){
         if (auth()->user()->role == 'admin'){
-            $totalEmployees = UserInfos::where('status',1)->whereNotIn('user_id',[1])->get('user_id');
-            $totalEmployeeMale = UserInfos::where('status',1)->whereNotIn('user_id',[1])->where('gender',1)->count();
-            $totalEmployeeFeMale = UserInfos::where('status',1)->whereNotIn('user_id',[1])->where('gender',2)->count();
-            $totalEmployeeOther = UserInfos::where('status',1)->whereNotIn('user_id',[1])->whereNotIn('gender',[1,2])->count();
-            $atten = Attendance::where('year',Carbon::now()->year)->get();
+            $year = Carbon::now()->year; // Store the current year for reuse
+
+            // Query to retrieve all employee statistics in a single query
+            $totalEmployees = UserInfos::where('status', 1)
+                ->whereNotIn('user_id', [1])
+                ->get(['user_id', 'gender']);
+
+            // Categorize gender counts in one pass
+            $totalEmployeeMale = $totalEmployees->where('gender', 1)->count();
+            $totalEmployeeFeMale = $totalEmployees->where('gender', 2)->count();
+            $totalEmployeeOther = $totalEmployees->whereNotIn('gender', [1, 2])->count();
+
+            // Query attendance and calculate sums at once
+            $atten = Attendance::where('year', $year)->get(['attend', 'late', 'absent']);
             $totalPresent = $atten->sum('attend');
             $totalLate = $atten->sum('late');
             $totalAbsent = $atten->sum('absent');
-            $absentEmployees = $totalEmployees->whereNotIn('user_id', $totalPresent)->count();
-            $leaveApply = Leave::whereYear('created_at', Carbon::now()->year)->count();
-            $holidays = Holiday::where('date_from', '>', \Illuminate\Support\Carbon::now())->latest()->simplePaginate(5);
+            // Calculate the leave applications for the current year
+            $leaveApply = Leave::whereYear('created_at', $year)->count();
+
+            // Retrieve holidays using simple pagination
+            $holidays = Holiday::where('date_from', '>', Carbon::now())->latest()->simplePaginate(5);
+
+            // Retrieve department, designation, and termination counts
             $departments = Department::count();
             $designations = Designation::count();
             $terminations = Termination::count();
-            $assets = Asset::where('status',1)->get();
+
+            // Retrieve assets and calculate the total value
+            $assets = Asset::where('status', 1)->get(['value']);
             $totalAssets = $assets->sum('value');
-            $users = User::whereNotIn('id',[1])->where('status',1)->get();
+
+            // Retrieve user details excluding the one with id = 1
+            $users = User::whereNotIn('id', [1])->where('status', 1)->get();
+
+            // Calculate total salary payments
             $totalSalaryPayment = SalaryPayment::sum('paid_amount');
-            return view('admin.dashboard.index',compact(
-                    'totalEmployees','totalEmployeeMale',
-                    'totalEmployeeFeMale','totalEmployeeOther',
-                    'totalPresent','totalLate','totalAbsent',
-                    'leaveApply','holidays','departments',
-                    'designations','terminations','assets','totalAssets','totalSalaryPayment','users')
-            );
+
+            // Return the data to the view
+            return view('admin.dashboard.index', compact(
+                'totalEmployees', 'totalEmployeeMale', 'totalEmployeeFeMale', 'totalEmployeeOther',
+                'totalPresent', 'totalLate', 'totalAbsent', 'leaveApply', 'holidays', 'departments',
+                'designations', 'terminations', 'assets', 'totalAssets', 'totalSalaryPayment', 'users'
+            ));
         }
         else{
-            $attendances = Attendance::where('user_id',auth()->user()->id)->latest()->take(10)->get();
-            $atten = Attendance::where('user_id',auth()->user()->id)->where('year',Carbon::now()->year)->get();
+            $userId = auth()->user()->id;
+            $year = Carbon::now()->year;
+
+// Get the last 10 attendance records
+            $attendances = Attendance::where('user_id', $userId)->latest()->take(10)->get();
+
+// Get all attendance records for the current year
+            $atten = Attendance::where('user_id', $userId)->where('year', $year)->get();
             $totalWorkingDay = $atten->sum('working_day');
             $totalAttend = $atten->sum('attend');
             $totalLate = $atten->sum('late');
             $totalAbsent = $atten->sum('absent');
-            $totalHolidays = Holiday::whereYear('date_from',Carbon::now()->year)->sum('total_day');
-            $holidays = Holiday::where('date_from', '>', \Illuminate\Support\Carbon::now())->latest()->simplePaginate(10);
-            $leavesPending = Leave::where('user_id',auth()->user()->id)->whereYear('created_at',Carbon::now()->year)->where('status',0)->count();
-            $leave = LeaveBalance::where('user_id',auth()->user()->id)->where('year',Carbon::now()->year)->first();
-            $leaveBalance = HalfDayLeaveBalance::where('user_id',auth()->user()->id)->where('year',Carbon::now()->year)->select([
-                                        \Illuminate\Support\Facades\DB::raw('SUM(half_day) as half_day_total'),
-                                        \Illuminate\Support\Facades\DB::raw('SUM(spent) as spent_total'),
-                                        \Illuminate\Support\Facades\DB::raw('SUM(`left`) as left_total'),
-                                    ])->first();
-            $totalAssets = $assets = Asset::where('user_id',auth()->user()->id)->get();
-            $expenses = Expense::latest()->where('soft_delete',0)->where('user_id',auth()->user()->id)->get();
-            $totalAdvanceAmount = $expenses->where('status',1)->where('receipt_type', 'advance_money_receipt')->sum('amount');
-            $totalMoneyAmount = $expenses->where('status',1)->where('receipt_type', 'money_receipt')->sum('amount');
-            $totalPayment = $expenses->where('status',1)->where('receipt_type', 'money_receipt')->sum('payment');
-            $totalDue = $expenses->where('status',1)->where('receipt_type', 'money_receipt')->sum('due');
 
-            return view('admin.dashboard.index',compact('leaveBalance','holidays','leave',
-                'attendances','totalAttend','totalLate','totalAbsent','leavesPending','totalWorkingDay',
-                'totalHolidays','totalAssets','totalAdvanceAmount','totalMoneyAmount','totalPayment','totalDue'));
+// Get total holidays for the current year
+            $totalHolidays = Holiday::whereYear('date_from', $year)->sum('total_day');
+
+// Paginate holidays for the future
+            $holidays = Holiday::where('date_from', '>', Carbon::now())->simplePaginate(10);
+
+// Get pending leaves for the user for the current year
+            $leavesPending = Leave::where('user_id', $userId)->whereYear('created_at', $year)->where('status', 0)->count();
+
+// Retrieve leave balance for the user for the current year
+            $leave = LeaveBalance::where('user_id', $userId)->where('year', $year)->first();
+
+// Retrieve half-day leave balance with aggregation
+            $leaveBalance = HalfDayLeaveBalance::where('user_id', $userId)->where('year', $year)
+                ->selectRaw('SUM(half_day) as half_day_total, SUM(spent) as spent_total, SUM(`left`) as left_total')
+                ->first();
+
+// Retrieve asset details for the user
+            $totalAssets = Asset::where('user_id', $userId)->get();
+
+// Get all expenses for the user and filter by receipt type
+            $expenses = Expense::where('user_id', $userId)
+                ->where('soft_delete', 0)
+                ->where('status', 1)
+                ->whereYear('date', $year)
+                ->get();
+
+// Calculate totals for various expense receipt types in a single query
+            $totalAdvanceAmount = $expenses->where('receipt_type', 'advance_money_receipt')->sum('amount');
+            $totalMoneyAmount = $expenses->where('receipt_type', 'money_receipt')->sum('amount');
+            $totalPayment = $expenses->where('receipt_type', 'money_receipt')->sum('payment');
+            $totalDue = $expenses->where('receipt_type', 'money_receipt')->sum('due');
+
+            // Pass the data to the view
+            return view('admin.dashboard.index', compact(
+                'leaveBalance', 'holidays', 'leave', 'attendances',
+                'totalAttend', 'totalLate', 'totalAbsent', 'leavesPending',
+                'totalWorkingDay', 'totalHolidays', 'totalAssets',
+                'totalAdvanceAmount', 'totalMoneyAmount', 'totalPayment', 'totalDue'
+            ));
+        }
+    }
+    public function hrIndex(){
+        if(auth()->user()->hasPermission('hr dashboard')){
+            $year = Carbon::now()->year;
+            // Query to retrieve all employee statistics in a single query
+            $totalEmployees = UserInfos::where('status', 1)
+                ->whereNotIn('user_id', [1])
+                ->get(['user_id', 'gender']);
+
+            // Categorize gender counts in one pass
+            $totalEmployeeMale = $totalEmployees->where('gender', 1)->count();
+            $totalEmployeeFeMale = $totalEmployees->where('gender', 2)->count();
+            $totalEmployeeOther = $totalEmployees->whereNotIn('gender', [1, 2])->count();
+
+            // Query attendance and calculate sums at once
+            $atten = Attendance::where('year', $year)->get(['attend', 'late', 'absent']);
+            $totalPresent = $atten->sum('attend');
+            $totalLate = $atten->sum('late');
+            $totalAbsent = $atten->sum('absent');
+            // Calculate the leave applications for the current year
+            $leaveApply = Leave::whereYear('created_at', $year)->count();
+
+            // Retrieve holidays using simple pagination
+            $holidays = Holiday::where('date_from', '>', Carbon::now())->simplePaginate(5);
+
+            // Retrieve department, designation, and termination counts
+            $departments = Department::count();
+            $designations = Designation::count();
+            $terminations = Termination::count();
+
+            // Retrieve assets and calculate the total value
+            $assets = Asset::where('status', 1)->get(['value']);
+            $totalAssets = $assets->sum('value');
+
+            // Retrieve user details excluding the one with id = 1
+            $users = User::whereNotIn('id', [1])->where('status', 1)->get();
+
+            // Calculate total salary payments
+            $totalSalaryPayment = SalaryPayment::sum('paid_amount');
+
+            // Return the data to the view
+            return view('admin.dashboard.hr-dashboard', compact(
+                'totalEmployees', 'totalEmployeeMale', 'totalEmployeeFeMale', 'totalEmployeeOther',
+                'totalPresent', 'totalLate', 'totalAbsent', 'leaveApply', 'holidays', 'departments',
+                'designations', 'terminations', 'assets', 'totalAssets', 'totalSalaryPayment', 'users'
+            ));
         }
     }
     public function AttendanceFilter(Request $request){
@@ -101,6 +195,79 @@ class DashboardController extends Controller
             return $q->whereYear('created_at', $year);
         })->count();
         $html = view('admin.dashboard.attendance', compact('totalAttend','totalLate','totalAbsent','leaveApply'))->render();
+        return response()->json(['html' => $html]);
+    }
+    public function allFilter(Request $request){
+        $userId = auth()->user()->id;
+        $month = $request->month;
+        $year = $request->year;
+
+// Get all attendance records for the current year
+        $atten = Attendance::where('user_id', $userId)->when($month, function ($q) use ($month) {
+            return $q->where('month', $month);
+        })->when($year, function ($q) use ($year) {
+                return $q->where('year', $year);
+        })->get();
+        $totalWorkingDay = $atten->sum('working_day');
+        $totalAttend = $atten->sum('attend');
+        $totalLate = $atten->sum('late');
+        $totalAbsent = $atten->sum('absent');
+
+// Get total holidays for the current year
+        $totalHolidays = Holiday::when($month, function ($q) use ($month) {
+            return $q->whereMonth('date_from', $month);
+        })->when($year, function ($q) use ($year) {
+                return $q->whereYear('date_from', $year);
+        })->sum('total_day');
+
+// Get pending leaves for the user for the current year
+        $leavesPending = Leave::where('user_id', $userId)->when($month, function ($q) use ($month) {
+            return $q->whereMonth('created_at', $month);
+        })->when($year, function ($q) use ($year) {
+            return $q->whereYear('created_at', $year);
+        })->where('status', 0)->count();
+
+// Retrieve leave balance for the user for the current year
+        $leave = LeaveBalance::where('user_id', $userId)->when($year, function ($q) use ($year) {
+            return $q->where('year', $year);
+        })->first();
+
+// Retrieve half-day leave balance with aggregation
+        $leaveBalance = HalfDayLeaveBalance::where('user_id', $userId)->when($month, function ($q) use ($month) {
+                return $q->where('month', $month);
+            })->when($year, function ($q) use ($year) {
+                return $q->where('year', $year);
+            })
+            ->selectRaw('SUM(half_day) as half_day_total, SUM(spent) as spent_total, SUM(`left`) as left_total')
+            ->first();
+
+// Retrieve asset details for the user
+        $totalAssets = Asset::where('user_id', $userId)->get();
+
+// Get all expenses for the user and filter by receipt type
+        $expenses = Expense::where('user_id', $userId)
+            ->where('soft_delete', 0)
+            ->where('status', 1)
+            ->when($month, function ($q) use ($month) {
+                return $q->whereMonth('date', $month);
+            })->when($year, function ($q) use ($year) {
+                return $q->whereYear('date', $year);
+            })
+            ->get();
+
+// Calculate totals for various expense receipt types in a single query
+        $totalAdvanceAmount = $expenses->where('receipt_type', 'advance_money_receipt')->sum('amount');
+        $totalMoneyAmount = $expenses->where('receipt_type', 'money_receipt')->sum('amount');
+        $totalPayment = $expenses->where('receipt_type', 'money_receipt')->sum('payment');
+        $totalDue = $expenses->where('receipt_type', 'money_receipt')->sum('due');
+
+        // Pass the data to the view
+        $html = view('admin.dashboard.all-filter', compact(
+            'leaveBalance', 'leave',
+            'totalAttend', 'totalLate', 'totalAbsent', 'leavesPending',
+            'totalWorkingDay', 'totalHolidays', 'totalAssets',
+            'totalAdvanceAmount', 'totalMoneyAmount', 'totalPayment', 'totalDue'
+        ))->render();
         return response()->json(['html' => $html]);
     }
 }

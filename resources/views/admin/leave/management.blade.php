@@ -65,6 +65,7 @@
                                     <div class="col-sm-12 my-2">
                                         <label for="monthHalf" class="form-label">Month <span class="text-danger">*</span></label><br>
                                         <select class="form-control-sm" name="month" id="monthHalf" required>
+                                            <option disabled selected value="">select one</option>
                                             @for ($i = 1; $i <= 12; $i++)
                                                 <option value="{{ $i }}">{{ date('F', mktime(0, 0, 0, $i, 1)) }}</option>
                                             @endfor

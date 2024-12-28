@@ -321,7 +321,7 @@ class ExpenseController extends Controller
                     event(new EmployeeNotificationEvent(
                         '',
                         $status,
-                        $expense->user_id,
+                        $request->user_id,
                         [
                             'content' => $expense->reason,
                             'user_id' => auth()->user()->id,
@@ -339,7 +339,7 @@ class ExpenseController extends Controller
                     event(new EmployeeNotificationEvent(
                         '',
                         $status,
-                        $expense->user_id,
+                        $request->user_id,
                         [
                             'content' => $expense->reason,
                             'user_id' => auth()->user()->id,

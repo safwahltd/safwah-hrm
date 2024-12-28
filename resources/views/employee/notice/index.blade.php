@@ -111,7 +111,7 @@
                                     <div class="modal-body">
                                         <div class="">
                                             @if(isset($notification->data['data']['content']))
-                                            <p align="justify">{{ isset($notification->data['data']['content']) ? $notification->data['data']['content'] : '' }}</p><br>
+                                            <p align="justify">{!! isset($notification->data['data']['content']) ? $notification->data['data']['content'] : '' !!}</p><br>
                                             @endif
                                             <p align="justify">
                                                 @if($notification->data['type'] == 'new_notice')
@@ -130,7 +130,10 @@
                 </div>
             @endforeach
         </div>
-        {{ $notifications->links() }}
+        <div class="d-grid justify-content-center">
+            {{ $notifications->links() }}
+        </div>
+
     </div>
 
 

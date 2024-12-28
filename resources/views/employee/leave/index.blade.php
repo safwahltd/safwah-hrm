@@ -6,6 +6,56 @@
             display: none; /* Hide all input groups by default */
         }
     </style>
+    <div class="row px-0">
+        <div class="col-md-3 col-lg-2 col-6 text-center">
+            <div class="card p-2 my-1">
+                <p class="text-black m-0 fw-bold text-uppercase" style="font-size: 12px;">Total Leave </p>
+                <p class="fw-bold" style="margin-bottom: 0; margin-top: 5px; color: #664d03">
+                    {{ $totalLeave = (($leaveBalance->sick ?? 0) + ($leaveBalance->casual ?? 0)) }} <br>
+                    <small>Sick : {{$leaveBalance->sick ?? 0}}</small>
+                    <small>Casual : {{$leaveBalance->casual ?? 0}}</small>
+                </p>
+            </div>
+        </div>
+        <div class="col-md-3 col-lg-2 col-6 text-center">
+            <div class="card p-2 my-1">
+                <p class="text-black m-0 fw-bold text-uppercase" style="font-size: 12px;">Leave Spent</p>
+                <p class="fw-bold text-primary" style="margin-bottom: 0; margin-top: 5px;">
+                    {{ $spentTotal = ($leaveBalance->sick_spent ?? 0) + ($leaveBalance->casual_spent ?? 0) }}<br>
+                    <small>Sick : {{$leaveBalance->sick_spent ?? 0}}</small>
+                    <small>Casual : {{$leaveBalance->casual_spent ?? 0}}</small>
+                </p>
+            </div>
+        </div>
+        <div class="col-md-3 col-lg-2 col-6 text-center">
+            <div class="card p-2 my-1">
+                <p class="text-black m-0 fw-bold text-uppercase" style="font-size: 12px;">Leave Left</p>
+                <p class="fw-bold text-success" style="margin-bottom: 0; margin-top: 5px;">
+                    {{ $totalLeave - $spentTotal ?? 0 }}<br>
+                    <small>Sick : {{$leaveBalance->sick_left ?? 0 }}</small>
+                    <small>Casual : {{$leaveBalance->casual_left ?? 0 }}</small>
+                </p>
+            </div>
+        </div>
+        <div class="col-md-3 col-lg-2 col-6 text-center">
+            <div class="card p-2 my-1">
+                <p class="text-black m-0 fw-bold text-uppercase" style="font-size: 12px;">Half Day</p>
+                <p class="fw-bold text-danger" style="margin-bottom: 0; margin-top: 5px;">{{ $leaveBalanceHalfDay->half_day ?? 0 }}</p>
+            </div>
+        </div>
+        <div class="col-md-3 col-lg-2 col-6 text-center">
+            <div class="card p-2 my-1">
+                <p class="text-black m-0 fw-bold text-uppercase" style="font-size: 12px;">Half Day Spent</p>
+                <p class="fw-bold text-primary" style="margin-bottom: 0; margin-top: 5px;">{{ $leaveBalanceHalfDay->spent ?? 0 }}</p>
+            </div>
+        </div>
+        <div class="col-md-3 col-lg-2 col-6 text-center">
+            <div class="card p-2 my-1">
+                <p class="text-black m-0 fw-bold text-uppercase" style="font-size: 12px;">Half Day Left</p>
+                <p class="fw-bold text-primary" style="margin-bottom: 0; margin-top: 5px;">{{ $leaveBalanceHalfDay->left ?? 0 }}</p>
+            </div>
+        </div>
+    </div>
     <div class="row align-items-center">
         <div class="border-0 mb-4">
             <div class="card-header py-3 no-bg bg-transparent d-flex align-items-center px-0 justify-content-between border-bottom flex-wrap">

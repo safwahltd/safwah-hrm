@@ -10,6 +10,7 @@ use App\Models\Expense;
 use App\Models\Holiday;
 use App\Models\Leave;
 use App\Models\Notice;
+use App\Models\OfficeExpense;
 use App\Models\Salary;
 use App\Models\SalaryPayment;
 use App\Models\SalarySetting;
@@ -704,8 +705,7 @@ class ReportController extends Controller
                     $totalPresents = $attendanceRecords->sum('attend');
                     $total_late = $attendanceRecords->sum('late');
                     $totalAbsents = $attendanceRecords->sum('absent');
-                    $totalLeave = Leave::whereMonth('start_date',$month)->whereYear('start_date',$year)->sum('days_taken');
-                    dd($totalLeave);
+                    $totalLeave = Leave::where('user_id',$userId)->whereMonth('start_date',$month)->whereYear('start_date',$year)->whereNotIn('leave_type',['half_day'])->where('status',1)->sum('days_taken');
 
                     $monthData[] = [
                         'user_name' => $user->name,
@@ -715,6 +715,7 @@ class ReportController extends Controller
                         'total_absents' => $totalAbsents,
                         'total_late' => $total_late,
                         'total_working_days' => $totalWorkingDays,
+                        'totalLeave' => $totalLeave,
                     ];
                 }
                 $reportData[$month] = $monthData;
@@ -801,6 +802,52 @@ class ReportController extends Controller
                 $pdf = Pdf::loadView('admin.report.expense.expense-report-download', compact('expenses','start_date','end_date','receipt_type'));
                 $pdf = $pdf->setPaper('A4','portrait');
                 return $pdf->stream('expense_report.pdf');
+            }
+            catch (\Exception $e){
+                toastr()->error($e->getMessage());
+                return back();
+            }
+        }
+        else{
+            toastr()->error('Permission Denied');
+            return back();
+        }
+    }
+    public function officeExpense(){
+        if(auth()->user()->hasPermission('admin office expense report')){
+            return view('admin.report.office-expense.office-expense');
+        }
+        else{
+            toastr()->error('Permission Denied');
+            return back();
+        }
+    }
+    public function officeExpenseReportShow(Request $request){
+        if(auth()->user()->hasPermission('admin expense office report show')){
+            $start_date = $request->input('start_date') ?? Carbon::now()->toDateString();
+            $end_date = $request->input('end_date') ?? Carbon::now()->toDateString();
+            $expenses = OfficeExpense::where('status',1)->when($start_date && $end_date, function ($query) use ($start_date, $end_date) {
+                $query->whereBetween('date', [$start_date, $end_date]);
+            })->orderBy('date','asc')->get();
+
+            return view('admin.report.office-expense.office-expense-report-show',compact('expenses','start_date','end_date'));
+        }
+        else{
+            toastr()->error('Permission Denied');
+            return back();
+        }
+    }
+    public function officeExpenseReportDownload(Request $request){
+        if(auth()->user()->hasPermission('admin download office expense report')){
+            try {
+                $start_date = $request->input('start_date');
+                $end_date = $request->input('end_date');
+                $expenses = OfficeExpense::where('status',1)->when($start_date && $end_date, function ($query) use ($start_date, $end_date) {
+                    $query->whereBetween('date', [$start_date, $end_date]);
+                })->orderBy('date','asc')->get();
+                $pdf = Pdf::loadView('admin.report.office-expense.office-expense-report-download', compact('expenses','start_date','end_date'));
+                $pdf = $pdf->setPaper('A4','portrait');
+                return $pdf->stream('office_expense_report.pdf');
             }
             catch (\Exception $e){
                 toastr()->error($e->getMessage());

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Payment Slip</title>
+    <title>{{\Illuminate\Support\Facades\Request::route()->getName() == 'admin.salary.download' ? 'Salary':'Payment'}} Slip</title>
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <style>
@@ -126,7 +126,7 @@
                         <div class="col-md-12" style="margin-top: 10px">
                             <div class="row">
                                 <div class="col-md-12">
-                                    <h5 style="font-size: 13px; padding: 5px; border: 1px solid black; font-weight: bold; margin-bottom: 25px;" align="center">EMPLOYEE SALARY PAYMENT SLIP</h5>
+                                    <h5 style="font-size: 13px; padding: 5px; border: 1px solid black; font-weight: bold; margin-bottom: 25px;" align="center">EMPLOYEE {{\Illuminate\Support\Facades\Request::route()->getName() == 'admin.salary.download' ? 'SALARY':'SALARY PAYMENT'}} SLIP</h5>
                                     <table class="table table-striped table-bordered" style="border: 1px solid black;">
                                         <thead class="text-center">
                                             <th colspan="4" class="p-2">
@@ -160,7 +160,7 @@
                                         <tr align="center">
                                             <th style=" width: 250px;"><small class="p-0 fw-bold mx-0" style="font-weight: bold">PAYMENT DETAILS</small></th>
                                             <th style=" width: 250px;"><small class="p-0 fw-bold mx-0" style="font-weight: bold">DEDUCTION DETAILS</small></th>
-                                            <th style=" width: 100px;"><small class="p-0 fw-bold mx-0" style="font-weight: bold">NET PAY (BDT)</small></th>
+                                            <th style=" width: 100px;"><small class="p-0 fw-bold mx-0" style="font-weight: bold">{{\Illuminate\Support\Facades\Request::route()->getName() == 'admin.salary.download' ? 'NET TOTAL':'PAID AMOUNT'}} (BDT)</small></th>
                                         </tr>
                                         <tr style="border: none;">
                                             <td style="padding: 0; border: none;">
@@ -198,10 +198,12 @@
                                                             $payment = json_decode($salary->payment);
                                                         @endphp
                                                         @foreach($salaryPaymentInputs as $paymentInput)
+                                                            @if(!empty($payment->{$paymentInput->name}))
                                                             <tr>
                                                                 <td style="text-transform: uppercase">{{ ucwords(str_replace('_',' ',$paymentInput->name)) }}</td>
-                                                                <td align="center">{{$payment->{$paymentInput->name} ?? 0 }}</td>
+                                                                <td align="center">{{ $payment->{$paymentInput->name} ?? 0 }}</td>
                                                             </tr>
+                                                            @endif
                                                         @endforeach
                                                     @endif
 
@@ -230,10 +232,12 @@
                                                             $deduct = json_decode($salary->deduct);
                                                         @endphp
                                                         @foreach($salaryDeductInputs as $deductInput)
-                                                            <tr style="text-transform: uppercase">
-                                                                <td style="border-left: none; ">{{ ucwords(str_replace('_',' ',$deductInput->name)) }}</td>
-                                                                <td style="border-right: none; "align="center">{{$deduct->{$deductInput->name} ?? 0 }}</td>
-                                                            </tr>
+                                                            @if(!empty($deduct->{$deductInput->name}))
+                                                                <tr style="text-transform: uppercase">
+                                                                    <td style="border-left: none; ">{{ ucwords(str_replace('_',' ',$deductInput->name)) }}</td>
+                                                                    <td style="border-right: none; "align="center">{{$deduct->{$deductInput->name} ?? 0 }}</td>
+                                                                </tr>
+                                                            @endif
                                                         @endforeach
                                                     @endif
 
@@ -241,7 +245,7 @@
                                                 </table>
                                             </td>
                                             <td style="" align="center">
-                                                <span style="font-weight: bold">{{$net ?? 0}}</span>
+                                                <span style="font-weight: bold">{{ $net ?? 0}}</span>
                                             </td>
                                         </tr>
                                         <tr align="center">
@@ -263,7 +267,7 @@
                                             @endphp
                                             <td style="font-weight: bold; border-top: none;">TOTAL PAY :  {{ $allowance = ($pay + $salary->basic_salary + $salary->house_rent + $salary->medical_allowance + $salary->conveyance_allowance + $salary->others + $salary->mobile_allowance + $salary->bonus) }}</td>
                                             <td style="font-weight: bold;">TOTAL DEDUCTION : {{ $deductions = ($deduct + $salary->meal_deduction + $salary->income_tax + $salary->other_deduction + $salary->attendance_deduction)}}</td>
-                                            <td style="font-weight: bold;" align="center"><span id="net-total">{{ $net = $allowance - $deductions }}</span> </td>
+                                            <td style="font-weight: bold;" align="center"><span id="net-total">{{ $net}}</span> </td>
                                         </tr>
                                     </table>
                                     <p style="font-weight:bold; font-size: 12px; padding: 5px; border: 1px solid black; margin-top: 10px; text-transform: uppercase;">In Words : {{ $netWords }}</p>

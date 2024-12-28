@@ -7,10 +7,10 @@
             <div class="card bg-secondary-subtle teacher-card mb-3">
                 <div class="card-body  d-flex teacher-fulldeatil">
                     <div class="profile-teacher pe-xl-4 pe-md-2 pe-sm-4 pe-0 text-center w220 mx-sm-0 mx-auto">
-                            @if($user->userInfo->image == '')
-                                <img id="imagePreview" src="{{asset('/')}}admi-ssets/images/lg/avatar3.jpg" alt="" class="avatar xl rounded-circle img-thumbnail shadow-sm">
+                            @if(file_exists(auth()->user()->userInfo->image))
+                            <img id="imagePreview" src="{{ asset($user->userInfo->image) }}" alt="" class="avatar xl rounded-circle img-thumbnail shadow-sm">
                             @else
-                                <img id="imagePreview" src="{{asset($user->userInfo->image)}}" alt="" class="avatar xl rounded-circle img-thumbnail shadow-sm">
+                            <img id="imagePreview" src="{{asset('/')}}admin/assets/images/lg/{{ auth()->user()->userInfo->gender == '1' ? 'avatar5.jpg':''}}{{auth()->user()->userInfo->gender == '2' ? 'avatar2.jpg':''}}{{auth()->user()->userInfo->gender == '3' ? 'avatar4.jpg':''}}" alt="" class="avatar xl rounded-circle img-thumbnail shadow-sm">
                             @endif
                                 <form action="{{route('employee.profile.picture.update')}}" method="POSt" enctype="multipart/form-data">
                                     @csrf
@@ -76,7 +76,7 @@
                             <div class="col-xl-5">
                                 <div class="d-flex align-items-center">
                                     <i class="icofont-users"></i>
-                                    <span class="ms-2 small">{{ $user->userInfo->gender ?? '-'}}</span>
+                                    <span class="ms-2 small">{{ $user->userInfo->gender == '1' ? 'Male':''}}{{ $user->userInfo->gender == '2' ? 'Female':''}}{{ $user->userInfo->gender == '3' ? 'Other':''}} </span>
                                 </div>
                             </div>
 
@@ -431,51 +431,6 @@
                 </div>
             </div>
         </div>
-        {{--<div class="col-xl-4 col-lg-12 col-md-12">
-            <div class="card">
-                <div class="card-header py-3">
-                    <h6 class="mb-0 fw-bold ">Experience</h6>
-                </div>
-                <div class="card-body">
-                    <div class="timeline-item ti-danger border-bottom ms-2">
-                        <div class="d-flex">
-                            <span class="avatar d-flex justify-content-center align-items-center rounded-circle light-success-bg">PW</span>
-                            <div class="flex-fill ms-3">
-                                <div class="mb-1"><strong>Pixel Wibes</strong></div>
-                                <span class="d-flex text-dark">Jan 2016 - Present (5 years 2 months)</span>
-                            </div>
-                        </div>
-                    </div> <!-- timeline item end  -->
-                    <div class="timeline-item ti-info border-bottom ms-2">
-                        <div class="d-flex">
-                            <span class="avatar d-flex justify-content-center align-items-center rounded-circle bg-careys-pink">CC</span>
-                            <div class="flex-fill ms-3">
-                                <div class="mb-1"><strong>Crest Coder</strong></div>
-                                <span class="d-flex text-dark">Dec 2015 - 2016 (1 years)</span>
-                            </div>
-                        </div>
-                    </div> <!-- timeline item end  -->
-                    <div class="timeline-item ti-success  ms-2">
-                        <div class="d-flex">
-                            <span class="avatar d-flex justify-content-center align-items-center rounded-circle bg-lavender-purple">MW</span>
-                            <div class="flex-fill ms-3">
-                                <div class="mb-1"><strong>Morning Wibe</strong></div>
-                                <span class="d-flex text-dark">Nov 2014 - 2015 (1 years)</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="timeline-item ti-danger border-bottom ms-2">
-                        <div class="d-flex">
-                            <span class="avatar d-flex justify-content-center align-items-center rounded-circle light-success-bg">FF</span>
-                            <div class="flex-fill ms-3">
-                                <div class="mb-1"><strong>FebiFlue</strong></div>
-                                <span class="d-flex text-dark">Jan 2010 - 2009 (1 years)</span>
-                            </div>
-                        </div>
-                    </div> <!-- timeline item end  -->
-                </div>
-            </div>
-        </div>--}}
     </div>
     <!-- Row End -->
 
@@ -518,9 +473,9 @@
                                     <label for="gender" class="form-label">Gender</label>
                                     <select name="gender" id="gender" class="form-control">
                                         <option label="Select One"></option>
-                                        <option {{$user->userInfo->gender == 'Male' ? 'selected':''}} value="Male">Male</option>
-                                        <option {{$user->userInfo->gender == 'Female' ? 'selected':''}} value="Female">Female</option>
-                                        <option {{$user->userInfo->gender == 'Other' ? 'selected':''}} value="Other">Other</option>
+                                        <option {{$user->userInfo->gender == '1' ? 'selected':''}} value="1">Male</option>
+                                        <option {{$user->userInfo->gender == '2' ? 'selected':''}} value="2">Female</option>
+                                        <option {{$user->userInfo->gender == '3' ? 'selected':''}} value="3">Other</option>
                                     </select>
                                 </div>
                                 <div class="col-6">

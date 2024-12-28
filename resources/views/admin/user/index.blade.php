@@ -2,7 +2,7 @@
 @section('title','Employee Management')
 @section('body')
     <div class="row">
-        <form method="get" action="{{ route('employees.index') }}">
+        <form method="get" action="{{ route('admin.employees.index') }}">
             <div class="row">
                 <div class="col my-2">
                     <div class="card ">
@@ -83,7 +83,9 @@
             <div class="card border-0 mb-4 no-bg">
                 <div class="card-header py-3 px-0 d-sm-flex align-items-center  justify-content-between border-bottom">
                     <h3 class="fw-bold flex-fill mb-0 mt-sm-0 text-white">Employee</h3>
+                    @if(auth()->user()->hasPermission('admin employees store'))
                     <button type="button" class="btn btn-dark me-1 mt-1 w-sm-100" data-bs-toggle="modal" data-bs-target="#createemp"><i class="icofont-plus-circle me-2 fs-6"></i>Add Employee</button>
+                    @endif
                 </div>
             </div>
         </div>
@@ -96,7 +98,10 @@
             <div class="card">
                 <div class="card-body">
                     <div class="">
+                        @if(auth()->user()->hasPermission('admin employees update'))
                         <button class="btn btn-toolbar float-start" data-bs-toggle="modal" data-bs-target="#editEmp{{$key}}"><i class="icofont-edit text-success"></i></button>
+                        @endif
+                        @if(auth()->user()->hasPermission('admin user ban unban'))
                         <form action="{{route('admin.user.ban.unban',$user->id)}}" method="post">
                             @csrf
                             @if($user->status == 0)
@@ -108,18 +113,19 @@
                                 <button class="float-end btn btn-toolbar"><i class="text-success icofont-stop"></i></button>
                             @endif
                         </form>
+                        @endif
                     </div>
                     <div class="text-center">
                         <a href="{{route('employee.profile',$user->id)}}">
                             @if($user->userInfo->image == '')
-                                <img src="{{asset('/')}}admin/assets/images/lg/avatar3.jpg" alt="" class="avatar xl rounded-circle img-thumbnail shadow-sm">
+                                <img src="{{asset('/')}}admin/assets/images/lg/{{$user->userInfo->gender == '1' ? 'avatar5.jpg':''}}{{$user->userInfo->gender == '2' ? 'avatar2.jpg':''}}{{$user->userInfo->gender == '3' ? 'avatar4.jpg':''}}" alt="" class="avatar xl rounded-circle img-thumbnail shadow-sm">
                             @else
                                 <img src="{{asset($user->userInfo->image)}}" alt="" class="avatar xl rounded-circle img-thumbnail shadow-sm">
                             @endif
                             <div class="about-info align-items-center mt-3 justify-content-center">
                                 <h6  class="mb-0 mt-2  fw-bold d-block fs-6">{{$user->name}}</h6>
                                 <span class="light-info-bg py-1 px-2 rounded-1 d-inline-block fw-bold small-11 mb-0 mt-1">{{$user->userInfo->designations->name ?? 'N/A'}}<br> <span>({{ str_replace('_',' ',$user->userInfo->employee_type) }})</span></span><br>
-                                <span class="light-info-bg py-1 px-2 rounded-1 d-inline-block fw-bold small-11 mb-0 mt-1">EIN : {{$user->userInfo->employee_id ?? 'N/A'}}</span>
+                                <span class="light-info-bg py-1 px-2 rounded-1 d-inline-block fw-bold small-11 mb-0 mt-1">EIN : SL{{$user->userInfo->employee_id ?? 'N/A'}}</span>
                             </div>
                         </a>
                     </div>
@@ -134,7 +140,7 @@
                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div class="modal-body">
-                            <form action="{{route('employees.update',$user->id)}}" method="post">
+                            <form action="{{route('admin.employees.update',$user->id)}}" method="post">
                                 @csrf
                                 @method('PUT')
                                 <div class="mb-3">
@@ -143,13 +149,13 @@
                                 </div>
                                 <div class="mb-3">
                                     <label for="exampleFormControlInput977" class="form-label">Email <span class="text-danger">*</span></label>
-                                    <input type="text" name="email" required class="form-control" value="{{$user->email}}" id="exampleFormControlInput977" placeholder="Email Address">
+                                    <input type="email" name="email" required class="form-control" value="{{$user->email}}" id="exampleFormControlInput977" placeholder="Email Address">
                                 </div>
                                 <div class="deadline-form">
                                     <div class="row g-3 mb-3">
                                         <div class="col-sm-4">
                                             <label for="exampleFormControlInput1778" class="form-label">Employee ID <span class="text-danger">*</span></label>
-                                            <input type="text" required name="employee_id" value="{{$user->userInfo->employee_id}}" class="form-control" id="exampleFormControlInput1778" placeholder="Employee Id">
+                                            <input type="number" required name="employee_id" value="{{$user->userInfo->employee_id}}" class="form-control" id="exampleFormControlInput1778" placeholder="Employee Id">
                                         </div>
                                         <div class="col-sm-4">
                                             <label for="employee_type" class="form-label">Employee Type <span class="text-danger">*</span></label>
@@ -172,7 +178,7 @@
                                     <div class="row g-3 mb-3">
                                         <div class="col-sm-6">
                                             <label for="exampleFormControlInput777" class="form-label">Phone</label>
-                                            <input type="text" name="phone" class="form-control" value="{{$user->userInfo->mobile}}" id="exampleFormControlInput777" placeholder="phone number">
+                                            <input type="number" name="phone" class="form-control" value="{{$user->userInfo->mobile}}" id="exampleFormControlInput777" placeholder="phone number">
                                         </div>
                                         <div class="col-sm-6">
                                             <label  class="form-label">Designation <span class="text-danger">*</span></label>
@@ -240,7 +246,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form action="{{route('employees.store')}}" method="post">
+                    <form action="{{route('admin.employees.store')}}" method="post">
                         @csrf
                         <div class="mb-3">
                             <label for="exampleFormControlInput877" class="form-label">Employee Name <span class="text-danger">*</span></label>
@@ -248,13 +254,13 @@
                         </div>
                         <div class="mb-3">
                             <label for="exampleFormControlInput977" class="form-label">Email <span class="text-danger">*</span></label>
-                            <input type="text" name="email" required class="form-control" value="{{old('name')}}" id="exampleFormControlInput977" placeholder="Email Address">
+                            <input type="email" name="email" required class="form-control" value="{{old('name')}}" id="exampleFormControlInput977" placeholder="Email Address">
                         </div>
                         <div class="deadline-form">
                             <div class="row g-3 mb-3">
                                 <div class="col-sm-4">
                                     <label for="exampleFormControlInput1778" class="form-label">Employee ID <span class="text-danger">*</span></label>
-                                    <input type="text" required name="employee_id" value="{{old('employee_id')}}" class="form-control" id="exampleFormControlInput1778" placeholder="Employee Id">
+                                    <input type="number" required name="employee_id" value="{{old('employee_id')}}" class="form-control" id="exampleFormControlInput1778" placeholder="Employee Id">
                                 </div>
                                 <div class="col-sm-4">
                                     <label for="employee_type" class="form-label">Employee Type <span class="text-danger">*</span></label>
@@ -285,7 +291,7 @@
                                 </div>
                                 <div class="col-sm-6">
                                     <label for="exampleFormControlInput777" class="form-label">Phone</label>
-                                    <input type="text" name="phone" class="form-control" value="{{old('phone')}}" id="exampleFormControlInput777" placeholder="phone number">
+                                    <input type="number" name="phone" class="form-control" value="{{old('phone')}}" id="exampleFormControlInput777" placeholder="phone number">
                                 </div>
                                 <div class="col-sm-6">
                                     <label  class="form-label">Designation <span class="text-danger">*</span></label>

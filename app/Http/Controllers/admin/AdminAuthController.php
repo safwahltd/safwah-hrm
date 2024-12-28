@@ -29,10 +29,11 @@ class AdminAuthController extends Controller
                 return redirect()->back()->withErrors($validate)->withInput();
             }
             $credentials = $request->only('email', 'password');
+            $remember = $request->has('remember');
             $user = User::where('email',$request->email)->first();
             if($user){
                 if ($user->status == 1){
-                    if (Auth::guard('web')->attempt($credentials,$request->has('remember'))){
+                    if (Auth::guard('web')->attempt($credentials,$remember)){
                         toastr()->success('Login Success.');
                         return redirect()->route('admin.dashboard');
                     }

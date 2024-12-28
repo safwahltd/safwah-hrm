@@ -24,38 +24,64 @@ use App\Http\Controllers\admin\SalarySettingController;
 use App\Http\Controllers\admin\PolicyController;
 use App\Http\Controllers\admin\FormController;
 use App\Http\Controllers\admin\ExpenseController;
+use App\Http\Controllers\admin\OfficeExpenseController;
 
 
-Route::get('/', [AdminAuthController::class, 'login'])->name('login');
-Route::post('/login-confirm', [AdminAuthController::class, 'loginConfirm'])->name('login.confirm');
+    Route::get('/', [AdminAuthController::class, 'login'])->name('login');
+    Route::post('/login-confirm', [AdminAuthController::class, 'loginConfirm'])->name('login.confirm');
 
-Route::middleware(['employee.auth'])->prefix('employee/')->group(function () {
-    Route::get('/dashboard', [EmployeeDashboardController::class, 'dashboard'])->name('employee.dashboard');
+    Route::middleware(['employee.auth'])->prefix('employee/')->group(function () {
+        Route::get('/dashboard', [EmployeeDashboardController::class, 'dashboard'])->name('employee.dashboard');
 
-});
-//if (auth()->check()){
+    });
     Route::middleware(['admin.auth'])->group(function () {
         ################################/*   Admin Panel Start  */########################################
         Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
+        Route::get('/hr-dashboard', [DashboardController::class, 'hrIndex'])->name('hr.dashboard');
         Route::get('/attendance-filter', [DashboardController::class, 'AttendanceFilter'])->name('admin.dashboard.attendance.filter');
+        Route::get('/all-filter', [DashboardController::class, 'allFilter'])->name('employee.dashboard.all.filter');
 
         Route::prefix('admin')->group(function (){
-            Route::resource('employees', EmployeeController::class);
+            Route::controller(EmployeeController::class)->group(function (){
+                Route::get('/admin-employees', 'index')->name('admin.employees.index');
+                Route::post('/admin-employees-store', 'store')->name('admin.employees.store');
+                Route::put('/admin-employees-update/{id}', 'update')->name('admin.employees.update');
+                Route::delete('/admin-employees-destroy/{id}', 'destroy')->name('admin.employees.destroy');
+            });
             Route::post('/employee-ban-unban/{id}', [EmployeeController::class, 'banUnbanUSer'])->name('admin.user.ban.unban');
-            Route::resource('departments', DepartmentController::class);
+            Route::controller(DepartmentController::class)->group(function (){
+                Route::get('/admin-department', 'index')->name('admin.department.index');
+                Route::post('/admin-department-store', 'store')->name('admin.department.store');
+                Route::get('/admin-department-edit/{id}', 'edit')->name('admin.department.edit');
+                Route::put('/admin-department-update/{id}', 'update')->name('admin.department.update');
+                Route::delete('/admin-department-destroy/{id}', 'destroy')->name('admin.department.destroy');
+            });
             Route::put('/department-soft-delete/{id}', [DepartmentController::class, 'destroy'])->name('admin.department.soft.delete');
             Route::post('/department-status-update/{id}', [DepartmentController::class, 'StatusUpdate'])->name('admin.department.StatusUpdate');
-            Route::resource('designations', DesignationController::class);
-            Route::put('/designation-soft-delete/{id}', [DesignationController::class,'destroy'])->name('designations.soft.destroy');
+            Route::controller(DesignationController::class)->group(function (){
+                Route::get('/admin-designation', 'index')->name('admin.designation.index');
+                Route::post('/admin-designation-store', 'store')->name('admin.designation.store');
+                Route::put('/admin-designation-update/{id}', 'update')->name('admin.designation.update');
+            });
+            Route::put('/designation-soft-delete/{id}', [DesignationController::class,'destroy'])->name('admin.designation.soft.destroy');
             Route::post('/designation-status-update/{id}', [DesignationController::class, 'StatusUpdate'])->name('admin.designation.StatusUpdate');
-            Route::resource('holidays', HolidayController::class);
-            Route::post('/holiday-status-update/{id}', [HolidayController::class, 'StatusUpdate'])->name('admin.holiday.StatusUpdate');
-            Route::resource('asset', AssetController::class);
-            Route::get('/assets-search-employee', [AssetController::class,'employeeFilter'])->name('employee.filter.asset');
+            Route::controller(HolidayController::class)->group(function (){
+                Route::get('/admin-holiday', 'index')->name('admin.holiday.index');
+                Route::post('/admin-holiday-store', 'store')->name('admin.holiday.store');
+                Route::put('/admin-holiday-update/{id}', 'update')->name('admin.holiday.update');
+                Route::delete('/admin-holiday-destroy/{id}', 'destroy')->name('admin.holiday.destroy');
+                Route::post('/holiday-status-update/{id}', 'StatusUpdate')->name('admin.holiday.StatusUpdate');
+            });
+
+            Route::controller(AssetController::class)->group(function (){
+                Route::get('/admin-asset', 'index')->name('admin.asset.index');
+                Route::post('/admin-asset-store', 'store')->name('admin.asset.store');
+                Route::put('/admin-asset-update/{id}', 'update')->name('admin.asset.update');
+                Route::delete('/admin-asset-destroy/{id}', 'destroy')->name('admin.asset.destroy');
+            });
+
             Route::get('/employee-profile/{id}', [EmployeeController::class,'employeeProfile'])->name('employee.profile');
             Route::get('/attendance-list', [AttendanceController::class,'adminAttendanceList'])->name('admin.attendance.list');
-//            Route::get('/attendance-report', [AttendanceController::class,'adminAttendanceReport'])->name('admin.attendance.report');
-//            Route::get('/export-attendance', [AttendanceController::class, 'exportAttendance'])->name('admin.attendance.report.export');
             Route::get('/employee-attendance-details', [AttendanceController::class,'details'])->name('admin.attendance.details');
             Route::get('/employee-attendance', [AttendanceController::class,'attendanceMonthly'])->name('admin.attendance.month.details');
             Route::get('/employee-attendance-details-download', [AttendanceController::class,'attendanceMonthlyDownload'])->name('admin.attendance.details.download');
@@ -129,22 +155,22 @@ Route::middleware(['employee.auth'])->prefix('employee/')->group(function () {
                 Route::put('/salaries-update/{id}','update')->name('admin.salary.update');
                 Route::put('/salaries-destroy/{id}','destroy')->name('admin.salary.destroy');
                 Route::get('/salaries-download/{id}', 'download')->name('admin.salary.download');
-                Route::get('/get-salary-details/{id}', [SalaryController::class, 'getSalaryDetails'])->name('salary.getDetails');
-                Route::get('/salaries-payment-download/{id}', 'download')->name('admin.salary.payment.download');
-                Route::get('/salaries/get-employees', [SalaryController::class, 'getEmployees'])->name('salaries.getEmployees');
+                Route::get('/get-salary-details/{id}', 'getSalaryDetails')->name('salary.getDetails');
+                Route::get('/salaries/get-employees', 'getEmployees')->name('salaries.getEmployees');
             });
             Route::controller(SalaryPaymentController::class)->prefix('account')->group(function (){
                 Route::get('/salaries-payment','index')->name('admin.salary.payment.index');
                 Route::post('/salaries-payment-store','store')->name('admin.salary.payment.store');
                 Route::put('/salaries-payment-update/{id}','update')->name('admin.salary.payment.update');
                 Route::put('/salaries-payment-destroy/{id}','destroy')->name('admin.salary.payment.destroy');
+                Route::get('/salaries-payment-download/{id}', 'download')->name('admin.salary.payment.download');
             });
-            /*Route::controller(BillingController::class)->group(function (){
-                Route::get('/billings','index')->name('admin.billings.index');
-                Route::post('/billings-store','store')->name('admin.billings.store');
-                Route::put('/billings-update/{id}','update')->name('admin.billings.update');
-                Route::delete('/billings-destroy/{id}','destroy')->name('admin.billings.destroy');
-            });*/
+            Route::controller(OfficeExpenseController::class)->group(function (){
+                Route::get('/office-expenses','index')->name('admin.office.expenses.index');
+                Route::post('/office-expenses-store','store')->name('admin.office.expenses.store');
+                Route::put('/office-expenses-update/{id}','update')->name('admin.office.expenses.update');
+                Route::delete('/office-expenses-destroy/{id}','destroy')->name('admin.office.expenses.destroy');
+            });
             Route::controller(ReportController::class)->prefix('report')->group(function (){
                 Route::get('/daily-report','daily')->name('admin.daily.report');
                 Route::get('/daily-report-show','dailyReport')->name('admin.daily.report.show');
@@ -164,6 +190,10 @@ Route::middleware(['employee.auth'])->prefix('employee/')->group(function () {
                 Route::get('/expense-report', 'expense')->name('admin.expense.report');
                 Route::get('/expense-report-show', 'expenseReportShow')->name('admin.expense.report.show');
                 Route::get('/download-expense-report', 'expenseReportDownload')->name('admin.download.expense.report');
+                Route::get('/office-expense-report', 'officeExpense')->name('admin.office.expense.report');
+                Route::get('/office-expense-report-show', 'officeExpenseReportShow')->name('admin.expense.office.report.show');
+                Route::get('/download-office-expense-report', 'officeExpenseReportDownload')->name('admin.download.office.expense.report');
+
             });
             Route::get('/update-email-password', [AdminAuthController::class, 'password'])->name('admin.password.index');
             Route::post('/update-password-confirm', [AdminAuthController::class, 'updatePassword'])->name('admin.password.update');
@@ -205,12 +235,7 @@ Route::middleware(['employee.auth'])->prefix('employee/')->group(function () {
             Route::post('/bank-info-update', [EmployeeAccountController::class,'bankInfoUpdate'])->name('employee.bank.info.update');
             Route::post('/profile-picture-update', [EmployeeAccountController::class,'profilePictureUpdate'])->name('employee.profile.picture.update');
             Route::post('/personal-info-update', [EmployeeAccountController::class,'personalInfoUpdate'])->name('employee.personal.info.update');
-            /*Route::get('/employee-clock-status', [AttendanceController::class,'getClockStatus'])->name('employee.clock.status');
-            Route::post('/employee-clock-in', [AttendanceController::class,'clockIn'])->name('employee.clock.in');
-            Route::post('/employee-clock-out', [AttendanceController::class,'clockOut'])->name('employee.clock.out');*/
             Route::get('/attendance-list', [AttendanceController::class,'attendanceList'])->name('employee.attendance.list');
-//            Route::get('/attendance-calendar', [AttendanceController::class,'attendanceReport'])->name('employee.attendance.report');
-//            Route::get('/attendance-report-event', [AttendanceController::class,'getEvents'])->name('employee.attendance.report.event');
             Route::get('/holiday', [HolidayController::class,'employeeIndex'])->name('employee.holiday.index');
             Route::controller(LeaveController::class)->group(function (){
                 Route::get('/leave', 'employeeLeaveIndex')->name('employee.leave');
@@ -246,4 +271,3 @@ Route::middleware(['employee.auth'])->prefix('employee/')->group(function () {
     })->name('notifications.markAsRead');
     Route::post('/logout', [AdminAuthController::class, 'logout'])->name('logout');
 
-//}

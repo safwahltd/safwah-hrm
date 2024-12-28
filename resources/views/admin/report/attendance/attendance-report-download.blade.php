@@ -70,6 +70,7 @@
                         <th>Attendance</th>
                         <th>Late Attendance</th>
                         <th>Absent</th>
+                        <th>Leave</th>
                     </tr>
                     </thead>
                     <tbody>
@@ -83,10 +84,11 @@
                             <td>{{ $data['total_presents'] }}</td>
                             <td>{{ $data['total_late'] }}</td>
                             <td>{{ $data['total_absents'] }}</td>
+                            <td>{{ $data['totalLeave'] }}</td>
                         </tr>
                     @empty
                         <tr>
-                            <td class="text-center" colspan="7">No Data Found</td>
+                            <td class="text-center" colspan="9">No Data Found</td>
                         </tr>
                     @endforelse
                     </tbody>

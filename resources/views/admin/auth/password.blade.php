@@ -12,6 +12,7 @@
     <!-- Row end  -->
 
     <div class="row clearfix justify-content-center g-3">
+        @if(auth()->user()->hasPermission('admin email update'))
         <div class="col-sm-6">
             <h4 class="text-center text-white">Email</h4>
             <hr class="text-white">
@@ -38,6 +39,8 @@
                 </div>
             </div>
         </div>
+        @endif
+        @if(auth()->user()->hasPermission('admin password update'))
         <div class="col-sm-6">
             <h4 class="text-center text-white">Password</h4>
             <hr class="text-white">
@@ -64,6 +67,7 @@
                 </div>
             </div>
         </div>
+        @endif
     </div>
     <!-- Row End -->
 

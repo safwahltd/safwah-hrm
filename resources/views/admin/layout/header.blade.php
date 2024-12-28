@@ -66,13 +66,13 @@
                         <small class="text-white">{{ ucwords(auth()->user()->role)}} </small>
                     </div>
                     <a class="nav-link dropdown-toggle pulse p-0" href="#" role="button" data-bs-toggle="dropdown" data-bs-display="static">
-                        <img class="avatar lg rounded-circle img-thumbnail" src="{{asset('/')}}admin/assets/images/profile_av.png" alt="profile">
+                        <img class="avatar lg rounded-circle img-thumbnail" src="{{asset('/')}}admin/assets/images/lg/avatar4.jpg" alt="profile">
                     </a>
                     <div class="dropdown-menu rounded-lg shadow border-0 dropdown-animation dropdown-menu-end p-0 m-0">
                         <div class="card border-0">
                             <div class="card-body pb-0">
                                 <div class="d-flex py-1">
-                                    <img class="avatar rounded-circle" src="{{asset('/')}}admin/assets/images/profile_av.png" alt="profile">
+                                    <img class="avatar rounded-circle" src="{{asset('/')}}admin/assets/images/lg/avatar4.jpg" alt="profile">
                                     <div class="flex-fill ms-3">
                                         <p class="mb-0"><span class="font-weight-bold">{{auth()->user()->name}}</span></p>
                                         <small class="">{{auth()->user()->email}}</small>
@@ -81,7 +81,7 @@
                                 <div><hr class="dropdown-divider border-dark"></div>
                             </div>
                             <div class="list-group m-2 ">
-                                <a href="{{route('employees.index')}}" class="list-group-item list-group-item-action border-0 "><i class="icofont-ui-user-group fs-6 me-3"></i>Members</a>
+                                <a href="{{route('admin.employees.index')}}" class="list-group-item list-group-item-action border-0 "><i class="icofont-ui-user-group fs-6 me-3"></i>Members</a>
                                 <a href="{{route('admin.settings.index')}}" class="list-group-item list-group-item-action border-0 "><i class="icofont-gear fs-6 me-3"></i>Settings</a>
                                 <a href="#" class="list-group-item list-group-item-action border-0" onclick="return confirm('are you sure to logout ?') ? document.getElementById('logout-form').submit():''">
                                     <i class="icofont-logout fs-6 me-3"></i> Logout

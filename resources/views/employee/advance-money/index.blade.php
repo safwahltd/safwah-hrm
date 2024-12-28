@@ -90,7 +90,7 @@
                                         <span class="bg-primary text-white  px-1 mx-1 rounded-2">{{ $expense->approved_by != null ? 'Approved':''}} </span>
                                     @endif
                                     @if($expense->received_by != null)
-                                        <span class="bg-secondary text-white  px-1 mx-1 rounded-2">{{ $expense->received_by != null ? 'Received':''}} </span>
+                                        <span class="bg-success text-white  px-1 mx-1 rounded-2">{{ $expense->received_by != null ? 'Received':''}} </span>
                                     @endif
 
                                 </td>
