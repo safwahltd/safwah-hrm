@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\admin;
 
+use App\Events\GeneralNotificationEvent;
 use App\Http\Controllers\Controller;
 use App\Models\Asset;
 use App\Models\Department;
@@ -20,7 +21,7 @@ class EmployeeController extends Controller
     public function index(Request $request)
     {
         try {
-            if(auth()->user()->hasPermission('employees index')){
+            if(auth()->user()->hasPermission('admin employees index')){
                 if ($request->all()){
                     $user_id = $request->user_id;
                     $status = $request->status;
@@ -71,7 +72,7 @@ class EmployeeController extends Controller
                 $designation_id = 0;
                 $designations = Designation::where('status',1)->get();
                 $userss = User::latest()->whereNotIn('role',['admin'])->get();
-                $users = User::latest()->whereNotIn('role',['admin'])->get();
+                $users = $userss;
                 $roles = Role::where('status',1)->get();
                 return view('admin.user.index',compact('designations','users','roles','userss','user_id','designation_id','type','status'));
             }
@@ -102,15 +103,15 @@ class EmployeeController extends Controller
     public function store(Request $request)
     {
         if(auth()->user()->hasPermission('employees store')){
-            try {
+//            try {
                 $validate = Validator::make($request->all(),[
                     "name" => "required|min:3",
                     "join" => "required",
                     "designation" => "required",
                     "gender" => "required",
-                    "employee_id" => "required|unique:user_infos,employee_id",
+                    "employee_id" => "required | unique:user_infos,employee_id",
                     "employee_type" => "required",
-                    "email" => "required|unique:users,email",
+                    "email" => "required | unique:users,email",
                     'password' => 'required|min:8|required_with:confirm_password|same:confirm_password',
                     'confirm_password' => 'required|min:8'
                 ]);
@@ -148,13 +149,33 @@ class EmployeeController extends Controller
                 $userInfo->gender = $request->gender;
                 $userInfo->status = $request->status;
                 $userInfo->save();
+
+                // Trigger event
+                event(new GeneralNotificationEvent(
+                    'new_employee_created',
+                    $user->name.' ('.$userInfo->employee_id.') ',
+                    [
+                        'content' => "<span> Name : ".$user->name."</span><br>
+                                      <span> EIN : SL".$userInfo->employee_id."</span><br>
+                                      <span> Designation : ".$user->userInfo->designations->name."</span><br>
+                                      <span> Department : ".$user->userInfo->designations->department->department_name."</span><br>
+                                      <span> Email : ".$user->email."</span><br>
+                                      <span> Employee Type : ".str_replace('_',' ',$userInfo->employee_type)."</span><br>
+                                      <span> Joining Date : ".$userInfo->join."</span><br>
+                                      <span> Gender : ".ucfirst($userInfo->gender)."</span><br>
+                                      <span> Role : ".ucfirst($user->role)."</span><br>
+                                      ",
+                        'user_id' => auth()->user()->id,
+                        'url' => route('employee.profile',$user->id),
+                    ]
+                ));
                 toastr()->success('Employee Added Success.');
                 return back();
-            }
-            catch (Exception $exception){
-                toastr()->error($exception->getMessage());
-                return back();
-            }
+//            }
+//            catch (Exception $exception){
+//                toastr()->error($exception->getMessage());
+//                return back();
+//            }
         }
         else{
             toastr()->error('Permission Denied');

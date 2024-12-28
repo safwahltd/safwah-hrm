@@ -6,7 +6,9 @@
             <div class="card-header py-3 no-bg bg-transparent d-flex align-items-center px-0 justify-content-between border-bottom flex-wrap">
                 <h3 class="fw-bold mb-0 text-white">Designation</h3>
                 <div class="col-auto d-flex w-sm-100">
+                    @if(auth()->user()->hasPermission('admin designation store'))
                     <button type="button" class="btn btn-dark btn-set-task w-sm-100" data-bs-toggle="modal" data-bs-target="#depadd"><i class="icofont-plus-circle me-2 fs-6"></i>Add Designation</button>
+                    @endif
                 </div>
             </div>
         </div>
@@ -24,7 +26,9 @@
                             <th>Designation Name</th>
                             <th>Department Name</th>
                             <th>Status</th>
+                            @if(auth()->user()->hasPermission('admin designation update') || auth()->user()->hasPermission('admin designation soft destroy'))
                             <th>Actions</th>
+                            @endif
                         </tr>
                         </thead>
                         <tbody>
@@ -44,32 +48,34 @@
                                     </select>
                                 </form>
                             </td>
-
-{{--                            <td>--}}
-{{--                                40--}}
-{{--                            </td>--}}
+                            @if(auth()->user()->hasPermission('admin designation update') || auth()->user()->hasPermission('admin designation soft destroy'))
                             <td>
                                 <div class="btn-group" role="group" aria-label="Basic outlined example">
+                                    @if(auth()->user()->hasPermission('admin designation update'))
                                     <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#degedit{{$key}}"><i class="icofont-edit text-success"></i></button>
-                                    <form action="{{ route('designations.soft.destroy',$designation->id) }}" method="post">
+                                    @endif
+                                    @if(auth()->user()->hasPermission('admin designation destroy'))
+                                    <form action="{{ route('admin.designation.soft.destroy',$designation->id) }}" method="post">
                                         @csrf
                                         @method('PUT')
                                         <button type="submit" onclick="return confirm('are you sure to delete ? ')" class="btn btn-outline-secondary deleterow"><i class="icofont-ui-delete text-danger"></i></button>
                                     </form>
+                                    @endif
                                 </div>
                             </td>
+                            @endif
                         </tr>
-                        <!-- Edit Department-->
+                        <!-- Edit Designation-->
                         <div class="modal fade" id="degedit{{$key}}" tabindex="-1"  aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered modal-md modal-dialog-scrollable">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h5 class="modal-title  fw-bold" id="depeditLabel"> Department Edit</h5>
+                                        <h5 class="modal-title  fw-bold" id="depeditLabel"> Designation Edit</h5>
                                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                     </div>
                                     <div class="modal-body">
                                         <div class="deadline-form">
-                                            <form action="{{route('designations.update',$designation->id)}}" method="post">
+                                            <form action="{{route('admin.designation.update',$designation->id)}}" method="post">
                                                 @csrf
                                                 @method('PUT')
                                                 <div class="modal-body">
@@ -127,7 +133,7 @@
                     <h5 class="modal-title  fw-bold" id="depaddLabel"> Designation Add</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <form action="{{route('designations.store')}}" method="post">
+                <form action="{{route('admin.designation.store')}}" method="post">
                     @csrf
                     <div class="modal-body">
                         <div class="mb-3">

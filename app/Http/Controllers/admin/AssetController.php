@@ -16,8 +16,8 @@ class AssetController extends Controller
 {
     public function index()
     {
-        if(auth()->user()->hasPermission('asset index')){
-            return view('admin.asset.index',[
+        if(auth()->user()->hasPermission('admin asset index')){
+            return view('admin.admin.asset.index',[
                 'assets' => Asset::latest()->paginate(10),
                 'users' => User::whereNotIn('role',['admin'])->get(),
             ]);
@@ -29,7 +29,7 @@ class AssetController extends Controller
     }
     public function store(Request $request)
     {
-        if(auth()->user()->hasPermission('asset store')){
+        if(auth()->user()->hasPermission('admin asset store')){
             $checkAsset = Asset::where('asset_id',$request->asset_id)->where('status',1)->first();
             if (!$checkAsset){
                 try {
@@ -81,7 +81,7 @@ class AssetController extends Controller
     }
     public function update(Request $request, Asset $asset)
     {
-        if(auth()->user()->hasPermission('asset update')){
+        if(auth()->user()->hasPermission('admin asset update')){
             $checkAsset = Asset::where('asset_id',$request->asset_id)->where('status',1)->whereNotIn('id',[$asset->id])->first();
             if (!$checkAsset){
                 try {
@@ -133,7 +133,7 @@ class AssetController extends Controller
     }
     public function destroy(Asset $asset)
     {
-        if(auth()->user()->hasPermission('asset destroy')){
+        if(auth()->user()->hasPermission('admin asset destroy')){
             try {
                 $asset->delete();
                 toastr()->success('Asset Delete Successfully.');

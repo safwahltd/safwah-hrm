@@ -17,7 +17,7 @@ class DepartmentController extends Controller
     {
         if(auth()->user()->hasPermission('admin department index')){
             return view('admin.department.index', [
-                'departments' => Department::latest()->where('soft_delete',0)->simplePaginate(100),
+                'departments' => Department::latest()->where('soft_delete',0)->simplePaginate(500),
                 'users' => User::whereNotIn('id',[1])->orderBy('name','asc')->get(),
             ]);
         }
@@ -69,7 +69,7 @@ class DepartmentController extends Controller
             return back();
         }
     }
-    public function update(Request $request, Department $department)
+    public function update(Request $request, $id)
     {
         if(auth()->user()->hasPermission('admin department update')){
             try {
@@ -81,12 +81,13 @@ class DepartmentController extends Controller
                     toastr()->error($validate->messages());
                     return redirect()->back();
                 }
+                $department = Department::find($id);
                 $department->department_name = $request->department_name;
                 $department->department_head = $request->department_head;
                 $department->status = $request->status;
                 $department->save();
                 toastr()->success('Department Updated Success.');
-                return back();
+                return redirect()->route('admin.department.index');
             }
             catch (Exception $exception){
                 toastr()->success($exception->getMessage());
@@ -99,10 +100,11 @@ class DepartmentController extends Controller
         }
 
     }
-    public function destroy(Department $department)
+    public function destroy($id)
     {
         if(auth()->user()->hasPermission('admin department destroy')){
             try {
+                $department = Department::find($id);
                 $department->department_name = $department->department_name;
                 $department->department_head = $department->department_head;
                 $department->status = $department->status;

@@ -140,7 +140,6 @@ class NoticeController extends Controller
             toastr()->error('Permission Denied');
             return back();
         }
-
     }
     public function download($id){
         if(auth()->user()->hasPermission('admin notice download')){
@@ -163,7 +162,7 @@ class NoticeController extends Controller
     public function employeeShowList(){
         if(auth()->user()->hasPermission('employee notice list')){
             try {
-                $notifications = auth()->user()->notifications()->paginate(500);
+                $notifications = auth()->user()->notifications()->paginate(50);
                 return view('employee.notice.index', compact('notifications'));
             }
             catch (\Exception $e){

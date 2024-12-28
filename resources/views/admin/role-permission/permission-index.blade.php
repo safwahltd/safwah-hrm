@@ -16,8 +16,8 @@
     <div class="row clearfix g-3">
         <div class="col-sm-12">
             <div class="card mb-3">
-                <div class="card-body export-table bg-dark-subtle">
-                    <table id="file-datatable" class="table table-bordered text-nowrap table-secondary key-buttons border-bottom w-100">
+                <div class="card-body table-responsive bg-dark-subtle">
+                    <table id="basic-datatable" class="table table-bordered text-nowrap table-secondary key-buttons border-bottom w-100">
                         <thead>
                         <tr>
                             <th class="border-bottom-0">SL No</th>
@@ -32,7 +32,7 @@
                                 <td>{{ $loop->iteration }}</td>
                                 <td>{{ $permission->name }}</td>
                                 <td class="col-2">
-                                    <span class="p-1 {{$permission->status == 1 ? 'bg-success':'bg-warning text-white'}}">{{$permission->status == 1 ? 'Active':'Inactive'}}</span>
+                                    <span class="p-1 rounded-3 text-white {{$permission->status == 1 ? 'bg-success':'bg-warning'}}">{{$permission->status == 1 ? 'Active':'Inactive'}}</span>
                                 </td>
                                 <td class="d-flex">
                                     <a href="#" class="btn btn-primary mx-2" data-bs-toggle="modal" data-bs-target="#Editpermission{{$key}}" ><i class="fa fa-edit"></i></a>

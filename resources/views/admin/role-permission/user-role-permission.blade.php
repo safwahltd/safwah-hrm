@@ -13,8 +13,8 @@
     <div class="row clearfix g-3">
         <div class="col-sm-12">
             <div class="card mb-3">
-                <div class="card-body export-table bg-dark-subtle">
-                    <table id="file-datatable" class="table table-bordered text-nowrap table-secondary key-buttons border-bottom w-100">
+                <div class="card-body table-responsive bg-dark-subtle">
+                    <table id="basic-datatable" class="table table-bordered text-nowrap table-secondary key-buttons border-bottom w-100">
                         <thead>
                         <tr>
                             <th>No</th>
@@ -54,21 +54,20 @@
                                                 @method('PUT')
                                                 <div class="deadline-form">
                                                         <div class="row my-2">
-                                                            <h4 class="text-center">Roles</h4>
-                                                            <hr>
+
                                                             @php($userRoles = \App\Models\UserRole::where('user_id',$user->id)->pluck('role_id')->toArray())
                                                             <h5 class="">
-                                                                <span style="border-bottom: 2px solid black">
-                                                                    <input class="selectAll" id="selectAll" type="checkbox" style="width: 18px; height: 18px">
+                                                                <span>
+                                                                    <input class="selectAll" id="selectAll" type="checkbox">
                                                                     <label for="selectAll">Select All</label>
                                                                 </span>
-                                                            </h5>
+                                                            </h5><hr>
                                                             @foreach($roles as $key => $role)
-                                                                <div class="col-4 my-4">
+                                                                <div class="col-12 col-md-4">
                                                                     <span>
-                                                                        <input type="checkbox" name="role_id[]" value="{{$role->id}}" {{ in_array($role->id, $userRoles) ? 'checked' : '' }} id="role{{$role->id}}" class="itemCheckbox" style="width: 18px; height: 18px">
-                                                                        <label class="" for="role{{$role->id}}">{{$role->name}}</label>
-                                                                    </span>
+                                                                    <input type="checkbox" name="role_id[]" value="{{$role->id}}" {{ in_array($role->id, $userRoles) ? 'checked' : '' }} id="role{{$randAdd = rand() }}" class="itemCheckbox text-danger">
+                                                                    <label class="p-1 rounded-3 {{ in_array($role->id, $userRoles) ? 'bg-success text-white' : '' }}"  for="role{{$randAdd}}">{{$role->name}}</label>
+                                                                </span>
                                                                 </div>
                                                             @endforeach
                                                         </div>

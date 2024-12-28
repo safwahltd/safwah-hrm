@@ -29,7 +29,7 @@
 @if(auth()->user()->hasPermission('employee leave'))
 <li class="collapsed">
     <a class="m-link {{ Request::route()->getName() == 'employee.leave' ? 'active':''}}" href="{{route('employee.leave')}}">
-        <i class="icofont-ui-calendar "></i> <span> Leave </span>
+        <i class="icofont-beach-bed"></i> <span> Leave </span>
     </a>
 </li>
 @endif

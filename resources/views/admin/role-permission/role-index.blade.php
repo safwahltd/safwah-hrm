@@ -16,14 +16,14 @@
     <div class="row clearfix g-3">
         <div class="col-sm-12">
             <div class="card mb-3">
-                <div class="card-body">
-                    <table  class="table table-bordered text-nowrap key-buttons border-bottom  w-100">
+                <div class="card-body table-responsive bg-dark-subtle">
+                    <table id="basic-datatable" class="table table-bordered text-nowrap key-buttons border-bottom">
                         <thead>
                             <tr>
-                            <th class="border-bottom-0">SL No</th>
-                            <th class="border-bottom-0">Name</th>
-                            <th class="border-bottom-0">Status</th>
-                            <th class="border-bottom-0">Action</th>
+                            <th>SL No</th>
+                            <th>Name</th>
+                            <th>Status</th>
+                            <th>Action</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -43,7 +43,6 @@
                                     </form>
                                 </td>
                             </tr>
-
                             <div class="modal fade" id="Editrole{{$key}}" tabindex="-1"  aria-hidden="true">
                                 <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
                                     <div class="modal-content">
@@ -62,27 +61,6 @@
                                                         <span class="text-danger">{{$errors->has('name') ? $errors->first('name'):''}}</span>
                                                     </div>
                                                 </div>
-                                                @php($rolePermissions = \App\Models\RolePermission::where('role_id',$role->id)->pluck('permission_id')->toArray())
-                                                <div class="row mb-4">
-                                                    <h5 class="text-center">All Permissions</h5>
-                                                    <hr>
-                                                    <h5><input class="selectAll" type="checkbox"> <label for="selectAll">Select All</label></h5>
-                                                    @foreach($permissionsGroup as $name => $permissions)
-                                                        <div class="row my-2">
-                                                                <h5 class="p-1 text-center" style="border: 1px solid black">{{ $name }}</h5>
-                                                                @foreach($permissions as $key => $permission)
-                                                                    <div class="col-4">
-                                                                <span>
-                                                                    <input type="checkbox" name="permission_ids[]" value="{{$permission->id}}"
-                                                                           {{ in_array($permission->id, $rolePermissions) ? 'checked' : '' }} id="permission{{$key}}" class="itemCheckbox">
-                                                                    <label for="permission{{$key}}">{{$permission->name}}</label>
-                                                                </span>
-                                                                    </div>
-                                                                @endforeach
-                                                        </div>
-                                                    @endforeach
-                                                </div>
-
                                                 <div class="row mb-4 d-flex form-group">
                                                     <div class="col-md-3 form-label">
                                                         <label class="" for="status">Status</label>
@@ -95,8 +73,30 @@
                                                         </select>
                                                     </div>
                                                 </div>
+                                                @php($rolePermissions = \App\Models\RolePermission::where('role_id',$role->id)->pluck('permission_id')->toArray())
+                                                <div class="row">
+                                                    <h5 class="text-center">All Permissions</h5>
+                                                    <hr>
+                                                    <h5><input class="selectAll" id="selectAll{{$ran = rand()}}" type="checkbox"> <label for="selectAll{{$ran}}">Select All</label></h5>
+                                                    @foreach($permissionsGroup as $name => $permissions)
+                                                        <div class="row my-2">
+                                                                <h5 class="p-1 text-center" style="border: 1px solid black">{{ $name }}</h5>
+                                                                @foreach($permissions as $key => $permission)
+                                                                    <div class="col-4 my-1">
+                                                                <span>
+                                                                    <input type="checkbox" name="permission_ids[]" value="{{$permission->id}}"
+                                                                           {{ in_array($permission->id, $rolePermissions) ? 'checked' : '' }} id="permissionEdit{{ $randEdit = rand() }}" class="itemCheckbox">
+                                                                    <label class="p-1 rounded-3 {{ in_array($permission->id, $rolePermissions) ? 'bg-success text-white' : '' }}" for="permissionEdit{{$randEdit}}">{{ucwords($permission->name)}}</label>
+                                                                </span>
+                                                                    </div>
 
-                                                <button class="btn btn-primary float-end" type="submit">Submit</button>
+                                                                @endforeach
+                                                        </div>
+                                                    @endforeach
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button class="btn btn-primary float-end" type="submit">Submit</button>
+                                                </div>
                                             </form>
                                         </div>
                                     </div>
@@ -123,7 +123,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form class="form-horizontal" action="{{route('admin.role.store')}}" method="post" enctype="multipart/form-data">
+                    <form class="form-horizontal position-relative" action="{{route('admin.role.store')}}" method="post" enctype="multipart/form-data">
                         @csrf
                         <div class="row mb-4">
                             <label for="name" class="col-md-3 form-label">Name <span class="text-danger">*</span></label>
@@ -132,25 +132,6 @@
                                 <span class="text-danger">{{$errors->has('name') ? $errors->first('name'):''}}</span>
                             </div>
                         </div>
-                        <div class="row mb-4">
-                            <h3 class="text-center">All Permissions</h3>
-                            <hr>
-                            <h5><input class="selectAll" type="checkbox" id="selectAll"> <label for="selectAll">Select All</label></h5>
-                            @foreach($permissionsGroup as $name => $permissions)
-                                <div class="row my-2">
-                                    <h5 class="p-1 text-center" style="border: 1px solid black">{{ $name }}</h5>
-                                    @foreach($permissions as $key => $permission)
-                                        <div class="col-4">
-                                            <span>
-                                            <input type="checkbox" name="permission_ids[]" value="{{$permission->id}}" id="permission{{$key}}" class="itemCheckbox">
-                                            <label for="permission{{$key}}">{{$permission->name}}</label>
-                                        </span>
-                                        </div>
-                                    @endforeach
-                                </div>
-                            @endforeach
-                        </div>
-
                         <div class="row mb-4 d-flex form-group">
                             <div class="col-md-3 form-label">
                                 <label class="" for="status">Status</label>
@@ -163,11 +144,31 @@
                                 </select>
                             </div>
                         </div>
+                        <div class="row">
+                            <h3 class="text-center">All Permissions</h3>
+                            <hr>
+                            <h5><input class="selectAll" type="checkbox" id="selectAll{{ $rand = rand() }}"> <label for="selectAll{{$rand}}">Select All</label></h5>
+                            @foreach($permissionsGroup as $name => $permissions)
+                                <div class="row my-2">
+                                    <h5 class="p-1 text-center" style="border: 1px solid black">{{ $name }}</h5>
+                                    @foreach($permissions as $key => $permission)
+                                        <div class="col-12 col-md-4">
+                                            <span>
+                                            <input type="checkbox" name="permission_ids[]" value="{{$permission->id}}" id="permission{{$randAdd = rand() }}" class="itemCheckbox text-danger">
+                                            <label for="permission{{$randAdd}}">{{$permission->name}}</label>
+                                        </span>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            @endforeach
+                        </div>
                         <div class="modal-footer">
                             <button class="btn btn-primary float-end" type="submit">Submit</button>
                         </div>
+
                     </form>
                 </div>
+
             </div>
         </div>
     </div>

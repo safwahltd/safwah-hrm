@@ -6,7 +6,7 @@
             <div class="col-md-6">
                 <div class="row g-3">
                     <div class="col-md-3 col-6">
-                        <a href="{{route('departments.index')}}">
+                        <a href="{{route('admin.department.index')}}">
                             <div class="card bg-primary" style="width: 100%; height: 100%;">
                                 <div class="card-body text-center row">
                                     <div class="col">
@@ -18,7 +18,7 @@
                         </a>
                     </div>
                     <div class="col-md-3 col-6">
-                        <a href="{{route('designations.index')}}">
+                        <a href="{{route('admin.designation.index')}}">
                             <div class="card bg-success" style="width: 100%; height: 100%;">
                                 <div class="card-body text-center  row">
                                     <div class="col">
@@ -42,7 +42,7 @@
                         </a>
                     </div>
                     <div class="col-md-3 col-6">
-                        <a href="{{route('asset.index')}}">
+                        <a href="{{route('admin.asset.index')}}">
                             <div class="card bg-warning" style="width: 100%; height: 100%;">
                                 <div class="card-body text-center  row">
                                     <div class="col">
@@ -58,7 +58,7 @@
                             <div class="card" style="background-color: #ff253a">
                                 <div class="card-body text-center row">
                                     <div class="col p-1">
-                                        <p class="fw-bold text-white" style="font-size: 150%;">৳ {{ $totalSalaryPayment }}</p>
+                                        <p class="fw-bold text-white" style="font-size: 150%;">৳ {{ number_format($totalSalaryPayment, 2) }}</p>
                                         <span class="text-white">Total Salary</span>
                                     </div>
                                 </div>
@@ -70,7 +70,7 @@
                             <div class="card" style="background-color: #2c0b0e">
                                 <div class="card-body text-center row">
                                     <div class="col p-1">
-                                        <p class="fw-bold text-white" style="font-size: 150%;">৳ {{ $totalSalaryPayment / count($totalEmployees) }}</p>
+                                        <p class="fw-bold text-white" style="font-size: 150%;">৳ {{ $totalEmployees->count() != 0 ? number_format($totalSalaryPayment / $totalEmployees->count(), 2) : 0  }}</p>
                                         <span class="text-white">Average Salary</span>
                                     </div>
                                 </div>
@@ -78,11 +78,11 @@
                         </a>
                     </div>
                     <div class="col-md-6">
-                        <a href="{{route('asset.index')}}">
+                        <a href="{{route('admin.asset.index')}}">
                             <div class="card" style="background-color: #990055">
                                 <div class="card-body text-center row">
                                     <div class="col p-1">
-                                        <p class="fw-bold text-white" style="font-size: 150%;">৳ {{ $totalAssets  }}</p>
+                                        <p class="fw-bold text-white" style="font-size: 150%;">৳ {{ number_format($totalAssets, 2) }}</p>
                                         <span class="text-white">Total Assets</span>
                                     </div>
                                 </div>
@@ -90,12 +90,24 @@
                         </a>
                     </div>
                     <div class="col-md-6">
-                        <a href="{{route('asset.index')}}">
+                        <a href="{{route('admin.asset.index')}}">
                             <div class="card" style="background-color: #6a1a21">
                                 <div class="card-body text-center row">
                                     <div class="col p-1">
-                                        <p class="fw-bold text-white" style="font-size: 150%;">৳ {{ $totalAssets / count($totalEmployees)  }}</p>
+                                        <p class="fw-bold text-white" style="font-size: 150%;">৳ {{ $totalEmployees->count() != 0 ? number_format($totalAssets / $totalEmployees->count(), 2) : 0  }}</p>
                                         <span class="text-white">Average Assets</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-md-6">
+                        <a href="{{route('admin.office.expenses.index')}}">
+                            <div class="card" style="background-color: #111111">
+                                <div class="card-body text-center row">
+                                    <div class="col p-1">
+                                        <p class="fw-bold text-white" style="font-size: 150%;">৳ {{ number_format( \App\Models\OfficeExpense::where('status',1)->sum('amount') , 2) }}</p>
+                                        <span class="text-white">Total Expense</span>
                                     </div>
                                 </div>
                             </div>
@@ -143,7 +155,7 @@
 
                                     </div>
                                     <div class="holiday-btn">
-                                        <a href="{{route('holidays.index')}}" class="btn btn-primary p-1 my-2">
+                                        <a href="{{route('admin.holiday.index')}}" class="btn btn-primary p-1 my-2">
                                             View All <i class="fe fe-arrow-right-circle"></i>
                                         </a>
                                     </div>
@@ -159,7 +171,7 @@
                     <div class="card">
                         <div class="card-header py-3 d-flex justify-content-between bg-transparent border-bottom-0">
                             <h6 class="mb-0 fw-bold ">
-                                <select class="select2-example my-2" name="month" id="user_id_attendance">
+                                <select style="font-size: 12px;" class="select2-example my-2" name="month" id="user_id_attendance">
                                     <option value="">select one</option>
                                         @foreach($users as $user)
                                             <option value="{{ $user->id }}">{{ $user->name.' '.'('.$user->userInfo->employee_id.')' }}</option>
@@ -176,7 +188,7 @@
                                             <option value="{{ $i }}">{{ $i }}</option>
                                         @endfor
                                     </select>
-                                <button id="filter-btn"  class="btn-success mx-2 px-3 my-2 rounded-2">filter</button>
+                                <button id="filter-btn"  class="btn-success mx-2 px-3 my-2 rounded-2">Apply</button>
                             </h6>
                         </div>
                         <div class="card-body">
@@ -274,13 +286,13 @@
                                     <div class="">
                                         <h5>Welcome Back, <span class="fw-bold">{{auth()->user()->name ?? 'N/A'}}</span></h5>
                                         <p><span class="">{{ auth()->user()->userInfo->designations->name ?? 'N/A'}}</span></p>
-                                        <p><span class="">ID : {{ auth()->user()->userInfo->employee_id ?? 'N/A'}}</span></p>
+                                        <p><span class="">ID : SL{{ auth()->user()->userInfo->employee_id ?? 'N/A'}}</span></p>
                                     </div>
                                     <div class="">
                                         @if(file_exists(auth()->user()->userInfo->image))
                                             <img src="{{asset(auth()->user()->userInfo->image)}}" alt="profile"  width="100" height="100" style="border-radius: 100%" class="img-responsive">
                                         @else
-                                            <img class="img-responsive" src="{{asset('/')}}admin/assets/images/lg/avatar3.jpg"  width="100" style="border-radius: 100%" height="100"  alt="profile">
+                                            <img class="img-responsive" src="{{asset('/')}}admin/assets/images/lg/{{auth()->user()->userInfo->gender == '1' ? 'avatar5.jpg':''}}{{auth()->user()->userInfo->gender == '2' ? 'avatar2.jpg':''}}{{auth()->user()->userInfo->gender == '3' ? 'avatar4.jpg':''}}"  width="100" style="border-radius: 100%" height="100"  alt="profile">
                                         @endif
 
                                     </div>
@@ -303,7 +315,21 @@
                         <div class="card flex-fill my-1">
                             <div class="card-body">
                                 <div class="attendance-list">
-                                    <div class="row">
+                                    <div class="text-end">
+                                        <select class="my-2" name="month" id="allMonth">
+                                            <option value="">All Month</option>
+                                            @for ($i = 1; $i <= 12; $i++)
+                                                <option value="{{ $i }}">{{ date('F', mktime(0, 0, 0, $i, 1)) }}</option>
+                                            @endfor
+                                        </select>
+                                        <select class="my-2" name="year" id="allYear">
+                                            @for ($i = date('Y'); $i >= 2022; $i--)
+                                                <option value="{{ $i }}">{{ $i }}</option>
+                                            @endfor
+                                        </select>
+                                        <button id="allfilter-btn" class="px-4">Filter</button>
+                                    </div>
+                                    <div class="row" id="allFilter">
                                         <div class="col-md-3 col-6 my-1" align="center">
                                             <div class="attendance-details bg-success p-2 rounded-2">
                                                 <h5 class="fw-bold text-white">{{$totalWorkingDay ?? 0}}</h5>
@@ -336,19 +362,19 @@
                                         </div>
                                         <div class="col-md-3 col-6 my-1" align="center">
                                             <div class="attendance-details p-2 rounded-2" style="background-color: blue">
-                                                <h5 class="fw-bold text-white">{{ ($leave->sick + $leave->casual) ?? 0 }}</h5>
+                                                <h5 class="fw-bold text-white">{{ (($leave->sick ?? 0) + ($leave->casual ?? 0)) }}</h5>
                                                 <p class="fw-bold text-uppercase text-white" style="font-size: 13px">Total Leave</p>
                                             </div>
                                         </div>
                                         <div class="col-md-3 col-6 my-1" align="center">
                                             <div class="attendance-details p-2 rounded-2" style="background-color: orangered">
-                                                <h5 class="fw-bold text-white">{{ ($leave->sick_spent + $leave->casual_spent) ?? 0 }}</h5>
+                                                <h5 class="fw-bold text-white">{{ (($leave->sick_spent ?? 0) + ($leave->casual_spent ?? 0)) }}</h5>
                                                 <p class="fw-bold text-uppercase text-white" style="font-size: 13px">Leaves Taken</p>
                                             </div>
                                         </div>
                                         <div class="col-md-3 col-6 my-1" align="center">
                                             <div class="attendance-details p-2 rounded-2" style="background-color: #006b60">
-                                                <h5 class="fw-bold text-white">{{ ($leave->sick_left + $leave->casual_left) ?? 0 }}</h5>
+                                                <h5 class="fw-bold text-white">{{ (($leave->sick_left ?? 0) + ($leave->casual_left ?? 0)) }}</h5>
                                                 <p class="fw-bold text-uppercase text-white" style="font-size: 13px">Leaves Left</p>
                                             </div>
                                         </div>
@@ -378,25 +404,25 @@
                                         </div>
                                         <div class="col-md-3 col-6 my-1" align="center">
                                             <div class="attendance-details p-2 rounded-2" style="background-color: #3788d8">
-                                                <h5 class="fw-bold text-white">{{$totalAssets->sum('value') ??  0}}</h5>
+                                                <h5 class="fw-bold text-white">{{ number_format($totalAssets->sum('value')) ??  0}}</h5>
                                                 <p class="fw-bold text-uppercase text-white" style="font-size: 13px">Asset Value</p>
                                             </div>
                                         </div>
                                         <div class="col-md-3 col-6 my-1" align="center">
                                             <div class="attendance-details p-2 rounded-2" style="background-color: #7b5e3e">
-                                                <h5 class="fw-bold text-white">{{$totalAdvanceAmount ??  0}}</h5>
+                                                <h5 class="fw-bold text-white">{{ number_format($totalAdvanceAmount) ??  0 }}</h5>
                                                 <p class="fw-bold text-uppercase text-white" style="font-size: 13px">Advance Money</p>
                                             </div>
                                         </div>
                                         <div class="col-md-3 col-6 my-1" align="center">
                                             <div class="attendance-details p-2 rounded-2" style="background-color: #021e16">
-                                                <h5 class="fw-bold text-white">{{$totalMoneyAmount ??  0}}</h5>
+                                                <h5 class="fw-bold text-white">{{number_format($totalMoneyAmount) ??  0}}</h5>
                                                 <p class="fw-bold text-uppercase text-white" style="font-size: 13px">Money Receipt</p>
                                             </div>
                                         </div>
                                         <div class="col-md-3 col-6 my-1" align="center">
                                             <div class="attendance-details p-2 rounded-2" style="background-color: #6c757d">
-                                                <h5 class="fw-bold text-white">{{$totalPayment ??  0}}</h5>
+                                                <h5 class="fw-bold text-white">{{number_format($totalPayment) ??  0}}</h5>
                                                 <p class="fw-bold text-uppercase text-white" style="font-size: 13px">Payment</p>
                                             </div>
                                         </div>
@@ -404,7 +430,7 @@
                                             <div class="attendance-details p-2 rounded-2" style="background-color: #523e02">
                                                 <h5 class="fw-bold text-white">
                                                     @if($totalMoneyAmount < ($totalAdvanceAmount + $totalPayment))
-                                                        {{ $TOTaldue = str_replace('-','', (($totalAdvanceAmount + $totalPayment) - $totalMoneyAmount)) }}
+                                                        {{ $TOTaldue = number_format(str_replace('-','', (($totalAdvanceAmount + $totalPayment) - $totalMoneyAmount))) }}
                                                     @else
                                                         {{ $TOTaldue = 0 }}
                                                     @endif
@@ -423,7 +449,7 @@
                                                                 $t = 0;
                                                             }
                                                     @endphp
-                                                    {{ str_replace('-','', ($t)) }}
+                                                    {{ number_format(str_replace('-','', ($t))) }}
                                                 </h5>
                                                 <p class="fw-bold text-uppercase text-white" style="font-size: 13px">Receivable</p>
                                             </div>
@@ -431,19 +457,19 @@
                                     </div>
                                 </div>
                                 <div class="my-2">
-                                    <a href="{{route('employee.attendance.list')}}" class="btn text-white bg-success">
+                                    <a href="{{route('employee.attendance.list')}}" class="btn text-white my-1 bg-success">
                                         Attendance <i class="fa fa-arrow-right"></i>
                                     </a>
-                                    <a href="{{route('employee.leave')}}" class="btn text-white" style="background-color: #990055">
+                                    <a href="{{route('employee.leave')}}" class="btn text-white my-1" style="background-color: #990055">
                                         Apply Leave <i class="fa fa-arrow-right"></i>
                                     </a>
-                                    <a href="{{route('employee.advance.money.index')}}" class="btn text-white" style="background-color: #006b60">
+                                    <a href="{{route('employee.advance.money.index')}}" class="btn my-1 text-white" style="background-color: #006b60">
                                         Apply Advance Money <i class="fa fa-arrow-right"></i>
                                     </a>
-                                    <a href="{{route('employee.holiday.index')}}" class="btn text-white  bg-dark-defualt">
+                                    <a href="{{route('employee.holiday.index')}}" class="btn text-white  my-1 bg-dark-defualt">
                                         Holidays <i class="fa fa-arrow-right"></i>
                                     </a>
-                                    <a href="{{route('employee.profile.details')}}" class="btn text-white btn-secondary">
+                                    <a href="{{route('employee.profile.details')}}" class="btn my-1 text-white btn-secondary">
                                         Profile <i class="fa fa-arrow-right"></i>
                                     </a>
                                 </div>
@@ -455,7 +481,7 @@
                     <div class="">
                         <div class="card bg-dark-subtle my-1">
                             <div class="card-body">
-                                <h5 class="fw-bold">Attendances</h5>
+                                <h5 class="fw-bold">Latest Attendances</h5>
                                 <div class="row table-responsive">
                                     <table class="table text-center table-bordered text-nowrap table-secondary key-buttons border-bottom w-100" style="font-size: 12px;">
                                         <thead class="bg-primary">
@@ -506,7 +532,7 @@
                                     <div class="">
                                         <div class="">
                                             <div class="row table-responsive">
-                                                <table class="table text-center table-bordered text-nowrap table-secondary key-buttons border-bottom w-100" style="font-size: 12px;">
+                                                <table class="table text-center table-bordered text-nowrap table-secondary key-buttons border-bottom w-100">
                                                     <thead class="bg-primary">
                                                     <tr class="bg-secondary">
                                                         <th  class="bg-primary-subtle">Name</th>
@@ -518,7 +544,7 @@
                                                     <tbody>
                                                     @forelse($holidays as $key => $holiday)
                                                         <tr class="fw-bold">
-                                                            <td><small>{{$holiday->name}}</small></td>
+                                                            <td align="left"><small>{{$holiday->name}}</small></td>
                                                             <td>
                                                                 <small>{{ \Illuminate\Support\Carbon::parse($holiday->date_from)->format('d M') }} -</small>
                                                                 <small>{{ \Illuminate\Support\Carbon::parse($holiday->date_to)->format('d M, Y') }}</small>
@@ -618,74 +644,6 @@
         </script>
 
     @else
-        {{--<script>
-            $(document).ready(function () {
-                function updateButtonStatus() {
-                    $.ajax({
-                        url: '{{route('employee.clock.status')}}',
-                        type: 'GET',
-                        success: function (response) {
-                            if (response.isClockedIn) {
-                                $('#clockInBtn').attr('hidden', true);
-                                $('#clockOutBtn').removeAttr('hidden');
-                            } else {
-                                $('#clockInBtn').removeAttr('hidden');
-                                $('#clockOutBtn').attr('hidden', true);
-                            }
-                        },
-                        error: function () {
-                            toastr.error('Error fetching clock status.');
-                        }
-                    });
-                }
-                // Initial check on page load
-                updateButtonStatus();
-
-                $('#clockInBtn').on('click', function () {
-                    $.ajax({
-                        url: '{{route('employee.clock.in')}}',
-                        type: 'POST',
-                        data: {
-                            _token: '{{ csrf_token() }}'
-                        },
-                        success: function (response) {
-                            toastr.success(response.message);
-                            $('#clockInBtn').attr('hidden', true);
-                            $('#clockOutBtn').removeAttr('hidden');
-                            $('#clock_in_time').text(response.clockIn);
-                        },
-                        error: function (xhr) {
-                            // alert(xhr.responseJSON.message);
-                            toastr.error(xhr.responseJSON.message);
-                        }
-                    });
-
-                });
-
-                $('#clockOutBtn').on('click', function () {
-                    if (confirm('Are you sure you want to clock Out ?')) {
-                        $.ajax({
-                            url: '{{route('employee.clock.out')}}',
-                            type: 'POST',
-                            data: {
-                                _token: '{{ csrf_token() }}'
-                            },
-                            success: function (response) {
-                                toastr.success(response.message);
-                                $('#clockOutBtn').attr('hidden', true);
-                                $('#clockInBtn').removeAttr('hidden');
-                                $('#clock_out_time').text(response.clockOut);
-                                $('#workingTime').text(response.working_time);
-                            },
-                            error: function (xhr) {
-                                // alert(xhr.responseJSON.message);
-                                toastr.error(xhr.responseJSON.message);
-                            }
-                        });
-                    }
-                });
-            });
-        </script>--}}
         <script>
             function updateClock() {
                 const now = new Date();
@@ -725,6 +683,27 @@
 
             // Initialize the clock and date immediately
             updateClock();
+        </script>
+        <script>
+            $(document).ready(function() {
+                $('#allfilter-btn').click(function() {
+                    const month = $('#allMonth').val();
+                    const year = $('#allYear').val();
+                    console.log(month,year);
+                    $.ajax({
+                        url: '{{ route('employee.dashboard.all.filter') }}',
+                        method: 'GET',
+                        data: {
+                            month: month,
+                            year: year
+                        },
+                        success: function(response) {
+                            $('#allFilter').empty();
+                            $('#allFilter').html(response.html);
+                        }
+                    });
+                });
+            });
         </script>
     @endif
 @endpush

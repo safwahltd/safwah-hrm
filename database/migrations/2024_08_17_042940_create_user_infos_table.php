@@ -52,9 +52,6 @@ return new class extends Migration
             $table->string('routing_number')->nullable();
             $table->string('bank_code')->nullable();
             $table->string('branch_code')->nullable();
-            $table->bigInteger('sick_leave')->nullable();
-            $table->bigInteger('casual_leave')->nullable();
-            $table->bigInteger('half_day_leave')->nullable();
             $table->string('token')->nullable();
             $table->dateTime('token_expired_at')->nullable();
             $table->string('otp',10)->nullable();

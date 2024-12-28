@@ -34,7 +34,7 @@
                 <a class="mx-1" href="#" data-bs-toggle="modal" data-bs-target="#show_asset{{$key}}"><i class="fa-solid btn btn-primary fa-eye m-r-5"></i></a>
                 <a class="" href="#" data-bs-toggle="modal" data-bs-target="#edit_asset{{$key}}"><i class="fa-solid btn btn-primary fa-pencil m-r-5"></i></a>
                 <a class="mx-1" href="#" data-bs-toggle="modal" data-bs-target="#delete_asset">
-                    <form action="{{route('asset.destroy',$asset->id)}}" method="post">
+                    <form action="{{route('admin.asset.destroy',$asset->id)}}" method="post">
                         @csrf
                         @method('DELETE')
                         <button class="border-0" onclick="return confirm('are you sure to delete ?') ? this.form.submit():''"><i onclick="" class="fa-regular btn btn-danger text-white fa-trash-can m-r-5" type="submit"></i></button>
@@ -51,7 +51,7 @@
                         <h5 class="modal-title  fw-bold" id="depaddLabel"> Asset Edit</h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <form action="{{route('asset.update',$asset->id)}}" method="post">
+                    <form action="{{route('admin.asset.update',$asset->id)}}" method="post">
                         @csrf
                         @method('PUT')
                         <div class="modal-body">

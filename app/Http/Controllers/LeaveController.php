@@ -26,7 +26,9 @@ class LeaveController extends Controller
     public function employeeLeaveIndex(){
         if (auth()->user()->hasPermission('employee leave')){
             $leaves = Leave::where('user_id',auth()->user()->id)->latest()->paginate(100);
-            return view('employee.leave.index',compact('leaves'));
+            $leaveBalance = LeaveBalance::where('user_id',auth()->user()->id)->where('year',Carbon::now()->year)->first();
+            $leaveBalanceHalfDay = HalfDayLeaveBalance::where('user_id',auth()->user()->id)->where('year',Carbon::now()->year)->where('month',Carbon::now()->month)->first();
+            return view('employee.leave.index',compact('leaves','leaveBalance','leaveBalanceHalfDay'));
         }
         else{
             toastr()->error('Permission Denied');
@@ -80,155 +82,158 @@ class LeaveController extends Controller
                     $leaveRequest->leave_type = $request->leave_type;
                     $leaveRequest->days_taken = count($dates);
 
-                    if ($request->leave_type == 'sick'){
-                        $leaveBalance = LeaveBalance::where('user_id',auth()->user()->id)->where('year',Carbon::parse($request->start_date)->format('Y'))->first();
-                        if ($leaveBalance->sick_left > 0){
-                            if ($leaveBalance->sick_left >= $leaveRequest->days_taken){
-                                $leaveRequest->reason = $request->reason;
-                                $leaveRequest->start_date = $request->start_date;
-                                $leaveRequest->end_date = $request->end_date;
-                                $leaveRequest->dates = json_encode($dates);
-                                $leaveRequest->address_contact = $request->address_contact;
-                                $leaveRequest->concern_person = $request->concern_person;
-                                $leaveRequest->save();
+                    switch ($request->leave_type){
+                        case 'sick':
+                            $leaveBalance = LeaveBalance::where('user_id',auth()->user()->id)->where('year',Carbon::parse($request->start_date)->format('Y'))->first();
+                            if ((!empty($leaveBalance->sick_left)) > 0){
+                                if ($leaveBalance->sick_left >= $leaveRequest->days_taken){
+                                    $leaveRequest->reason = $request->reason;
+                                    $leaveRequest->start_date = $request->start_date;
+                                    $leaveRequest->end_date = $request->end_date;
+                                    $leaveRequest->dates = json_encode($dates);
+                                    $leaveRequest->address_contact = $request->address_contact;
+                                    $leaveRequest->concern_person = $request->concern_person;
+                                    $leaveRequest->save();
 
-                                // Trigger event
-                                event(new GeneralNotificationEvent(
-                                    'new_leave_request',
-                                    ucwords($leaveRequest->leave_type),
-                                    [
-                                        'content' => $leaveRequest->reason,
-                                        'user_id' => $leaveRequest->user_id,
-                                        'url' => route('admin.leave.requests'),
-                                    ]
-                                ));
-                                // Trigger event
-                                foreach ($employees as $employee) {
-                                    event(new EmployeeNotificationEvent(
+                                    // Trigger event
+                                    event(new GeneralNotificationEvent(
                                         'new_leave_request',
                                         ucwords($leaveRequest->leave_type),
-                                        $employee->id,
                                         [
                                             'content' => $leaveRequest->reason,
                                             'user_id' => $leaveRequest->user_id,
                                             'url' => route('admin.leave.requests'),
                                         ]
                                     ));
-                                }
+                                    // Trigger event
+                                    foreach ($employees as $employee) {
+                                        event(new EmployeeNotificationEvent(
+                                            'new_leave_request',
+                                            ucwords($leaveRequest->leave_type),
+                                            $employee->id,
+                                            [
+                                                'content' => $leaveRequest->reason,
+                                                'user_id' => $leaveRequest->user_id,
+                                                'url' => route('admin.leave.requests'),
+                                            ]
+                                        ));
+                                    }
 
-                                toastr()->success('Leave Request Send Success.');
-                                return back();
+                                    toastr()->success('Leave Request Send Success.');
+                                    return back();
+                                }
+                                else{
+                                    toastr()->error('Not Enough Leave Balance.');
+                                    return back();
+                                }
                             }
                             else{
                                 toastr()->error('Not Enough Leave Balance.');
                                 return back();
                             }
-                        }
-                        else{
-                            toastr()->error('Not Enough Leave Balance.');
-                            return back();
-                        }
-                    }
-                    if ($request->leave_type == 'casual'){
-                        $leaveBalance = LeaveBalance::where('user_id',auth()->user()->id)->where('year',Carbon::parse($request->start_date)->format('Y'))->first();
-                        if ($leaveBalance->casual_left > 0){
-                            if ($leaveBalance->casual_left >= $leaveRequest->days_taken){
-                                $leaveRequest->reason = $request->reason;
-                                $leaveRequest->start_date = $request->start_date;
-                                $leaveRequest->end_date = $request->end_date;
-                                $leaveRequest->dates = json_encode($dates);
-                                $leaveRequest->address_contact = $request->address_contact;
-                                $leaveRequest->concern_person = $request->concern_person;
-                                $leaveRequest->save();
 
-                                // Trigger event
-                                event(new GeneralNotificationEvent(
-                                    'new_leave_request',
-                                    ucwords($leaveRequest->leave_type),
-                                    [
-                                        'content' => $leaveRequest->reason,
-                                        'user_id' => $leaveRequest->user_id,
-                                        'url' => route('admin.leave.requests'),
-                                    ]
-                                ));
-                                // Trigger event
-                                foreach ($employees as $employee) {
-                                    event(new EmployeeNotificationEvent(
+                        case 'casual':
+                            $leaveBalance = LeaveBalance::where('user_id',auth()->user()->id)->where('year',Carbon::parse($request->start_date)->format('Y'))->first();
+
+                            if ((!empty($leaveBalance->casual_left)) > 0){
+                                if ($leaveBalance->casual_left >= $leaveRequest->days_taken){
+                                    $leaveRequest->reason = $request->reason;
+                                    $leaveRequest->start_date = $request->start_date;
+                                    $leaveRequest->end_date = $request->end_date;
+                                    $leaveRequest->dates = json_encode($dates);
+                                    $leaveRequest->address_contact = $request->address_contact;
+                                    $leaveRequest->concern_person = $request->concern_person;
+                                    $leaveRequest->save();
+
+                                    // Trigger event
+                                    event(new GeneralNotificationEvent(
                                         'new_leave_request',
                                         ucwords($leaveRequest->leave_type),
-                                        $employee->id,
                                         [
                                             'content' => $leaveRequest->reason,
                                             'user_id' => $leaveRequest->user_id,
                                             'url' => route('admin.leave.requests'),
                                         ]
                                     ));
+                                    // Trigger event
+                                    foreach ($employees as $employee) {
+                                        event(new EmployeeNotificationEvent(
+                                            'new_leave_request',
+                                            ucwords($leaveRequest->leave_type),
+                                            $employee->id,
+                                            [
+                                                'content' => $leaveRequest->reason,
+                                                'user_id' => $leaveRequest->user_id,
+                                                'url' => route('admin.leave.requests'),
+                                            ]
+                                        ));
+                                    }
+                                    toastr()->success('Leave Request Send Success.');
+                                    return back();
                                 }
-                                toastr()->success('Leave Request Send Success.');
-                                return back();
+                                else{
+                                    toastr()->error('Not Enough Leave Balance.');
+                                    return back();
+                                }
                             }
                             else{
                                 toastr()->error('Not Enough Leave Balance.');
                                 return back();
                             }
-                        }
-                        else{
-                            toastr()->error('Not Enough Leave Balance.');
-                            return back();
-                        }
-                    }
-                    if ($request->leave_type == 'half_day'){
-                        $startOfMonth = Carbon::now()->startOfMonth();
-                        $endOfMonth = Carbon::now()->endOfMonth();
-                        $leavee = Leave::where('user_id',auth()->user()->id)->whereNot('start_time',null)->whereBetween('created_at', [$startOfMonth, $endOfMonth])->where('status',1)->count();
-                        $leaveBalance = HalfDayLeaveBalance::where('user_id',auth()->user()->id)->where('year',Carbon::parse($request->start_date)->format('Y'))->where('month',Carbon::parse($request->start_date)->format('m'))->first();
-                        if ($leaveBalance->left > 0){
-                            if ($leaveBalance->left > $leavee){
-                                $leaveRequest->start_time = $request->start_time;
-                                $leaveRequest->end_time = $request->end_time;
-                                $leaveRequest->start_date = today();
-                                $leaveRequest->end_date = today();
-                                $leaveRequest->dates = json_encode(today());
-                                $leaveRequest->reason = $request->reason;
-                                $leaveRequest->address_contact = $request->address_contact;
-                                $leaveRequest->concern_person = $request->concern_person;
-                                $leaveRequest->save();
 
-                                // Trigger event
-                                event(new GeneralNotificationEvent(
-                                    'new_leave_request',
-                                    ucwords($leaveRequest->leave_type),
-                                    [
-                                        'content' => $leaveRequest->reason,
-                                        'user_id' => $leaveRequest->user_id,
-                                        'url' => route('admin.leave.requests'),
-                                    ]
-                                ));
-                                // Trigger event
-                                foreach ($employees as $employee) {
-                                    event(new EmployeeNotificationEvent(
+                        case 'half_day':
+                            $startOfMonth = Carbon::now()->startOfMonth();
+                            $endOfMonth = Carbon::now()->endOfMonth();
+                            $leavee = Leave::where('user_id',auth()->user()->id)->whereNot('start_time',null)->whereBetween('created_at', [$startOfMonth, $endOfMonth])->where('status',1)->count();
+                            $leaveBalance = HalfDayLeaveBalance::where('user_id',auth()->user()->id)->where('year',Carbon::parse($request->start_date)->format('Y'))->where('month',Carbon::parse($request->start_date)->format('m'))->first();
+
+                            if ((!empty($leaveBalance->left)) > 0){
+                                if ($leaveBalance->left > $leavee){
+                                    $leaveRequest->start_time = $request->start_time;
+                                    $leaveRequest->end_time = $request->end_time;
+                                    $leaveRequest->start_date = today();
+                                    $leaveRequest->end_date = today();
+                                    $leaveRequest->dates = json_encode(today());
+                                    $leaveRequest->reason = $request->reason;
+                                    $leaveRequest->address_contact = $request->address_contact;
+                                    $leaveRequest->concern_person = $request->concern_person;
+                                    $leaveRequest->save();
+
+                                    // Trigger event
+                                    event(new GeneralNotificationEvent(
                                         'new_leave_request',
                                         ucwords($leaveRequest->leave_type),
-                                        $employee->id,
                                         [
                                             'content' => $leaveRequest->reason,
                                             'user_id' => $leaveRequest->user_id,
                                             'url' => route('admin.leave.requests'),
                                         ]
                                     ));
+                                    // Trigger event
+                                    foreach ($employees as $employee) {
+                                        event(new EmployeeNotificationEvent(
+                                            'new_leave_request',
+                                            ucwords($leaveRequest->leave_type),
+                                            $employee->id,
+                                            [
+                                                'content' => $leaveRequest->reason,
+                                                'user_id' => $leaveRequest->user_id,
+                                                'url' => route('admin.leave.requests'),
+                                            ]
+                                        ));
+                                    }
+                                    toastr()->success('Leave Request Send Success.');
+                                    return back();
                                 }
-                                toastr()->success('Leave Request Send Success.');
-                                return back();
+                                else{
+                                    toastr()->error('Not Enough Leave Balance.');
+                                    return back();
+                                }
                             }
                             else{
                                 toastr()->error('Not Enough Leave Balance.');
                                 return back();
                             }
-                        }
-                        else{
-                            toastr()->error('Not Enough Leave Balance.');
-                            return back();
-                        }
                     }
                 }
                 else{
@@ -271,19 +276,69 @@ class LeaveController extends Controller
                     $dates->push($currentDate->toDateString());  // Add the date to the collection
                     $currentDate->addDay();  // Move to the next day
                 }
-
                 $leaveRequest = Leave::find($id);
                 $leaveRequest->user_id = auth()->user()->id;
                 $leaveRequest->leave_type = $request->leave_type;
                 $leaveRequest->days_taken = count($dates);
-                if ($request->leave_type == 'sick'){
-                    $leaveBalance = LeaveBalance::where('user_id',auth()->user()->id)->where('year',Carbon::parse($request->start_date)->format('Y'))->first();
-                    if ($leaveBalance->sick_left > 0){
-                        if ($leaveBalance->sick_left >= $leaveRequest->days_taken){
+                switch ($request->leave_type){
+                    case 'sick':
+                        $leaveBalance = LeaveBalance::where('user_id',auth()->user()->id)->where('year',Carbon::parse($request->start_date)->format('Y'))->first();
+                        if ((!empty($leaveBalance->sick_left)) > 0){
+                            if ($leaveBalance->sick_left >= $leaveRequest->days_taken){
+                                $leaveRequest->reason = $request->reason;
+                                $leaveRequest->start_date = $request->start_date;
+                                $leaveRequest->end_date = $request->end_date;
+                                $leaveRequest->dates = json_encode($dates);
+                                $leaveRequest->address_contact = $request->address_contact;
+                                $leaveRequest->concern_person = $request->concern_person;
+                                $leaveRequest->save();
+                                toastr()->success('Leave Request Send Success.');
+                                return back();
+                            }
+                            else{
+                                toastr()->error('Not Enough Leave Balance.');
+                                return back();
+                            }
+                        }
+                        else{
+                            toastr()->error('Not Enough Leave Balance.');
+                            return back();
+                        }
+                    case 'casual':
+                        $leaveBalance = LeaveBalance::where('user_id',auth()->user()->id)->where('year',Carbon::parse($request->start_date)->format('Y'))->first();
+                        if ((!empty($leaveBalance->casual_left)) > 0){
+                            if ($leaveBalance->casual_left >= $leaveRequest->days_taken){
+                                $leaveRequest->reason = $request->reason;
+                                $leaveRequest->start_date = $request->start_date;
+                                $leaveRequest->end_date = $request->end_date;
+                                $leaveRequest->dates = json_encode($dates);
+                                $leaveRequest->address_contact = $request->address_contact;
+                                $leaveRequest->concern_person = $request->concern_person;
+                                $leaveRequest->save();
+                                toastr()->success('Leave Request Send Success.');
+                                return back();
+                            }
+                            else{
+                                toastr()->error('Not Enough Leave Balance.');
+                                return back();
+                            }
+                        }
+                        else{
+                            toastr()->error('Not Enough Leave Balance.');
+                            return back();
+                        }
+                    case 'half_day':
+                        $startOfMonth = Carbon::now()->startOfMonth();
+                        $endOfMonth = Carbon::now()->endOfMonth();
+                        $leavee = Leave::where('user_id',auth()->user()->id)->whereNot('start_time',null)->whereBetween('created_at', [$startOfMonth, $endOfMonth])->where('status',1)->count();
+                        $leaveBalance = HalfDayLeaveBalance::where('user_id',auth()->user()->id)->where('year',Carbon::parse($request->start_date)->format('Y'))->where('month',Carbon::parse($request->start_date)->format('m'))->first();
+                        if ((!empty($leaveBalance->left)) > 0){
+                            $leaveRequest->start_time = $request->start_time;
+                            $leaveRequest->end_time = $request->end_time;
+                            $leaveRequest->start_date = today();
+                            $leaveRequest->end_date = today();
+                            $leaveRequest->dates = json_encode(today());
                             $leaveRequest->reason = $request->reason;
-                            $leaveRequest->start_date = $request->start_date;
-                            $leaveRequest->end_date = $request->end_date;
-                            $leaveRequest->dates = json_encode($dates);
                             $leaveRequest->address_contact = $request->address_contact;
                             $leaveRequest->concern_person = $request->concern_person;
                             $leaveRequest->save();
@@ -294,58 +349,6 @@ class LeaveController extends Controller
                             toastr()->error('Not Enough Leave Balance.');
                             return back();
                         }
-                    }
-                    else{
-                        toastr()->error('Not Enough Leave Balance.');
-                        return back();
-                    }
-                }
-                if ($request->leave_type == 'casual'){
-                    $leaveBalance = LeaveBalance::where('user_id',auth()->user()->id)->where('year',Carbon::parse($request->start_date)->format('Y'))->first();
-                    if ($leaveBalance->casual_left > 0){
-                        if ($leaveBalance->casual_left >= $leaveRequest->days_taken){
-                            $leaveRequest->reason = $request->reason;
-                            $leaveRequest->start_date = $request->start_date;
-                            $leaveRequest->end_date = $request->end_date;
-                            $leaveRequest->dates = json_encode($dates);
-                            $leaveRequest->address_contact = $request->address_contact;
-                            $leaveRequest->concern_person = $request->concern_person;
-                            $leaveRequest->save();
-                            toastr()->success('Leave Request Send Success.');
-                            return back();
-                        }
-                        else{
-                            toastr()->error('Not Enough Leave Balance.');
-                            return back();
-                        }
-                    }
-                    else{
-                        toastr()->error('Not Enough Leave Balance.');
-                        return back();
-                    }
-                }
-                if ($request->leave_type == 'half_day'){
-                    $startOfMonth = Carbon::now()->startOfMonth();
-                    $endOfMonth = Carbon::now()->endOfMonth();
-                    $leavee = Leave::where('user_id',auth()->user()->id)->whereNot('start_time',null)->whereBetween('created_at', [$startOfMonth, $endOfMonth])->where('status',1)->count();
-                    $leaveBalance = HalfDayLeaveBalance::where('user_id',auth()->user()->id)->where('year',Carbon::parse($request->start_date)->format('Y'))->where('month',Carbon::parse($request->start_date)->format('m'))->first();
-                    if ($leaveBalance->half_day_leave > 0){
-                        $leaveRequest->start_time = $request->start_time;
-                        $leaveRequest->end_time = $request->end_time;
-                        $leaveRequest->start_date = today();
-                        $leaveRequest->end_date = today();
-                        $leaveRequest->dates = json_encode(today());
-                        $leaveRequest->reason = $request->reason;
-                        $leaveRequest->address_contact = $request->address_contact;
-                        $leaveRequest->concern_person = $request->concern_person;
-                        $leaveRequest->save();
-                        toastr()->success('Leave Request Send Success.');
-                        return back();
-                    }
-                    else{
-                        toastr()->error('Not Enough Leave Balance.');
-                        return back();
-                    }
                 }
             }
             catch (Exception $e){
@@ -392,7 +395,7 @@ class LeaveController extends Controller
     }
     public function adminIndex(){
         if(auth()->user()->hasPermission('admin leave requests')){
-            $leaves = Leave::latest()->paginate(20);
+            $leaves = Leave::latest()->paginate(500);
             return view('admin.leave.index',compact('leaves'));
         }
         else{
@@ -423,49 +426,131 @@ class LeaveController extends Controller
                         ->first();
                 }
 
-                if ($leave->status == 0){
-                    if ($request->status == 1){
-                        if($leave->leave_type == 'casual'){
-                            if ($leaveBalance->casual_left >= $leave->days_taken){
-                                $leave->status = $request->status;
-                                $leaveBalance->casual_spent = ($leaveBalance->casual_spent + $leave->days_taken);
-                                $leaveBalance->casual_left = ($leaveBalance->casual_left - $leave->days_taken);
-                                $leave->approved_by = auth()->user()->id;
-                                $leave->save();
-                                $leaveBalance->save();
-                                $status = ($request->status == 1 ? '':'');
-                                // Trigger event
-                                event(new EmployeeNotificationEvent(
+                switch ($leave->status){
+                    case 0:
+                        if ($request->status == 1){
+                            switch ($leave->leave_type){
+                                case 'casual':
+                                    if ($leaveBalance->casual_left >= $leave->days_taken){
+                                        $leave->status = $request->status;
+                                        $leaveBalance->casual_spent = ($leaveBalance->casual_spent + $leave->days_taken);
+                                        $leaveBalance->casual_left = ($leaveBalance->casual_left - $leave->days_taken);
+                                        $leave->approved_by = auth()->user()->id;
+                                        $leave->save();
+                                        $leaveBalance->save();
+                                        $status = ($request->status == 1 ? '':'');
+                                        // Trigger event
+                                        event(new EmployeeNotificationEvent(
+                                            '',
+                                            'Your Leave Request Approved.',
+                                            $leave->user_id,
+                                            [
+                                                'content' => $status,
+                                                'user_id' => $leave->approved_by,
+                                                'url' => route('employee.leave'),
+                                            ]
+                                        ));
+                                        toastr()->success('update successfully.');
+                                        return back();
+                                    }
+                                    else{
+                                        toastr()->error('Not Enough Leave Balance');
+                                        return back();
+                                    }
+                                case 'sick':
+                                    if ($leaveBalance->sick_left >= $leave->days_taken){
+                                        $leave->status = $request->status;
+                                        $leaveBalance->sick_spent = ($leaveBalance->sick_spent + $leave->days_taken);
+                                        $leaveBalance->sick_left = ($leaveBalance->sick_left - $leave->days_taken);
+                                        $leave->approved_by = auth()->user()->id;
+                                        $leave->save();
+                                        $leaveBalance->save();
+                                        $status = ($request->status == 1 ? 'Your Leave Request Approved.':'');
+                                        // Trigger event
+                                        event(new EmployeeNotificationEvent(
+                                            '',
+                                            'Your Leave Request Approved.',
+                                            $leave->user_id,
+                                            [
+                                                'content' => $status,
+                                                'user_id' => $leave->approved_by,
+                                                'url' => route('employee.leave'),
+                                            ]
+                                        ));
+                                        toastr()->success('update successfully.');
+                                        return back();
+                                    }else{
+                                        toastr()->error('Not Enough Leave Balance');
+                                        return back();
+                                    }
+                                case 'half_day':
+                                    $leave->status = $request->status;
+                                    $leave->approved_by = auth()->user()->id;
+                                    $leaveBalance->spent = ($leaveBalance->spent + $leave->days_taken);
+                                    $leaveBalance->left = ($leaveBalance->left - $leave->days_taken);
+                                    $leave->save();
+                                    $leaveBalance->save();
+                                    if ($request->status == 1){
+                                        $status = 'Your Leave Request Approved.';
+                                    }
+                                    // Trigger event
+                                    event(new EmployeeNotificationEvent(
                                         '',
-                                        'Your Leave Request Approved.',
+                                        ucwords($status),
                                         $leave->user_id,
                                         [
                                             'content' => $status,
                                             'user_id' => $leave->approved_by,
                                             'url' => route('employee.leave'),
                                         ]
-                                ));
-                                toastr()->success('update successfully.');
-                                return back();
-                            }
-                            else{
-                                toastr()->error('Not Enough Leave Balance');
-                                return back();
+                                    ));
+                                    toastr()->success('update successfully.');
+                                    return back();
                             }
                         }
-                        if($leave->leave_type == 'sick'){
-                            if ($leaveBalance->sick_left >= $leave->days_taken){
+                        if ($request->status == 2 || $request->status == 3){
+                            $leave->status = $request->status;
+                            $leave->approved_by = auth()->user()->id;
+                            $leave->save();
+                            if ($request->status == 2){
+                                $status = 'Your Leave Request Rejected.';
+                            }
+                            elseif ($request->status == 3){
+                                $status =  'Your Leave Request Canceled.';
+                            }
+                            // Trigger event
+                            event(new EmployeeNotificationEvent(
+                                '',
+                                ucwords($status),
+                                $leave->user_id,
+                                [
+                                    'content' => $status,
+                                    'user_id' => $leave->approved_by,
+                                    'url' => route('employee.leave'),
+                                ]
+                            ));
+                            toastr()->success('update successfully.');
+                            return back();
+                        }
+                    case 1:
+                        if ($request->status == 0 || $request->status == 2 || $request->status == 3){
+                            if($leave->leave_type == 'casual'){
                                 $leave->status = $request->status;
-                                $leaveBalance->sick_spent = ($leaveBalance->sick_spent + $leave->days_taken);
-                                $leaveBalance->sick_left = ($leaveBalance->sick_left - $leave->days_taken);
+                                $leaveBalance->casual_spent = ($leaveBalance->casual_spent - $leave->days_taken);
+                                $leaveBalance->casual_left = ($leaveBalance->casual_left + $leave->days_taken);
                                 $leave->approved_by = auth()->user()->id;
                                 $leave->save();
                                 $leaveBalance->save();
-                                $status = ($request->status == 1 ? 'Your Leave Request Approved.':'');
+                                if ($request->status == 2){
+                                    $status = 'Your Leave Request Rejected.';
+                                }
+                                elseif ($request->status == 3){
+                                    $status =  'Your Leave Request Canceled.';
+                                }
                                 // Trigger event
                                 event(new EmployeeNotificationEvent(
                                     '',
-                                    'Your Leave Request Approved.',
+                                    ucwords($status),
                                     $leave->user_id,
                                     [
                                         'content' => $status,
@@ -475,76 +560,264 @@ class LeaveController extends Controller
                                 ));
                                 toastr()->success('update successfully.');
                                 return back();
+                            }
+                            if($leave->leave_type == 'sick'){
+                                $leave->status = $request->status;
+                                $leaveBalance->sick_spent = ($leaveBalance->sick_spent - $leave->days_taken);
+                                $leaveBalance->sick_left = ($leaveBalance->sick_left + $leave->days_taken);
+                                $leave->approved_by = auth()->user()->id;
+                                $leave->save();
+                                $leaveBalance->save();
+                                if ($request->status == 2){
+                                    $status = 'Your Leave Request Rejected.';
+                                }
+                                elseif ($request->status == 3){
+                                    $status =  'Your Leave Request Canceled.';
+                                }
+                                // Trigger event
+                                event(new EmployeeNotificationEvent(
+                                    '',
+                                    ucwords($status),
+                                    $leave->user_id,
+                                    [
+                                        'content' => $status,
+                                        'user_id' => $leave->approved_by,
+                                        'url' => route('employee.leave'),
+                                    ]
+                                ));
+                                toastr()->success('update successfully.');
+                                return back();
+                            }
+                            if($leave->leave_type == 'half_day'){
+                                $leave->status = $request->status;
+                                $leave->approved_by = auth()->user()->id;
+                                $leaveBalance->spent = ($leaveBalance->spent - $leave->days_taken);
+                                $leaveBalance->left = ($leaveBalance->left + $leave->days_taken);
+                                $leave->save();
+                                $leaveBalance->save();
+                                if ($request->status == 2){
+                                    $status = 'Your Leave Request Rejected.';
+                                }
+                                elseif ($request->status == 3){
+                                    $status =  'Your Leave Request Canceled.';
+                                }
+                                // Trigger event
+                                event(new EmployeeNotificationEvent(
+                                    '',
+                                    ucwords($status),
+                                    $leave->user_id,
+                                    [
+                                        'content' => $status,
+                                        'user_id' => $leave->approved_by,
+                                        'url' => route('employee.leave'),
+                                    ]
+                                ));
+                                toastr()->success('update successfully.');
+                                return back();
+                            }
+                        }
+                    case 2:
+                        if ($request->status = 1){
+                            if($leave->leave_type == 'casual'){
+                                if ($leaveBalance->casual_left >= $leave->days_taken){
+                                    $leave->status = $request->status;
+                                    $leaveBalance->casual_spent = ($leaveBalance->casual_spent + $leave->days_taken);
+                                    $leaveBalance->casual_left = ($leaveBalance->casual_left - $leave->days_taken);
+                                    $leave->approved_by = auth()->user()->id;
+                                    $leave->save();
+                                    $leaveBalance->save();
+                                    if ($request->status == 1){
+                                        $status = 'Your Leave Request Approved.';
+                                    }
+                                    // Trigger event
+                                    event(new EmployeeNotificationEvent(
+                                        '',
+                                        ucwords($status),
+                                        $leave->user_id,
+                                        [
+                                            'content' => $status,
+                                            'user_id' => $leave->approved_by,
+                                            'url' => route('employee.leave'),
+                                        ]
+                                    ));
+                                    toastr()->success('update successfully.');
+                                    return back();
+                                }
+                                else{
+                                    toastr()->error('Not Enough Leave Balance');
+                                    return back();
+                                }
+                            }
+                            if($leave->leave_type == 'sick'){
+                                if ($leaveBalance->sick_left >= $leave->days_taken){
+                                    $leave->status = $request->status;
+                                    $leaveBalance->sick_spent = ($leaveBalance->sick_spent + $leave->days_taken);
+                                    $leaveBalance->sick_left = ($leaveBalance->sick_left - $leave->days_taken);
+                                    $leave->approved_by = auth()->user()->id;
+                                    $leave->save();
+                                    $leaveBalance->save();
+                                    if ($request->status == 1){
+                                        $status = 'Your Leave Request Approved.';
+                                    }
+                                    // Trigger event
+                                    event(new EmployeeNotificationEvent(
+                                        '',
+                                        ucwords($status),
+                                        $leave->user_id,
+                                        [
+                                            'content' => $status,
+                                            'user_id' => $leave->approved_by,
+                                            'url' => route('employee.leave'),
+                                        ]
+                                    ));
+                                    toastr()->success('update successfully.');
+                                    return back();
+                                }
+                                else{
+                                    toastr()->error('Not Enough Leave Balance');
+                                    return back();
+                                }
+                            }
+                            if($leave->leave_type == 'half_day'){
+                                $leave->status = $request->status;
+                                $leave->approved_by = auth()->user()->id;
+                                $leaveBalance->spent = ($leaveBalance->spent + $leave->days_taken);
+                                $leaveBalance->left = ($leaveBalance->left - $leave->days_taken);
+                                $leave->save();
+                                $leaveBalance->save();
+                                if ($request->status == 1){
+                                    $status = 'Your Leave Request Approved.';
+                                }
+                                // Trigger event
+                                event(new EmployeeNotificationEvent(
+                                    '',
+                                    ucwords($status),
+                                    $leave->user_id,
+                                    [
+                                        'content' => $status,
+                                        'user_id' => $leave->approved_by,
+                                        'url' => route('employee.leave'),
+                                    ]
+                                ));
+                                toastr()->success('update successfully.');
+                                return back();
+                            }
+                        }
+                        if ($request->status == 0 || $request->status == 3){
+                            $leave->status = $request->status;
+                            $leave->approved_by = auth()->user()->id;
+                            $leave->save();
+                            if ($request->status == 3){
+                                $status = 'Your Leave Request Canceled.';
+                            }
+                            // Trigger event
+                            event(new EmployeeNotificationEvent(
+                                '',
+                                ucwords($status),
+                                $leave->user_id,
+                                [
+                                    'content' => $status,
+                                    'user_id' => $leave->approved_by,
+                                    'url' => route('employee.leave'),
+                                ]
+                            ));
+                            toastr()->success('update successfully.');
+                            return back();
+                        }
+                    case 3:
+                        if ($request->status == 1){
+                            if($leave->leave_type = 'casual'){
+                                if ($leaveBalance->casual_left >= $leave->days_taken){
+                                    $leave->status = $request->status;
+                                    $leaveBalance->casual_spent = ($leaveBalance->casual_spent + $leave->days_taken);
+                                    $leaveBalance->casual_left = ($leaveBalance->casual_left - $leave->days_taken);
+                                    $leave->approved_by = auth()->user()->id;
+                                    $leave->save();
+                                    $leaveBalance->save();
+                                    if ($request->status == 1){
+                                        $status = 'Your Leave Request Approved.';
+                                    }
+                                    // Trigger event
+                                    event(new EmployeeNotificationEvent(
+                                        '',
+                                        ucwords($status),
+                                        $leave->user_id,
+                                        [
+                                            'content' => $status,
+                                            'user_id' => $leave->approved_by,
+                                            'url' => route('employee.leave'),
+                                        ]
+                                    ));
+                                    toastr()->success('update successfully.');
+                                    return back();
+                                }
+                            }
+                            else{
+                                toastr()->error('Not Enough Leave Balance');
+                                return back();
+                            }
+                            if($leave->leave_type == 'sick'){
+                                if($leaveBalance->sick_left >= $leave->days_taken){
+                                    $leave->status = $request->status;
+                                    $leaveBalance->sick_spent = ($leaveBalance->sick_spent + $leave->days_taken);
+                                    $leaveBalance->sick_left = ($leaveBalance->sick_left - $leave->days_taken);
+                                    $leave->approved_by = auth()->user()->id;
+                                    $leave->save();
+                                    $leaveBalance->save();
+                                    if ($request->status == 1){
+                                        $status = 'Your Leave Request Approved.';
+                                    }
+                                    // Trigger event
+                                    event(new EmployeeNotificationEvent(
+                                        '',
+                                        ucwords($status),
+                                        $leave->user_id,
+                                        [
+                                            'content' => $status,
+                                            'user_id' => $leave->approved_by,
+                                            'url' => route('employee.leave'),
+                                        ]
+                                    ));
+                                    toastr()->success('update successfully.');
+                                    return back();
+                                }
+
                             }else{
                                 toastr()->error('Not Enough Leave Balance');
                                 return back();
                             }
-                        }
-                        if($leave->leave_type == 'half_day'){
-                            $leave->status = $request->status;
-                            $leave->approved_by = auth()->user()->id;
-                            $leaveBalance->spent = ($leaveBalance->spent + $leave->days_taken);
-                            $leaveBalance->left = ($leaveBalance->left - $leave->days_taken);
-                            $leave->save();
-                            $leaveBalance->save();
-                            if ($request->status == 1){
-                                $status = 'Your Leave Request Approved.';
+                            if($leave->leave_type == 'half_day'){
+                                $leave->status = $request->status;
+                                $leave->approved_by = auth()->user()->id;
+                                $leaveBalance->spent = ($leaveBalance->spent + $leave->days_taken);
+                                $leaveBalance->left = ($leaveBalance->left - $leave->days_taken);
+                                $leave->save();
+                                $leaveBalance->save();
+                                if ($request->status == 1){
+                                    $status = 'Your Leave Request Approved.';
+                                }
+                                // Trigger event
+                                event(new EmployeeNotificationEvent(
+                                    '',
+                                    ucwords($status),
+                                    $leave->user_id,
+                                    [
+                                        'content' => $status,
+                                        'user_id' => $leave->approved_by,
+                                        'url' => route('employee.leave'),
+                                    ]
+                                ));
+                                toastr()->success('update successfully.');
+                                return back();
                             }
-                            // Trigger event
-                            event(new EmployeeNotificationEvent(
-                                '',
-                                ucwords($status),
-                                $leave->user_id,
-                                [
-                                    'content' => $status,
-                                    'user_id' => $leave->approved_by,
-                                    'url' => route('employee.leave'),
-                                ]
-                            ));
-                            toastr()->success('update successfully.');
-                            return back();
                         }
-                    }
-                    if ($request->status == 2 || $request->status == 3){
-                        $leave->status = $request->status;
-                        $leave->approved_by = auth()->user()->id;
-                        $leave->save();
-                        if ($request->status == 2){
-                            $status = 'Your Leave Request Rejected.';
-                        }
-                        elseif ($request->status == 3){
-                            $status =  'Your Leave Request Canceled.';
-                        }
-                        // Trigger event
-                        event(new EmployeeNotificationEvent(
-                            '',
-                            ucwords($status),
-                            $leave->user_id,
-                            [
-                                'content' => $status,
-                                'user_id' => $leave->approved_by,
-                                'url' => route('employee.leave'),
-                            ]
-                        ));
-                        toastr()->success('update successfully.');
-                        return back();
-                    }
-                }
-                if ($leave->status == 1){
-                    if ($request->status == 0 || $request->status == 2 || $request->status == 3){
-                        if($leave->leave_type == 'casual'){
+                        if ($request->status == 0 || $request->status == 2){
                             $leave->status = $request->status;
-                            $leaveBalance->casual_spent = ($leaveBalance->casual_spent - $leave->days_taken);
-                            $leaveBalance->casual_left = ($leaveBalance->casual_left + $leave->days_taken);
                             $leave->approved_by = auth()->user()->id;
                             $leave->save();
-                            $leaveBalance->save();
                             if ($request->status == 2){
                                 $status = 'Your Leave Request Rejected.';
                             }
-                            elseif ($request->status == 3){
-                                $status =  'Your Leave Request Canceled.';
-                            }
                             // Trigger event
                             event(new EmployeeNotificationEvent(
                                 '',
@@ -559,279 +832,6 @@ class LeaveController extends Controller
                             toastr()->success('update successfully.');
                             return back();
                         }
-                        if($leave->leave_type == 'sick'){
-                            $leave->status = $request->status;
-                            $leaveBalance->sick_spent = ($leaveBalance->sick_spent - $leave->days_taken);
-                            $leaveBalance->sick_left = ($leaveBalance->sick_left + $leave->days_taken);
-                            $leave->approved_by = auth()->user()->id;
-                            $leave->save();
-                            $leaveBalance->save();
-                            if ($request->status == 2){
-                                $status = 'Your Leave Request Rejected.';
-                            }
-                            elseif ($request->status == 3){
-                                $status =  'Your Leave Request Canceled.';
-                            }
-                            // Trigger event
-                            event(new EmployeeNotificationEvent(
-                                '',
-                                ucwords($status),
-                                $leave->user_id,
-                                [
-                                    'content' => $status,
-                                    'user_id' => $leave->approved_by,
-                                    'url' => route('employee.leave'),
-                                ]
-                            ));
-                            toastr()->success('update successfully.');
-                            return back();
-                        }
-                        if($leave->leave_type == 'half_day'){
-                            $leave->status = $request->status;
-                            $leave->approved_by = auth()->user()->id;
-                            $leaveBalance->spent = ($leaveBalance->spent - $leave->days_taken);
-                            $leaveBalance->left = ($leaveBalance->left + $leave->days_taken);
-                            $leave->save();
-                            $leaveBalance->save();
-                            if ($request->status == 2){
-                                $status = 'Your Leave Request Rejected.';
-                            }
-                            elseif ($request->status == 3){
-                                $status =  'Your Leave Request Canceled.';
-                            }
-                            // Trigger event
-                            event(new EmployeeNotificationEvent(
-                                '',
-                                ucwords($status),
-                                $leave->user_id,
-                                [
-                                    'content' => $status,
-                                    'user_id' => $leave->approved_by,
-                                    'url' => route('employee.leave'),
-                                ]
-                            ));
-                            toastr()->success('update successfully.');
-                            return back();
-                        }
-                    }
-                }
-                if ($leave->status = 2){
-                    if ($request->status = 1){
-                        if($leave->leave_type == 'casual'){
-                            if ($leaveBalance->casual_left >= $leave->days_taken){
-                                $leave->status = $request->status;
-                                $leaveBalance->casual_spent = ($leaveBalance->casual_spent + $leave->days_taken);
-                                $leaveBalance->casual_left = ($leaveBalance->casual_left - $leave->days_taken);
-                                $leave->approved_by = auth()->user()->id;
-                                $leave->save();
-                                $leaveBalance->save();
-                                if ($request->status == 1){
-                                    $status = 'Your Leave Request Approved.';
-                                }
-                                // Trigger event
-                                event(new EmployeeNotificationEvent(
-                                    '',
-                                    ucwords($status),
-                                    $leave->user_id,
-                                    [
-                                        'content' => $status,
-                                        'user_id' => $leave->approved_by,
-                                        'url' => route('employee.leave'),
-                                    ]
-                                ));
-                                toastr()->success('update successfully.');
-                                return back();
-                            }
-                            else{
-                                toastr()->error('Not Enough Leave Balance');
-                                return back();
-                            }
-                        }
-                        if($leave->leave_type == 'sick'){
-                            if ($leaveBalance->sick_left >= $leave->days_taken){
-                                $leave->status = $request->status;
-                                $leaveBalance->sick_spent = ($leaveBalance->sick_spent + $leave->days_taken);
-                                $leaveBalance->sick_left = ($leaveBalance->sick_left - $leave->days_taken);
-                                $leave->approved_by = auth()->user()->id;
-                                $leave->save();
-                                $leaveBalance->save();
-                                if ($request->status == 1){
-                                    $status = 'Your Leave Request Approved.';
-                                }
-                                // Trigger event
-                                event(new EmployeeNotificationEvent(
-                                    '',
-                                    ucwords($status),
-                                    $leave->user_id,
-                                    [
-                                        'content' => $status,
-                                        'user_id' => $leave->approved_by,
-                                        'url' => route('employee.leave'),
-                                    ]
-                                ));
-                                toastr()->success('update successfully.');
-                                return back();
-                            }
-                            else{
-                                toastr()->error('Not Enough Leave Balance');
-                                return back();
-                            }
-                        }
-                        if($leave->leave_type == 'half_day'){
-                            $leave->status = $request->status;
-                            $leave->approved_by = auth()->user()->id;
-                            $leaveBalance->spent = ($leaveBalance->spent + $leave->days_taken);
-                            $leaveBalance->left = ($leaveBalance->left - $leave->days_taken);
-                            $leave->save();
-                            $leaveBalance->save();
-                            if ($request->status == 1){
-                                $status = 'Your Leave Request Approved.';
-                            }
-                            // Trigger event
-                            event(new EmployeeNotificationEvent(
-                                '',
-                                ucwords($status),
-                                $leave->user_id,
-                                [
-                                    'content' => $status,
-                                    'user_id' => $leave->approved_by,
-                                    'url' => route('employee.leave'),
-                                ]
-                            ));
-                            toastr()->success('update successfully.');
-                            return back();
-                        }
-                    }
-                    if ($request->status == 0 || $request->status == 3){
-                        $leave->status = $request->status;
-                        $leave->approved_by = auth()->user()->id;
-                        $leave->save();
-                        if ($request->status == 3){
-                            $status = 'Your Leave Request Canceled.';
-                        }
-                        // Trigger event
-                        event(new EmployeeNotificationEvent(
-                            '',
-                            ucwords($status),
-                            $leave->user_id,
-                            [
-                                'content' => $status,
-                                'user_id' => $leave->approved_by,
-                                'url' => route('employee.leave'),
-                            ]
-                        ));
-                        toastr()->success('update successfully.');
-                        return back();
-                    }
-                }
-                if ($leave->status == 3){
-                    if ($request->status == 1){
-                        if($leave->leave_type = 'casual'){
-                            if ($leaveBalance->casual_left >= $leave->days_taken){
-                                $leave->status = $request->status;
-                                $leaveBalance->casual_spent = ($leaveBalance->casual_spent + $leave->days_taken);
-                                $leaveBalance->casual_left = ($leaveBalance->casual_left - $leave->days_taken);
-                                $leave->approved_by = auth()->user()->id;
-                                $leave->save();
-                                $leaveBalance->save();
-                                if ($request->status == 1){
-                                    $status = 'Your Leave Request Approved.';
-                                }
-                                // Trigger event
-                                event(new EmployeeNotificationEvent(
-                                    '',
-                                    ucwords($status),
-                                    $leave->user_id,
-                                    [
-                                        'content' => $status,
-                                        'user_id' => $leave->approved_by,
-                                        'url' => route('employee.leave'),
-                                    ]
-                                ));
-                                toastr()->success('update successfully.');
-                                return back();
-                            }
-                        }
-                        else{
-                            toastr()->error('Not Enough Leave Balance');
-                            return back();
-                        }
-                        if($leave->leave_type == 'sick'){
-                            if($leaveBalance->sick_left >= $leave->days_taken){
-                                $leave->status = $request->status;
-                                $leaveBalance->sick_spent = ($leaveBalance->sick_spent + $leave->days_taken);
-                                $leaveBalance->sick_left = ($leaveBalance->sick_left - $leave->days_taken);
-                                $leave->approved_by = auth()->user()->id;
-                                $leave->save();
-                                $leaveBalance->save();
-                                if ($request->status == 1){
-                                    $status = 'Your Leave Request Approved.';
-                                }
-                                // Trigger event
-                                event(new EmployeeNotificationEvent(
-                                    '',
-                                    ucwords($status),
-                                    $leave->user_id,
-                                    [
-                                        'content' => $status,
-                                        'user_id' => $leave->approved_by,
-                                        'url' => route('employee.leave'),
-                                    ]
-                                ));
-                                toastr()->success('update successfully.');
-                                return back();
-                            }
-
-                        }else{
-                            toastr()->error('Not Enough Leave Balance');
-                            return back();
-                        }
-                        if($leave->leave_type == 'half_day'){
-                            $leave->status = $request->status;
-                            $leave->approved_by = auth()->user()->id;
-                            $leaveBalance->spent = ($leaveBalance->spent + $leave->days_taken);
-                            $leaveBalance->left = ($leaveBalance->left - $leave->days_taken);
-                            $leave->save();
-                            $leaveBalance->save();
-                            if ($request->status == 1){
-                                $status = 'Your Leave Request Approved.';
-                            }
-                            // Trigger event
-                            event(new EmployeeNotificationEvent(
-                                '',
-                                ucwords($status),
-                                $leave->user_id,
-                                [
-                                    'content' => $status,
-                                    'user_id' => $leave->approved_by,
-                                    'url' => route('employee.leave'),
-                                ]
-                            ));
-                            toastr()->success('update successfully.');
-                            return back();
-                        }
-                    }
-                    if ($request->status == 0 || $request->status == 2){
-                        $leave->status = $request->status;
-                        $leave->approved_by = auth()->user()->id;
-                        $leave->save();
-                        if ($request->status == 2){
-                            $status = 'Your Leave Request Rejected.';
-                        }
-                        // Trigger event
-                        event(new EmployeeNotificationEvent(
-                            '',
-                            ucwords($status),
-                            $leave->user_id,
-                            [
-                                'content' => $status,
-                                'user_id' => $leave->approved_by,
-                                'url' => route('employee.leave'),
-                            ]
-                        ));
-                        toastr()->success('update successfully.');
-                        return back();
-                    }
                 }
             }
             catch(Exception $e){
@@ -847,8 +847,8 @@ class LeaveController extends Controller
     public function management(){
         if(auth()->user()->hasPermission('admin leave management')){
             $users = User::whereNotIn('id',[1])->where('status',1)->get();
-            $leaveBalances = LeaveBalance::orderBy('year','desc')->where('status',1)->simplePaginate(500);
-            $halfDayLeaveBalances = HalfDayLeaveBalance::orderBy('year','desc')->orderBy('month','desc')->where('status',1)->simplePaginate(200);
+            $leaveBalances = LeaveBalance::orderBy('year','desc')->simplePaginate(500);
+            $halfDayLeaveBalances = HalfDayLeaveBalance::orderBy('year','desc')->orderBy('month','desc')->simplePaginate(200);
             return view('admin.leave.management',compact('users','leaveBalances','halfDayLeaveBalances'));
         }else{
             toastr()->error('Permission Denied');

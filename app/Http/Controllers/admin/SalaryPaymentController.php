@@ -4,6 +4,7 @@ namespace App\Http\Controllers\admin;
 
 use App\Events\EmployeeNotificationEvent;
 use App\Events\GeneralNotificationEvent;
+use App\Helpers\helpers;
 use App\Http\Controllers\Controller;
 use App\Models\Attendance;
 use App\Models\Salary;
@@ -39,8 +40,8 @@ class SalaryPaymentController extends Controller
                         });
                 })->orderBy('id','desc')->where('soft_delete',0)->paginate(100);
                 $salaries = Salary::where('status', '1')->get();
-                $salaryPaymentInputs = SalarySetting::where('status',1)->where('type','payment')->get();
-                $salaryDeductInputs = SalarySetting::where('status',1)->where('type','deduct')->get();
+                $salaryPaymentInputs = SalarySetting::where('type','payment')->get();
+                $salaryDeductInputs = SalarySetting::where('type','deduct')->get();
                 return view('admin.salary.payment', compact('payments','salaries','year', 'month','day','salaryPaymentInputs','salaryDeductInputs'));
             }
             else{
@@ -49,8 +50,8 @@ class SalaryPaymentController extends Controller
                 $day = 0;
                 $payments = SalaryPayment::with('user', 'salary')->orderBy('id','desc')->where('soft_delete',0)->paginate(100);
                 $salaries = Salary::where('status', '1')->get();
-                $salaryPaymentInputs = SalarySetting::where('status',1)->where('type','payment')->get();
-                $salaryDeductInputs = SalarySetting::where('status',1)->where('type','deduct')->get();
+                $salaryPaymentInputs = SalarySetting::where('type','payment')->get();
+                $salaryDeductInputs = SalarySetting::where('type','deduct')->get();
                 return view('admin.salary.payment', compact('payments','salaries','year', 'month','day','salaryPaymentInputs','salaryDeductInputs'));
             }
         }
@@ -181,13 +182,13 @@ class SalaryPaymentController extends Controller
 
     }
     public function download($id){
-        $salary = Salary::find($id);
-        $totalAttendance = collect(Attendance::where('user_id', $salary->user_id)
-            ->whereMonth('clock_in', $salary->month)
-            ->whereYear('clock_in', $salary->year)
-            ->get());
+        $paid = SalaryPayment::find($id);
+        $salary = Salary::find($paid->salary_id);
+        $totalAttendance = Attendance::where('user_id', $salary->user_id)
+            ->where('month', $salary->month)
+            ->where('year', $salary->year)
+            ->first();
 
-        $totalAttendance = $totalAttendance->unique('clock_in_date')->count();
         /* payment dynamic column */
         $salaryPaymentInputs = SalarySetting::where('status',1)->where('type','payment')->get();
         $pay = 0 ;
@@ -208,11 +209,11 @@ class SalaryPaymentController extends Controller
             }
         }
 
-        $net = ($salary->basic_salary + $salary->house_rent + $salary->medical_allowance + $salary->conveyance_allowance + $salary->others + $salary->mobile_allowance + $salary->bonus + $pay) - ($salary->meal_deduction + $salary->income_tax + $salary->other_deduction + $salary->attendance_deduction + $deduct);
-        $netWords = $this->numberToWords($net);
-        $workingDay = WorkingDay::where('month',$salary->month)->where('year',$salary->year)->first()->working_day ?? 0;
+//        $net = ($salary->basic_salary + $salary->house_rent + $salary->medical_allowance + $salary->conveyance_allowance + $salary->others + $salary->mobile_allowance + $salary->bonus + $pay) - ($salary->meal_deduction + $salary->income_tax + $salary->other_deduction + $salary->attendance_deduction + $deduct);
+        $net = $paid->paid_amount;
+        $netWords = helpers::numberToWords( $net );
 //        return view('admin.salary.pdf',compact('salary','totalAttendance','net','netWords','workingDay','salaryPaymentInputs','salaryDeductInputs'));
-        $pdf = Pdf::loadView('admin.salary.pdf', compact('salary','totalAttendance','net','netWords','workingDay','salaryPaymentInputs','salaryDeductInputs'));
+        $pdf = Pdf::loadView('admin.salary.pdf', compact('salary','totalAttendance','net','netWords','salaryPaymentInputs','salaryDeductInputs'));
         $pdf->setPaper('A4', 'portrait');
         return $pdf->stream($salary->user->userInfo->employee_id.'_salary_slip.pdf');
     }

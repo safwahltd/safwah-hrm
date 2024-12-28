@@ -78,7 +78,7 @@
                         @if(file_exists(auth()->user()->userInfo->image))
                             <img src="{{asset(auth()->user()->userInfo->image)}}" alt="profile" class="avatar lg rounded-circle img-thumbnail">
                         @else
-                            <img class="avatar lg rounded-circle img-thumbnail" src="{{asset('/')}}admin/assets/images/lg/avatar3.jpg" alt="profile">
+                            <img class="avatar lg rounded-circle img-thumbnail" src="{{asset('/')}}admin/assets/images/lg/{{auth()->user()->userInfo->gender == '1' ? 'avatar5.jpg':''}}{{auth()->user()->userInfo->gender == '2' ? 'avatar2.jpg':''}}{{auth()->user()->userInfo->gender == '3' ? 'avatar4.jpg':''}}" alt="profile">
                         @endif
 
                     </a>
@@ -89,7 +89,7 @@
                                     @if(file_exists(auth()->user()->userInfo->image))
                                         <img src="{{asset(auth()->user()->userInfo->image)}}" alt="" class="avatar rounded-circle">
                                     @else
-                                        <img src="{{asset('/')}}admin/assets/images/lg/avatar3.jpg" alt="" class="avatar rounded-circle">
+                                        <img src="{{asset('/')}}admin/assets/images/lg/{{auth()->user()->userInfo->gender == '1' ? 'avatar5.jpg':''}}{{auth()->user()->userInfo->gender == '2' ? 'avatar2.jpg':''}}{{auth()->user()->userInfo->gender == '3' ? 'avatar4.jpg':''}}" alt="" class="avatar rounded-circle">
                                     @endif
 
                                     <div class="flex-fill ms-3">
