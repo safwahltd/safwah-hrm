@@ -184,7 +184,7 @@
                                             <label  class="form-label">Designation <span class="text-danger">*</span></label>
                                             <select required name="designation" class="form-select" aria-label="Default select">
                                                 @foreach($designations as $designation)
-                                                    <option value="{{$designation->id}}" {{$user->userInfo->designation == $designation->id ? 'selected':''}} >{{$designation->name}}</option>
+                                                    <option value="{{$designation->id}}" {{$user->userInfo->designation == $designation->id ? 'selected':''}} >{{$designation->name}} - ({{$designation->department->department_name}})</option>
                                                 @endforeach
                                             </select>
                                         </div>
@@ -297,7 +297,7 @@
                                     <label  class="form-label">Designation <span class="text-danger">*</span></label>
                                     <select required name="designation" class="form-select" aria-label="Default select">
                                         @foreach($designations as $designation)
-                                            <option value="{{$designation->id}}" {{old('designation') == $designation->id ? 'selected':''}} >{{$designation->name}}</option>
+                                            <option value="{{$designation->id}}" {{old('designation') == $designation->id ? 'selected':''}} >{{$designation->name}} - ({{$designation->department->department_name}})</option>
                                         @endforeach
                                     </select>
                                 </div>

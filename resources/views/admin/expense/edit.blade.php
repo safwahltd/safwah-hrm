@@ -103,7 +103,7 @@
                                     <input class="form-control" type="text" name="mfs_transaction_no" value="{{ $expense->mfs_transaction_no }}" id="mfs_transaction_noAdd">
                                 </div>
                                 {{-- Others --}}
-                                <div class="mb-3  {{$expense->money_payment_type == 'others' ? '':'others_group'}}">
+                                <div class="mb-3  {{ $expense->money_payment_type == 'others' ? '':'others_group'}}">
                                     <label for="othersAdd" class="form-label"> Others </label>
                                     <input class="form-control" type="text" name="others" value="{{ $expense->others }}" id="others">
                                 </div>
@@ -115,9 +115,21 @@
                                     <select style="width: 100%" class="form-control select2-example adjusted_receipt_no" name="adjusted_receipt_no" id="adjusted_receipt_noAdd">
                                         <option value="" disabled selected> Select Receipt No </option>
                                         @foreach($receipts as $receipt)
-                                            <option {{ $expense->adjusted_receipt_no == $receipt->receipt_no ? 'selected':''}} value="{{ $receipt->receipt_no }}">{{ $receipt->receipt_no }} ({{ $receipt->date }})</option>
+                                            <option {{ $expense->adjusted_receipt_no == $receipt->receipt_no ? 'selected':''}} data-value="{{ $receipt->date }}" value="{{ $receipt->receipt_no }}">{{ $receipt->receipt_no }} ({{ $receipt->date }})</option>
                                         @endforeach
                                     </select>
+                                </div>
+                                <div id="result" class="my-2 card p-2">
+                                    @if(!empty($adjustedReceipt))
+                                    <h4>Receipt Details :</h4>
+                                    <p><span>Receipt No : {{$adjustedReceipt->receipt_no}} - ({{$adjustedReceipt->date}})</span></p>
+                                    <p>Amount : {{$adjustedReceipt->amount}}</p>
+                                    @endif
+                                </div>
+
+                                <div class="mb-3  {{$expense->receipt_type == 'money_receipt' ? '':'time_group'}}">
+                                    <label for="expense" class="form-label">Expense <span class="text-danger">*</span></label>
+                                    <input type="number" name="expense" min="0" class="form-control" id="expense" value="{{ $expense->expense ?? 0 }}">
                                 </div>
                                 <div class="mb-3">
                                     <label for="amount" class="form-label">Amount <span class="text-danger">*</span></label>
@@ -236,9 +248,40 @@
                     $('.others_group').show();
                 }
             });
-
-
-
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            $('#adjusted_receipt_noAdd').change(function () {
+                const selectedOption = $(this).find(':selected');
+                const receipt_id = selectedOption.val();
+                const date = selectedOption.data('value');
+                console.log(receipt_id,date);
+                if (receipt_id) {
+                    $.ajax({
+                        url: '/receipt-details',
+                        type: 'GET',
+                        data: {
+                            receipt_id:receipt_id,
+                            date:date,
+                        },
+                        success: function (response) {
+                            $('#result').empty();
+                            $('#result').html(`
+                            <h4>Receipt Details :</h4>
+                            <p><span>Receipt No : ${response.receipt_no} - (${response.date})</span></p>
+                            <p>Amount : ${response.amount}</p>
+                        `);
+                        },
+                        error: function (xhr) {
+                            console.error('Error fetching data:', xhr.responseText);
+                            $('#result').html('<p class="text-danger">Data Not Found.</p>');
+                        }
+                    });
+                } else {
+                    $('#result').html('');
+                }
+            });
         });
     </script>
 @endpush

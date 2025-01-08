@@ -7,39 +7,36 @@
     <style>
         body { font-family: Arial, sans-serif; line-height: 1.5; }
         h1 { text-align: center; }
-        .content { margin: 0 auto; width: 80%; }
+        .content { margin: 0 auto; width: 90%; }
         .signature { margin-top: 50px; }
     </style>
 </head>
 <body>
     <div class="content">
         <div class="">
-            <img class="img-responsive" width="200" src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('admin/assets/Safwah-Limited-logo.webp'))) }}" alt="">
+            <img class="img-responsive" width="150px" src="data:image/png;base64,{{ base64_encode(file_get_contents(public_path('admin/assets/Safwah-Limited-logo.webp'))) }}" alt="">
         </div>
-        <p>Confidence Center, Building-2, 10B, Shahjadpur, Gulshan-2, Dhaka, Bangladesh</p>
+        <p style="font-size: 10px;">Confidence Center, Building-2, 10B, Shahjadpur, Gulshan-2, Dhaka, Bangladesh</p>
 
-        <h2 align="center">Termination Letter</h2>
+        <h3 align="center">Termination Letter</h3>
         <p><span style="font-weight: bold">Date: </span>{{ now()->format('d M, Y') }}</p>
 
         <p>To,</p>
         <p>{{ $termination->employee->name }}<br>
-            <span style="font-weight: bold">Employee ID: </span>{{ $termination->employee->userInfo->employee_id }}<br>
+            <span style="font-weight: bold">ID: </span>{{ $termination->employee->userInfo->employee_id }}<br>
             <span style="font-weight: bold">Department: </span>{{ $termination->employee->userInfo->designations->department->department_name }}</p>
 
         <p>Dear {{ $termination->employee->name }},</p>
 
-        <p>We regret to inform you that your employment with {{ config('app.name') }} is being terminated effective immediately.</p>
 
-        <p><span style="font-weight: bold">Reason for Termination: </span>{{ $termination->reason }}</p>
+        <p>{{ $termination->reason }}</p>
 
         <p>{{ $termination->details }}</p>
 
-        <p>Please return all company property in your possession before your departure. We wish you the best of luck in your future endeavors.</p>
-
         <div class="signature">
             <p>Sincerely,</p>
-            <p>{{ config('app.name') }}</p>
-            <p>HR Department</p>
+            <p>{{ $termination->terminatedBy->name }}</p>
+            <p>{{ $termination->terminatedBy->userInfo->designations->department->department_name }}</p>
         </div>
     </div>
 </body>

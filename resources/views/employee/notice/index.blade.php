@@ -21,67 +21,8 @@
     <!-- Row end  -->
 
     <div class="row clearfix g-3">
-        {{--<div class="col-sm-12">
-            <div class="card mb-3">
-                <div class="card-body table-responsive export-table bg-dark-subtle">
-                    <table id="basic-datatable" class="table table-bordered text-nowrap table-secondary key-buttons border-bottom w-100">
-                        <thead>
-                        <tr>
-                            <th>SL</th>
-                            <th>Notifications</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        @foreach ($notifications as $key => $notification)
-                            <tr class="m-0" style="margin: 0">
-                                <td>{{ $loop->iteration }}</td>
-                                <td class="m-0">
-                                    <div class="alert alert-primary {{ $notification->read_at == null ? '':'text-muted' }}" role="alert">
-                                        <a href="#" class="" data-bs-toggle="modal" id="notice{{$key}}" data-bs-target="#noticeShow{{$key}}">
-                                            <span class="fw-bold ">{{ ucfirst(str_replace('_', ' ', $notification->data['type'])) }}</span>  <small>{{ $notification->created_at->diffForHumans() }}</small>
-                                            <p class="">{{ $notification->data['message'] }}</p>
-                                        </a>
-                                        <span class="">
-                                            @if( $notification->read_at == null )
-                                                <form action="{{route('notifications.markAsRead',$notification->id)}}">
-                                                    <button>mark as read</button>
-                                                </form>
-                                            @endif
-                                        </span>
-                                    </div>
-                                </td>
-                            </tr>
-                            <div class="modal fade" id="noticeShow{{$key}}" tabindex="-1"  aria-hidden="true">
-                                <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
-                                    <div class="modal-content bg-secondary-subtle ">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title  fw-bold" id="depeditLabel">{{ ucwords(str_replace('_', ' ', $notification->data['type'])) }}</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <div class="deadline-form">
-                                                <div class="modal-body">
-                                                    <div class="">
-                                                        <p align="justify">{{ $notification->data['message'] }}</p><br>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                        @endforeach
-                        </tbody>
-                    </table>
-                    <div class="text-white my-3 d-grid justify-content-center">
-                        {{ $notifications->links() }}
-                    </div>
-                </div>
-            </div>
-        </div>--}}
         <div class="col-sm-12">
-            @foreach ($notifications as $key => $notification)
+            @forelse ($notifications as $key => $notification)
                     <div class="alert card" role="alert">
                         <a href="#" class="" data-bs-toggle="modal" id="notice{{$key}}" data-bs-target="#noticeShow{{$key}}">
                             <span class="fw-bold  {{ $notification->read_at == null ? '':'text-muted' }}">{{ ucfirst(str_replace('_', ' ', $notification->data['type'])) }}</span>  <small class=" {{ $notification->read_at == null ? '':'text-muted' }}">{{ $notification->created_at->diffForHumans() }}</small>
@@ -118,7 +59,7 @@
                                                 <span>Sincerely,</span><br>
                                                 @endif
                                                 <span>{{ isset($user->name) ? $user->name : 'User Not Find' }}</span><br>
-                                                <span>{{ isset($user->name) ? $user->userInfo->designations->name : '' }}</span><br>
+                                                <span>{{ isset($user->userInfo->designations->name) ? $user->userInfo->designations->name : '' }}</span><br>
                                                 <span>{{ isset($setting->company_name) ? $setting->company_name : '' }}</span><br>
                                             </p>
                                         </div>
@@ -128,7 +69,11 @@
                         </div>
                     </div>
                 </div>
-            @endforeach
+                @empty
+                <div class="alert card" role="alert">
+                    <p class="text-center"> No Notification Found</p>
+                </div>
+            @endforelse
         </div>
         <div class="d-grid justify-content-center">
             {{ $notifications->links() }}

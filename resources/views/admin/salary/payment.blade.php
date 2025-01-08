@@ -335,6 +335,7 @@
                                 <div class="col-sm-6">
                                     <label for="monthAdd" class="form-label">Month <span class="text-danger">*</span></label>
                                     <select class="form-control" name="month" id="monthAdd" required>
+                                        <option value="" disabled selected>Select Month</option>
                                         @for ($i = 1; $i <= 12; $i++)
                                             <option value="{{ $i }}">{{ date('F', mktime(0, 0, 0, $i, 1)) }}</option>
                                         @endfor
@@ -343,6 +344,7 @@
                                 <div class="col-sm-6">
                                     <label for="yearAdd" class="form-label">Year <span class="text-danger">*</span></label>
                                     <select class="form-control" name="year" id="yearAdd" required>
+                                        <option value="" disabled selected>Select Year</option>
                                         @for ($i = date('Y'); $i >= 2022; $i--)
                                             <option value="{{ $i }}">{{ $i }}</option>
                                         @endfor

@@ -44,12 +44,10 @@
                                     <a class="m-1" href="" data-bs-toggle="modal" data-bs-target="#degedit{{$key}}"><i class="fa-solid btn btn-success btn-sm fa-pencil m-r-5"></i></a>
                                     @endif
                                     @if(auth()->user()->hasPermission('admin office expenses destroy'))
-                                    <a href="" class="m-1" onclick="return confirm('are you sure to delete ?') ? document.getElementById('destroy-form-{{$key}}').submit():''">
-                                        <i onclick="" class="fa-regular btn btn-danger btn-sm text-white fa-trash-can m-r-5" type="submit"></i>
-                                    </a>
-                                    <form class="" id="destroy-form-{{$key}}" action="{{ route('admin.office.expenses.destroy',$officeExpense->id) }}" method="post">
+                                    <form class="" action="{{ route('admin.office.expenses.destroy',$officeExpense->id) }}" method="post">
                                         @csrf
-                                        @method('PUT')
+                                        @method('DELETE')
+                                        <button class="btn btn-sm" onclick="return confirm('are you sure to delete ?')"><i class="fa-regular btn btn-danger btn-sm text-white fa-trash-can m-r-5" type="submit"></i></button>
                                     </form>
                                     @endif
                                 </td>

@@ -18,6 +18,7 @@ return new class extends Migration
             $table->text('details')->nullable();
             $table->date('terminated_at');
             $table->date('notice_date')->nullable();
+            $table->unsignedBigInteger('terminated_by')->nullable();
             $table->tinyInteger('status')->default(0);
             $table->tinyInteger('soft_delete')->default(0);
             $table->timestamps();

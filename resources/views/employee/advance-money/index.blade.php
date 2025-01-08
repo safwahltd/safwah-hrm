@@ -51,9 +51,9 @@
         <div class="border-0 mb-4">
             <div class="card-header py-3 no-bg bg-transparent d-flex align-items-center px-0 justify-content-between border-bottom flex-wrap">
                 <h3 class="fw-bold mb-0 text-white">Money Receipts</h3>
-                <div class="col-auto d-flex w-sm-100">
+               {{-- <div class="col-auto d-flex w-sm-100">
                     <button type="button" class="btn btn-dark btn-set-task w-sm-100" data-bs-toggle="modal" data-bs-target="#depadd"><i class="icofont-plus-circle me-2 fs-6"></i>Create New</button>
-                </div>
+                </div>--}}
             </div>
         </div>
     </div>
@@ -96,7 +96,7 @@
                                 </td>
                                 <td class="d-sm-flex d-grid align-items-center">
                                     <a class="m-1" href="#" data-bs-toggle="modal" data-bs-target="#show_asset{{$key}}"><i class="fa-solid btn btn-info btn-sm fa-eye m-r-5"></i></a>
-                                    @if($expense->receipt_type == 'advance_money_receipt')
+                                    {{--@if($expense->receipt_type == 'advance_money_receipt')
                                        @if($expense->approved_by == null || $expense->status == 0)
                                         <a class="m-1" href="#" data-bs-toggle="modal" data-bs-target="#degedit{{$key}}"><i class="fa-solid btn btn-success btn-sm fa-pencil m-r-5"></i></a>
                                         <a href="#" class="m-1" onclick="return confirm('are you sure to delete ?') ? document.getElementById('destroy-form-{{$key}}').submit():''">
@@ -107,7 +107,7 @@
                                             @method('PUT')
                                         </form>
                                         @endif
-                                    @endif
+                                    @endif--}}
                                     @if($expense->status != 2)
                                     <a target="_blank" class="m-1" href="{{route('admin.expense.download',$expense->id)}}"><i class="fa-solid btn btn-primary btn-sm fa-print m-r-5"></i></a>
                                     @endif
@@ -199,7 +199,7 @@
                                                 <div class="row px-2  fw-bold ">
                                                     <div class="col-4"><label for="purchase_date" class="form-label">Adjusted Receipt No</label></div>
                                                     <div class="col-2">:</div>
-                                                    <div class="col-6"><p class="">{{$expense->adjusted_receipt_no ?? '-'}}</p></div>
+                                                    <div class="col-6"><p class="">{{ $expense->adjusted_receipt_no ? ($expense->adjusted_receipt_no).'('.$expense->date.')':'-'}}</p></div>
                                                 </div>
                                             @endif
                                             <div class="row px-2">
@@ -252,7 +252,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="modal fade" id="degedit{{$key}}" tabindex="-1"  aria-hidden="true">
+                            {{--<div class="modal fade" id="degedit{{$key}}" tabindex="-1"  aria-hidden="true">
                                 <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
                                     <div class="modal-content">
                                         <div class="modal-header">
@@ -308,7 +308,7 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div>
+                            </div>--}}
                         @endforeach
                         </tbody>
                     </table>
@@ -316,7 +316,7 @@
             </div>
         </div>
     </div>
-    <div class="modal fade" id="depadd" tabindex="-1"  aria-hidden="true">
+    {{--<div class="modal fade" id="depadd" tabindex="-1"  aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header">
@@ -344,7 +344,7 @@
                                     <label for="date" class="form-label">Date <span class="text-danger">*</span></label>
                                     <input type="date" name="date" class="form-control" id="date" required>
                                 </div>
-                                {{--Advance Money Receipt--}}
+                                --}}{{--Advance Money Receipt--}}{{--
                                 <div class="mb-3">
                                     <label for="payment_type" class="form-label">Payment Type </label>
                                     <select class="form-control"  name="advance_payment_type" id="payment_type">
@@ -373,7 +373,7 @@
                     </form>
             </div>
         </div>
-    </div>
+    </div>--}}
 @endsection
 
 

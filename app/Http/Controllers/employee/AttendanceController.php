@@ -611,5 +611,4 @@ class AttendanceController extends Controller
             return back();
         }
     }
-
 }

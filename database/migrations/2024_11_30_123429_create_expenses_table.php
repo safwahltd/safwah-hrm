@@ -27,7 +27,9 @@ return new class extends Migration
             $table->string('mfs_transaction_no')->nullable();
             $table->string('others')->nullable();
             $table->string('adjusted_receipt_no')->nullable();
+            $table->date('adjusted_receipt_date')->nullable();
             $table->longText('reason')->nullable();
+            $table->bigInteger('expense')->nullable();
             $table->bigInteger('amount')->nullable();
             $table->bigInteger('payment')->nullable();
             $table->bigInteger('due')->nullable();

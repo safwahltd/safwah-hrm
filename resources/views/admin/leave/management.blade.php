@@ -11,7 +11,7 @@
     <!-- Row end  -->
 
     <div class="row clearfix g-3">
-        <div class="col-sm-3">
+        <div class="col-sm-4">
             <div class="card">
                 <div class="card-body">
                     <ul class="nav nav-pills mb-3" id="pills-tab-2" role="tablist">
@@ -102,7 +102,7 @@
             </div>
 
         </div>
-        <div class="col-sm-9">
+        <div class="col-sm-8">
             <div class="card">
                 <div class="card-body">
                     <ul class="nav nav-pills mb-3" id="pills-tab-1" role="tablist">

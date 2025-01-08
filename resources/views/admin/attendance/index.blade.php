@@ -111,7 +111,7 @@
                                         <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#attendedit{{$key}}"><i class="icofont-edit text-success"></i></button>
                                         <form action="{{ route('admin.attendance.destroy',$attendance->id) }}" method="post">
                                             @csrf
-                                            @method('PUT')
+                                            @method('DELETE')
                                             <button type="submit" onclick="return confirm('are you sure to delete ? ')" class="btn btn-outline-secondary deleterow"><i class="icofont-ui-delete text-danger"></i></button>
                                         </form>
                                     </div>

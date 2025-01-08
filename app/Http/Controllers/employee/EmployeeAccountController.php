@@ -19,7 +19,8 @@ class EmployeeAccountController extends Controller
         return view('employee.profile.profile',compact('user','assets'));
     }
     public function personalInfoUpdate(Request $request){
-        $userInfo = UserInfos::where('user_id',auth()->user()->id)->first();
+
+        $userInfo = UserInfos::where('user_id',$request->user_id)->first();
         try {
             $validate = Validator::make($request->all(),[
                 "personal_email" => Rule::unique('user_infos')->ignore($userInfo->id),
@@ -45,7 +46,7 @@ class EmployeeAccountController extends Controller
             $userInfo->biography = $request->biography;
             $userInfo->save();
 
-            $user = User::find(auth()->user()->id);
+            $user = User::find($request->user_id);
             $user->name = $request->name;
             $user->save();
 
@@ -58,10 +59,9 @@ class EmployeeAccountController extends Controller
         }
 
     }
-
     public function generalInfoUpdate(Request $request){
         try {
-            $userInfo = UserInfos::where('user_id',auth()->user()->id)->first();
+            $userInfo = UserInfos::where('user_id',$request->user_id)->first();
             $userInfo->nationality = $request->nationality;
             $userInfo->religion = $request->religion;
             $userInfo->marital_status = $request->marital_status;
@@ -81,7 +81,6 @@ class EmployeeAccountController extends Controller
         }
 
     }
-
     public function bankInfoUpdate(Request $request){
         try {
             $validate = Validator::make($request->all(),[
@@ -97,7 +96,7 @@ class EmployeeAccountController extends Controller
                 toastr()->error($validate->messages());
                 return redirect()->back();
             }
-            $userInfo = UserInfos::where('user_id',auth()->user()->id)->first();
+            $userInfo = UserInfos::where('user_id',$request->user_id)->first();
             $userInfo->bank_name = $request->bank_name;
             $userInfo->account_name = $request->account_name;
             $userInfo->account_number = $request->account_number;
@@ -118,7 +117,7 @@ class EmployeeAccountController extends Controller
     }
     public function profilePictureUpdate(Request $request){
         try {
-            $userInfo = UserInfos::where('user_id',auth()->user()->id)->first();
+            $userInfo = UserInfos::where('user_id',$request->user_id)->first();
             $image = $request->file('image');
             $imageExtension = $image->getClientOriginalExtension();
             $imageName = time().'.'.$imageExtension;

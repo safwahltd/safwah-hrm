@@ -17,7 +17,7 @@ class AssetController extends Controller
     public function index()
     {
         if(auth()->user()->hasPermission('admin asset index')){
-            return view('admin.admin.asset.index',[
+            return view('admin.asset.index',[
                 'assets' => Asset::latest()->paginate(10),
                 'users' => User::whereNotIn('role',['admin'])->get(),
             ]);

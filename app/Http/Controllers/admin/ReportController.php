@@ -327,7 +327,7 @@ class ReportController extends Controller
                 }
             }
             $pdf = Pdf::loadView('admin.report.daily.daily-report-download', compact('reportData', 'year', 'month', 'daysInMonth','day'));
-            return $pdf->download('daily_report.pdf');
+            return $pdf->stream('daily_report.pdf');
         }
         else{
             toastr()->error('Permission Denied');
@@ -362,8 +362,7 @@ class ReportController extends Controller
                 })
                 ->when($type, function ($q) use ($type) {
                     return $q->where('leave_type', $type);
-                })
-                ->get();
+                })->where('soft_delete',0)->get();
             $users = User::whereNotIn('id',[1])
                 ->when($user_id, function ($q) use ($user_id) {
                     return $q->where('id', $user_id);
@@ -394,15 +393,14 @@ class ReportController extends Controller
                 })
                 ->when($type, function ($q) use ($type) {
                     return $q->where('leave_type', $type);
-                })
-                ->get();
+                })->where('soft_delete',0)->get();
             $users = User::whereNotIn('id',[1])
                 ->when($user_id, function ($q) use ($user_id) {
                     return $q->where('id', $user_id);
                 })->get();
 //            return view('admin.report.leave.leave-report-download', compact('leaves','users','month','year','type'));
             $pdf = Pdf::loadView('admin.report.leave.leave-report-download', compact('leaves','users','month','year','type'));
-            return $pdf->download('leave_report.pdf');
+            return $pdf->stream('leave_report.pdf');
         }
         else{
             toastr()->error('Permission Denied');
@@ -431,7 +429,7 @@ class ReportController extends Controller
                 })
                 ->when($years, function ($q) use ($years) {
                     return $q->where('year', $years);
-                })->get();
+                })->where('soft_delete',0)->get();
 
             $salaryPaymentInputs = SalarySetting::where('type','payment')->get();
             $salaryDeductInputs = SalarySetting::where('type','deduct')->get();
@@ -496,7 +494,7 @@ class ReportController extends Controller
                 })
                 ->when($year, function ($q) use ($year) {
                     return $q->where('year', $year);
-                })->get();
+                })->where('soft_delete',0)->get();
             $salaryPaymentInputs = SalarySetting::where('type','payment')->get();
             $salaryDeductInputs = SalarySetting::where('type','deduct')->get();
             $monthlyReport = [];
@@ -544,7 +542,7 @@ class ReportController extends Controller
                 ];
             }
             $pdf = Pdf::loadView('admin.report.salary.salary-report-download', compact('monthlyReport'));
-            return $pdf->download('salary_report.pdf');
+            return $pdf->stream('salary_report.pdf');
         }
         else{
             toastr()->error('Permission Denied');
@@ -568,14 +566,12 @@ class ReportController extends Controller
             if ($status == 0){
                 $assets = Asset::where('status',$status)->when($user_id, function ($q) use ($user_id) {
                     return $q->where('user_id', $user_id);
-                })
-                    ->get();
+                })->where('soft_delete',0)->get();
             }
             if ($status == 1){
                 $assets = Asset::where('status',$status)->when($user_id, function ($q) use ($user_id) {
                     return $q->where('user_id', $user_id);
-                })
-                    ->get();
+                })->where('soft_delete',0)->get();
             }
             if ($status == ''){
                 $assets = Asset::when($user_id, function ($q) use ($user_id) {
@@ -583,10 +579,8 @@ class ReportController extends Controller
                 })
                     ->when($status, function ($q) use ($status) {
                         return $q->where('status', $status);
-                    })
-                    ->get();
+                    })->where('soft_delete',0)->get();
             }
-
             return view('admin.report.asset.asset-report',compact('assets','user_id','status'));
         }
         else{
@@ -601,14 +595,12 @@ class ReportController extends Controller
             if ($status == 0){
                 $assets = Asset::where('status',$status)->when($user_id, function ($q) use ($user_id) {
                     return $q->where('user_id', $user_id);
-                })
-                    ->get();
+                })->where('soft_delete',0)->get();
             }
             if ($status == 1){
                 $assets = Asset::where('status',$status)->when($user_id, function ($q) use ($user_id) {
                     return $q->where('user_id', $user_id);
-                })
-                    ->get();
+                })->where('soft_delete',0)->get();
             }
             if ($status == ''){
                 $assets = Asset::when($user_id, function ($q) use ($user_id) {
@@ -616,11 +608,10 @@ class ReportController extends Controller
                 })
                     ->when($status, function ($q) use ($status) {
                         return $q->where('status', $status);
-                    })
-                    ->get();
+                    })->where('soft_delete',0)->get();
             }
             $pdf = Pdf::loadView('admin.report.asset.asset-report-download', compact('assets'));
-            return $pdf->download('asset_report.pdf');
+            return $pdf->stream('asset_report.pdf');
         }
         else{
             toastr()->error('Permission Denied');
@@ -649,8 +640,7 @@ class ReportController extends Controller
                 /* Attendance Count Query */
                 $attendanceQuery = Attendance::when($user_id, function($q) use ($user_id) {
                     return $q->where('user_id', $user_id);
-                })->where('year', $year)
-                    ->where('month', $month);
+                })->where('year', $year)->where('month', $month)->where('soft_delete',0);
                 $attendanceData = $attendanceQuery->get()->groupBy('user_id');
                 $monthData = [];
                 foreach ($attendanceData as $userId => $attendanceRecords) {
@@ -693,8 +683,7 @@ class ReportController extends Controller
                 /* Attendance Count Query */
                 $attendanceQuery = Attendance::when($user_id, function($q) use ($user_id) {
                     return $q->where('user_id', $user_id);
-                })->where('year', $year)
-                    ->where('month', $month);
+                })->where('year', $year)->where('month', $month)->where('soft_delete',0);
                 $attendanceData = $attendanceQuery->get()->groupBy('user_id');
                 $monthData = [];
                 foreach ($attendanceData as $userId => $attendanceRecords) {
@@ -733,20 +722,20 @@ class ReportController extends Controller
             return back();
         }
     }
-    public function excelExportAttendanceReport(Request $request)
+    /*public function excelExportAttendanceReport(Request $request)
     {
         if(auth()->user()->hasPermission('admin attendance report export')){
             $day = $request->input('day',null);
             $year = $request->input('year');
             $month = $request->input('month');
             $fileName = "attendance_report_{$year}_{$month}.xlsx";
-            return Excel::download(new AttendanceExport($year, $month,$day), $fileName);
+            return Excel\::download(new AttendanceExport($year, $month,$day), $fileName);
         }
         else{
             toastr()->error('Permission Denied');
             return back();
         }
-    }
+    }*/
     public function expense(){
         if(auth()->user()->hasPermission('admin expense report')){
             $users = User::orderBy('name','asc')->get();
@@ -765,15 +754,13 @@ class ReportController extends Controller
             $receipt_type = $request->receipt_type;
             $expenses = Expense::where('status',1)->when($start_date && $end_date, function ($query) use ($start_date, $end_date) {
                 $query->whereBetween('date', [$start_date, $end_date]);
-            })
+                })
                 ->when($user_id, function ($query) use ($user_id) {
                     $query->where('user_id', $user_id);
                 })
                 ->when($receipt_type, function ($query) use ($receipt_type) {
                     $query->where('receipt_type', $receipt_type);
-                })
-                ->get();
-
+                })->where('soft_delete',0)->get();
             return view('admin.report.expense.expense-report-show',compact('expenses','start_date','end_date','user_id','receipt_type'));
         }
         else{
@@ -797,8 +784,7 @@ class ReportController extends Controller
                     })
                     ->when($receipt_type, function ($query) use ($receipt_type) {
                         $query->where('receipt_type', $receipt_type);
-                    })
-                    ->get();
+                    })->where('soft_delete',0)->get();
                 $pdf = Pdf::loadView('admin.report.expense.expense-report-download', compact('expenses','start_date','end_date','receipt_type'));
                 $pdf = $pdf->setPaper('A4','portrait');
                 return $pdf->stream('expense_report.pdf');
@@ -828,7 +814,7 @@ class ReportController extends Controller
             $end_date = $request->input('end_date') ?? Carbon::now()->toDateString();
             $expenses = OfficeExpense::where('status',1)->when($start_date && $end_date, function ($query) use ($start_date, $end_date) {
                 $query->whereBetween('date', [$start_date, $end_date]);
-            })->orderBy('date','asc')->get();
+            })->orderBy('date','asc')->where('soft_delete',0)->get();
 
             return view('admin.report.office-expense.office-expense-report-show',compact('expenses','start_date','end_date'));
         }
@@ -844,7 +830,7 @@ class ReportController extends Controller
                 $end_date = $request->input('end_date');
                 $expenses = OfficeExpense::where('status',1)->when($start_date && $end_date, function ($query) use ($start_date, $end_date) {
                     $query->whereBetween('date', [$start_date, $end_date]);
-                })->orderBy('date','asc')->get();
+                })->orderBy('date','asc')->where('soft_delete',0)->get();
                 $pdf = Pdf::loadView('admin.report.office-expense.office-expense-report-download', compact('expenses','start_date','end_date'));
                 $pdf = $pdf->setPaper('A4','portrait');
                 return $pdf->stream('office_expense_report.pdf');

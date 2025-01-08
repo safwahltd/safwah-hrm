@@ -51,13 +51,7 @@
                             <td>{{$termination->terminated_at}}</td>
 
                             <td>
-                                <form action="{{--{{route('admin.department.StatusUpdate',$termination->id)}}--}}" method="post">
-                                    @csrf
-                                    <select name="status" id="" class="form-control-sm text-white {{$termination->status == 1 ? 'bg-success':'bg-danger'}}" onchange="this.form.submit()">
-                                        <option {{$termination->status == 1 ? 'selected':''}} value="1">Active</option>
-                                        <option {{$termination->status == 0 ? 'selected':''}} value="0">Inactive</option>
-                                    </select>
-                                </form>
+                                <span>{{$termination->status == 1 ? 'Active':''}}{{$termination->status == 0 ? 'Inactive':''}}</span>
                             </td>
                             <td>
                                 <div class="btn-group" role="group" aria-label="Basic outlined example">
@@ -68,7 +62,7 @@
                                         @method('DELETE')
                                         <button type="submit" onclick="return confirm('are you sure to delete ? ')" class="btn btn-outline-secondary deleterow"><i class="icofont-ui-delete text-danger"></i></button>
                                     </form>
-                                    <form action="{{route('admin.termination.download',$termination->id)}}" method="post">
+                                    <form action="{{route('admin.termination.download',$termination->id)}}" target="_blank" method="post">
                                         @csrf
                                         <button type="submit" onclick="return confirm('are you sure to download ? ')" class="btn btn-outline-secondary deleterow"><i class="icofont-download-alt text-primary"></i></button>
                                     </form>
@@ -152,18 +146,14 @@
 
                                                 <p>Dear {{ $termination->employee->name }},</p>
 
-                                                <p>We regret to inform you that your employment with {{ config('app.name') }} is being terminated effective immediately.</p>
-
-                                                <p><span class="fw-bolder">Reason for Termination: </span>{{ $termination->reason }}</p>
+                                                <p>{{ $termination->reason }}</p>
 
                                                 <p>{{ $termination->details }}</p>
 
-                                                <p>Please return all company property in your possession before your departure. We wish you the best of luck in your future endeavors.</p>
-
                                                 <div class="signature">
                                                     <p>Sincerely,</p>
-                                                    <p>{{ config('app.name') }}</p>
-                                                    <p>HR Department</p>
+                                                    <p>{{ $termination->terminatedBy->name }}</p>
+                                                    <p>{{ $termination->terminatedBy->userInfo->designations->department->department_name }}</p>
                                                 </div>
                                             </div>
                                         </div>
