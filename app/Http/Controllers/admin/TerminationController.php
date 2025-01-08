@@ -40,6 +40,7 @@ class TerminationController extends Controller
                 $termination->reason = $request->reason;
                 $termination->details = $request->details;
                 $termination->terminated_at = $request->terminated_at;
+                $termination->terminated_by = auth()->user()->id;
                 $termination->notice_date = now();
                 $termination->save();
                 toastr()->success('Termination Create Successfully.');
@@ -75,6 +76,7 @@ class TerminationController extends Controller
                 $termination->details = $request->details;
                 $termination->terminated_at = $request->terminated_at;
                 $termination->notice_date = now();
+                $termination->status = $request->status;
                 $termination->save();
                 toastr()->success('Termination Update Successfully.');
                 return back();
@@ -114,7 +116,7 @@ class TerminationController extends Controller
         if (auth()->user()->hasPermission('admin termination download')){
             $termination = Termination::find($id);
             $pdf = Pdf::loadView('admin.termination.pdf', compact('termination'));
-            return $pdf->download('termination_letter_'.$termination->employee->userInfo->employee_id.'.pdf');
+            return $pdf->stream('termination_letter_'.$termination->employee->userInfo->employee_id.'.pdf');
         }
         else{
             toastr()->error('Permission Denied');

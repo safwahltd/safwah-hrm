@@ -106,7 +106,7 @@
                             <div class="card" style="background-color: #111111">
                                 <div class="card-body text-center row">
                                     <div class="col p-1">
-                                        <p class="fw-bold text-white" style="font-size: 150%;">৳ {{ number_format( \App\Models\OfficeExpense::where('status',1)->sum('amount') , 2) }}</p>
+                                        <p class="fw-bold text-white" style="font-size: 150%;">৳ {{ number_format( \App\Models\OfficeExpense::where('status',1)->where('soft_delete',0)->sum('amount') , 2) }}</p>
                                         <span class="text-white">Total Expense</span>
                                     </div>
                                 </div>

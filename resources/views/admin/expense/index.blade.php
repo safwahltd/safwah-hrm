@@ -12,7 +12,6 @@
         </div>
     </div>
     <!-- Row end  -->
-
     <div class="row clearfix justify-content-center g-3">
         <div class="col-sm-12">
             <div class="card p-2">
@@ -26,6 +25,7 @@
                             <th>Date</th>
                             <th>User</th>
                             <th>Status</th>
+                            <th>Expense</th>
                             <th>Amount</th>
                             <th class="text-center">Action</th>
                         </tr>
@@ -50,6 +50,7 @@
                                     <span class="bg-success text-white mx-1 px-1 rounded-2">{{ $expense->received_by != null ? 'Received':''}} </span>
                                     @endif
                                 </td>
+                                <td align="center">{{ $expense->expense }} /-</td>
                                 <td align="center">{{ $expense->amount }} /-</td>
                                 <td class="d-sm-flex d-grid align-items-center">
                                     <a class="m-1" href="#" data-bs-toggle="modal" data-bs-target="#show_asset{{$key}}"><i class="fa-solid btn btn-primary text-white btn-sm fa-eye m-r-5"></i></a>
@@ -150,7 +151,7 @@
                                                 <div class="row px-2  fw-bold ">
                                                     <div class="col-4"><label for="purchase_date" class="form-label">Adjusted Receipt No</label></div>
                                                     <div class="col-2">:</div>
-                                                    <div class="col-6"><p class="">{{$expense->adjusted_receipt_no ?? '-'}}</p></div>
+                                                    <div class="col-6"><p class="">{{ $expense->adjusted_receipt_no ?? '-'}} ({{ $expense->adjusted_receipt_date ?? ''}})</p></div>
                                                 </div>
                                             @endif
                                             <div class="row px-2">
@@ -164,6 +165,11 @@
                                                 <div class="col-6"><p class="">৳ {{$expense->amount ?? 0}}</p></div>
                                             </div>
                                             @if($expense->receipt_type == 'money_receipt')
+                                            <div class="row px-2  fw-bold ">
+                                                <div class="col-4"><label for="description" class="form-label">Expense</label></div>
+                                                <div class="col-2">:</div>
+                                                <div class="col-6"><p class="">৳ {{$expense->expense ?? 0}}</p></div>
+                                            </div>
                                             <div class="row px-2  fw-bold ">
                                                 <div class="col-4"><label for="description" class="form-label">Payment</label></div>
                                                 <div class="col-2">:</div>

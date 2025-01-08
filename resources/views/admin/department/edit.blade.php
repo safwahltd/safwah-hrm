@@ -25,7 +25,7 @@
                     </div>
                     <div class="col-sm-4">
                         <label for="department_head" class="form-label"> Department Head  </label><br>
-                        <select class="form-control select2-example"  name="department_head" id="department_head" style="width: 100%;" required>
+                        <select class="form-control select2-example"  name="department_head" id="department_head" style="width: 100%;">
                             <option value="">Select One</option>
                             @foreach($users as $user)
                                 <option {{$dept->department_head == $user->id ? 'selected':''}} value="{{$user->id}}">{{$user->name}} <sub>({{$user->userInfo->employee_id}})</sub></option>

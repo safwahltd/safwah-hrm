@@ -43,7 +43,7 @@ class ExpenseController extends Controller
         if(auth()->user()->hasPermission('admin expense create')){
             try {
                 $users = User::orderBy('name','asc')->get();
-                $receipts = Expense::latest()->where('receipt_type','advance_money_receipt')->get();
+                $receipts = Expense::latest()->where('receipt_type','advance_money_receipt')->where('soft_delete',0)->where('status',1)->get();
                 return view('admin.expense.add',compact('users','receipts'));
             }
             catch (\Exception $e){
@@ -83,6 +83,7 @@ class ExpenseController extends Controller
                         'date' => 'required',
                         'reason' => 'required',
                         'money_payment_type' => 'required',
+                        'expense' => 'required',
                         'amount' => 'required',
                         'payment' => 'required',
                         'due' => 'required',
@@ -92,8 +93,6 @@ class ExpenseController extends Controller
                         return back();
                     }
                 }
-                $receipt = Expense::latest()->first()->receipt_no;
-                $receiptNo = $receipt + 1;
 
                 $expense = new Expense();
                 $expense->receipt_type = $request->receipt_type;
@@ -110,7 +109,9 @@ class ExpenseController extends Controller
                 $expense->mfs_transaction_no = $request->mfs_transaction_no;
                 $expense->others = $request->others;
                 $expense->adjusted_receipt_no = $request->adjusted_receipt_no;
+                $expense->adjusted_receipt_date = $request->adjusted_receipt_date;
                 $expense->reason = $request->reason;
+                $expense->expense = $request->expense;
                 $expense->amount = $request->amount;
                 $expense->payment = $request->payment;
                 $expense->due = $request->due;
@@ -232,10 +233,11 @@ class ExpenseController extends Controller
     public function edit($id){
         if(auth()->user()->hasPermission('admin expense edit')){
             try {
-                $users = User::orderBy('name','asc')->get();
-                $receipts = Expense::latest()->where('receipt_type','advance_money_receipt')->get();
+                $users = User::orderBy('name','asc')->where('status',1)->get();
+                $receipts = Expense::latest()->where('receipt_type','advance_money_receipt')->where('soft_delete',0)->where('status',1)->get();
                 $expense = Expense::find($id);
-                return view('admin.expense.edit',compact('users','receipts','expense'));
+                $adjustedReceipt = Expense::where('user_id',$expense->user_id)->where('receipt_type','advance_money_receipt')->where('receipt_no',$expense->adjusted_receipt_no)->where('date',$expense->adjusted_receipt_date)->where('soft_delete',0)->where('status',1)->first();
+                return view('admin.expense.edit',compact('users','receipts','expense','adjustedReceipt'));
             }
             catch (\Exception $e){
                 toastr()->error($e->getMessage());
@@ -269,6 +271,7 @@ class ExpenseController extends Controller
                         'user_id' => 'required',
                         'date' => 'required',
                         'reason' => 'required',
+                        'expense' => 'required',
                         'amount' => 'required',
                         'payment' => 'required',
                         'due' => 'required',
@@ -293,6 +296,7 @@ class ExpenseController extends Controller
                 $expense->others = $request->others;
                 $expense->adjusted_receipt_no = $request->adjusted_receipt_no;
                 $expense->reason = $request->reason;
+                $expense->expense = $request->expense;
                 $expense->amount = $request->amount;
                 $expense->payment = $request->payment;
                 $expense->due = $request->due;
@@ -460,8 +464,12 @@ class ExpenseController extends Controller
 
 
     }
-    /* Admin End */
+    public function getReceiptDetails(Request $request){
 
+        $receipt = Expense::where('receipt_type','advance_money_receipt')->where('receipt_no',$request->receipt_id)->where('date',$request->date)->where('soft_delete',0)->where('status',1)->first();
+        return response()->json($receipt);
+    }
+    /* Admin End */
     /* Employee Start */
     public function indexAdvance(){
         if(auth()->user()->hasPermission('employee advance money index')){

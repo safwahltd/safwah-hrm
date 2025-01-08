@@ -11,4 +11,7 @@ class Termination extends Model
     public function employee(){
         return $this->belongsTo(User::class,'employee_id');
     }
+    public function terminatedBy(){
+        return $this->belongsTo(User::class,'terminated_by');
+    }
 }

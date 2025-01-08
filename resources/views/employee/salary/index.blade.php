@@ -74,34 +74,6 @@
                                     </div>
                                 </td>
                             </tr>
-                            @php
-                                $user_id = $payment->salary->user_id;
-                                $yearr = $payment->salary->year;
-                                $monthh = $payment->salary->month;
-                                $daysInaMonth = \Illuminate\Support\Carbon::create($yearr, $monthh, 1)->daysInMonth;
-                                $startDate = \Illuminate\Support\Carbon::create($yearr, $monthh, 1);
-                                $endDate = $startDate->copy()->endOfMonth();
-                                $allDates = [];
-                                for ($date = $startDate; $date <= $endDate; $date->addDay()) {
-                                    $allDates[] = $date->toDateString(); // Store the dates in an array
-                                }
-                                for ($day = 1; $day <= $daysInaMonth; $day++) {
-                                    $attendancesForDay = \App\Models\Attendance::with('user')->where(function($query) use ($user_id, $yearr, $monthh, $day) {
-                                        $query->when($user_id, function($q) use ($user_id) {
-                                            $q->where('user_id', $user_id);
-                                        })->when($yearr, function($q) use ($yearr) {
-                                            $q->where('year', $yearr);
-                                        })->when($monthh, function($q) use ($monthh) {
-                                            $q->where('month', $monthh);
-                                        });
-                                    })->get();
-
-                                    $attendanceData = collect($allDates)->mapWithKeys(function ($date) use ($attendancesForDay) {
-                                        return [$date => $attendancesForDay->get($date, collect())];
-                                    });
-                                }
-
-                            @endphp
                             <div class="modal fade" id="salaryShow{{$key}}" tabindex="-1"  aria-hidden="true">
                                 <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
                                     <div class="modal-content">
@@ -122,11 +94,12 @@
                                                                 </div>
                                                                 <div class="col-md-6">
                                                                     <p><small class="fw-bold" style="font-weight: bold">ID </small> : <small> {{$payment->salary->user->userInfo->employee_id}}</small></p>
-                                                                    <p><small class="fw-bold" style="font-weight: bold">TOTAL ATTENDENCE </small> : <small> {{$attendancesForDay->sum('attend')}}</small></p>
                                                                     @php
-                                                                        $workingDaysRecord = \App\Models\WorkingDay::where('year', $payment->salary->year)->where('month', $payment->salary->month)->first();
+                                                                        $atttendance = \App\Models\Attendance::where('user_id',$payment->salary->user->id)->where('month',$payment->salary->month)->where('year',$payment->salary->year)->first();
                                                                     @endphp
-                                                                    <p><small class="fw-bold" style="font-weight: bold">TOTAL WORKING DAY </small> : <small> {{$workingDaysRecord->working_day ?? 0}} </small></p>
+                                                                    <p><small class="fw-bold" style="font-weight: bold">TOTAL ATTENDENCE </small> : <small> {{ $atttendance->attend ?? 0 }}</small></p>
+
+                                                                    <p><small class="fw-bold" style="font-weight: bold">TOTAL WORKING DAY </small> : <small> {{$atttendance->working_day ?? 0}} </small></p>
                                                                 </div>
 
                                                             </div>

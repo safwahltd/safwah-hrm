@@ -18,34 +18,41 @@
                             </div>
                             <div class="tab-content card-body">
                                 <div class="tab-pane fade show active">
+                                    @if(\Illuminate\Support\Facades\Auth::user()->unreadNotifications->count())
                                     <ul class="list-unstyled list mb-0">
-                                        @if(\Illuminate\Support\Facades\Auth::user()->unreadNotifications->count())
                                             @foreach (\Illuminate\Support\Facades\Auth::user()->unreadNotifications as $key => $notification)
                                                 <li class="py-2 mb-1 border-bottom">
                                                     @if(isset($notification->data['data']['url']))
                                                         <a href="{{ $notification->data['data']['url'] }}" class="d-flex">
+                                                            <div class="flex-fill ms-2 {{ $notification->read_at == null ? '':'text-muted' }} ">
+                                                                <p class="d-flex justify-content-between mb-0 ">
+                                                                    @if($notification->data['type'])
+                                                                        <span class="font-weight-bold">{{ ucwords(str_replace('_', ' ', $notification->data['type'])) }} </span>
+                                                                    @endif
+                                                                    <small>{{ $notification->created_at->diffForHumans() }}</small>
+                                                                </p>
+                                                                <p>{{ ucfirst(str_replace('_', ' ', $notification->data['message'])) }}</p>
+                                                            </div>
+                                                        </a>
                                                     @else
                                                         <a href="{{route('employee.notice.list')}}#notice{{$key}}" class="d-flex">
+                                                            <div class="flex-fill ms-2 {{ $notification->read_at == null ? '':'text-muted' }} ">
+                                                                <p class="d-flex justify-content-between mb-0 ">
+                                                                    @if($notification->data['type'])
+                                                                        <span class="font-weight-bold">{{ ucwords(str_replace('_', ' ', $notification->data['type'])) }} </span>
+                                                                    @endif
+                                                                    <small>{{ $notification->created_at->diffForHumans() }}</small>
+                                                                </p>
+                                                                <p>{{ ucfirst(str_replace('_', ' ', $notification->data['message'])) }}</p>
+                                                            </div>
+                                                        </a>
                                                     @endif
-                                                        <div class="flex-fill ms-2 {{ $notification->read_at == null ? '':'text-muted' }} ">
-
-                                                            <p class="d-flex justify-content-between mb-0 ">
-                                                                @if($notification->data['type'])
-                                                                <span class="font-weight-bold">{{ ucwords(str_replace('_', ' ', $notification->data['type'])) }} </span>
-                                                                @endif
-                                                                <small>{{ $notification->created_at->diffForHumans() }}</small>
-                                                            </p>
-
-                                                            <p>{{ ucfirst(str_replace('_', ' ', $notification->data['message'])) }}</p>
-
-                                                        </div>
-                                                    </a>
                                                 </li>
                                             @endforeach
-                                        @else
-                                            <a class="dropdown-item" href="#">No New Notification</a>
-                                        @endif
                                     </ul>
+                                    @else
+                                        <p class="dropdown-item">No New Notification</p>
+                                    @endif
                                 </div>
                                 <div class="row {{\Illuminate\Support\Facades\Auth::user()->unreadNotifications->count() ? '':'justify-content-center'}}">
                                     @if(\Illuminate\Support\Facades\Auth::user()->unreadNotifications->count())

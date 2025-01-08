@@ -60,7 +60,7 @@ class EmployeeController extends Controller
                                 });
                             })->latest()->get();
                     }
-                    $designations = Designation::where('status',1)->get();
+                    $designations = Designation::where('status',1)->where('soft_delete',0)->get();
                     $roles = Role::where('status',1)->get();
                     $userss = User::whereNotIn('role',['admin'])->get();
                     $status = $request->status ?? 2;
@@ -70,7 +70,7 @@ class EmployeeController extends Controller
                 $status = 2;
                 $type = 0;
                 $designation_id = 0;
-                $designations = Designation::where('status',1)->get();
+                $designations = Designation::where('status',1)->where('soft_delete',0)->get();
                 $userss = User::latest()->whereNotIn('role',['admin'])->get();
                 $users = $userss;
                 $roles = Role::where('status',1)->get();

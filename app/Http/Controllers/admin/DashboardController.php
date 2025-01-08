@@ -49,8 +49,8 @@ class DashboardController extends Controller
             $holidays = Holiday::where('date_from', '>', Carbon::now())->latest()->simplePaginate(5);
 
             // Retrieve department, designation, and termination counts
-            $departments = Department::count();
-            $designations = Designation::count();
+            $departments = Department::where('soft_delete',0)->count();
+            $designations = Designation::where('soft_delete',0)->count();
             $terminations = Termination::count();
 
             // Retrieve assets and calculate the total value
@@ -151,8 +151,8 @@ class DashboardController extends Controller
             $holidays = Holiday::where('date_from', '>', Carbon::now())->simplePaginate(5);
 
             // Retrieve department, designation, and termination counts
-            $departments = Department::count();
-            $designations = Designation::count();
+            $departments = Department::where('soft_delete',0)->count();
+            $designations = Designation::where('soft_delete',0)->count();
             $terminations = Termination::count();
 
             // Retrieve assets and calculate the total value

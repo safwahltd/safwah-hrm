@@ -169,7 +169,7 @@ use App\Http\Controllers\admin\OfficeExpenseController;
                 Route::get('/office-expenses','index')->name('admin.office.expenses.index');
                 Route::post('/office-expenses-store','store')->name('admin.office.expenses.store');
                 Route::put('/office-expenses-update/{id}','update')->name('admin.office.expenses.update');
-                Route::delete('/office-expenses-destroy/{id}','destroy')->name('admin.office.expenses.destroy');
+                Route::delete('/office-expenses-delete/{id}','destroy')->name('admin.office.expenses.destroy');
             });
             Route::controller(ReportController::class)->prefix('report')->group(function (){
                 Route::get('/daily-report','daily')->name('admin.daily.report');
@@ -225,6 +225,7 @@ use App\Http\Controllers\admin\OfficeExpenseController;
             Route::put('/expense-update/{id}','update')->name('admin.expense.update');
             Route::put('/expense-destroy/{id}','destroy')->name('admin.expense.destroy');
             Route::get('expense-download/{id}', 'printExpense')->name('admin.expense.download');
+            Route::get('receipt-details', 'getReceiptDetails')->name('admin.receipt.details');
         });
 
         ####################################### /* Admin Panel End Here  */###################################################################

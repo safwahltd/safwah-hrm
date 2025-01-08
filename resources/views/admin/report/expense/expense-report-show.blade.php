@@ -103,6 +103,7 @@
                 <th>Receipt No</th>
                 <th>Ref. Receipt No</th>
                 <th>Payment Type</th>
+                <th>Expense</th>
                 <th>Amount</th>
                 <th>Payment</th>
                 <th>Due</th>
@@ -122,19 +123,17 @@
                     <td>{{ $expense->receipt_no}}</td>
                     <td>{{ $expense->adjusted_receipt_no ?? '-'}}</td>
                     <td>{{ $expense->advance_payment_type ? ucwords($expense->advance_payment_type) : ucwords($expense->money_payment_type)}}</td>
+                    <td>{{ $expense->expense ?? '-'  }}</td>
                     <td>{{ $expense->amount ?? '-'  }}</td>
                     <td>{{ $expense->payment ?? '-'  }}</td>
                     <td>{{ $expense->due ?? '-' }}</td>
                 </tr>
-                <p hidden>{{ $amount = $amount + $expense->amount}}</p>
-                <p hidden>{{ $payment = $payment + $expense->payment}}</p>
-                <p hidden>{{ $due = $due + $expense->due}}</p>
             @endforeach
             <tr style="font-weight: bold">
                 <td colspan="8">Total</td>
-                <td>{{ $amount }}</td>
-                <td>{{ $payment }}</td>
-                <td>{{ $due }}</td>
+                <td>{{ $amount = $expenses->sum('amount') + $expenses->sum('expense')}}</td>
+                <td>{{ $expenses->sum('payment') }}</td>
+                <td>{{ $expenses->sum('due') }}</td>
             </tr>
         </table>
         @else
@@ -148,6 +147,7 @@
                     <th>Receipt No</th>
                     <th>Ref. Receipt No</th>
                     <th>Payment Type</th>
+                    <th>Expense</th>
                     <th>Amount</th>
                     <th>Payment</th>
                     <th>Due</th>
@@ -169,6 +169,7 @@
                         <td>{{ $expense->receipt_no}}</td>
                         <td>{{ $expense->adjusted_receipt_no ?? '-'}}</td>
                         <td>{{ $expense->advance_payment_type ? ucwords($expense->advance_payment_type) : ucwords($expense->money_payment_type)}}</td>
+                        <td>{{ $expense->expense ?? '-'  }}</td>
                         <td>{{ $expense->amount ?? '-'  }}</td>
                         <td>{{ $expense->payment ?? '-'  }}</td>
                         <td>{{ $expense->due ?? '-' }}</td>
@@ -185,18 +186,19 @@
                 @endforeach
                 <tr style="font-weight: bold">
                     <td colspan="8">Total</td>
+                    <td>Expense : {{$expenseAmount =  $expenses->sum('expense') }} </td>
                     <td>AD : {{ $AdAmount }} | MO : {{ $MAmount }} </td>
                     <td>{{ $Tpayment }}</td>
                     <td>
-                        @if($MAmount < ($AdAmount + $Tpayment))
-                            {{ $TOTaldue = ($AdAmount + $Tpayment) - $MAmount }}
+                        @if(($MAmount + $expenseAmount) < ($AdAmount + $Tpayment))
+                            {{ $TOTaldue = ($AdAmount + $Tpayment) - ($MAmount + $expenseAmount) }}
                         @else
                             {{ $TOTaldue = 0 }}
                         @endif
                     </td>
                     <td>
-                        @if($MAmount > ($AdAmount + $Tpayment))
-                            {{ str_replace('-','', ($MAmount - ($AdAmount + $Tpayment ))) }}
+                        @if(($MAmount + $expenseAmount) > ($AdAmount + $Tpayment))
+                            {{ str_replace('-','', (($MAmount + $expenseAmount) - ($AdAmount + $Tpayment ))) }}
                         @else
                             0
                         @endif
